@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Trash2, AlertTriangle, X, Loader2 } from "lucide-react"
+import { signOut } from "@/lib/auth-client"
 
 export default function DeleteProfile() {
   const [isConfirming, setIsConfirming] = useState(false)
@@ -30,6 +31,9 @@ export default function DeleteProfile() {
       if (!response.ok) {
         throw new Error(data.error || "Failed to delete account")
       }
+
+      // Sign out to clear client-side session
+      await signOut()
 
       // Redirect to home page after successful deletion
       router.push("/")

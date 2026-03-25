@@ -53,7 +53,7 @@ export default function PostSection() {
     }
 
     return (
-        <div className="flex flex-col h-full bg-white rounded-xl overflow-hidden">
+        <div className="flex flex-col h-full rounded-xl overflow-hidden">
             {/* Header */}
             <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between shrink-0">
                 <div className="flex items-center gap-2">

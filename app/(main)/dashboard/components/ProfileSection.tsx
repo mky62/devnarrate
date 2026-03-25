@@ -6,37 +6,8 @@ import { useState } from "react";
 import { z } from "zod";
 import { useUser } from "@/hooks/useUser";
 import { useUpdateProfile } from "@/hooks/useUpdateProfile";
+import { profileSchema } from "@/lib/profileValidation";
 
-// Zod validation schema
-const profileSchema = z.object({
-  stageName: z
-    .string()
-    .max(30, "Stage name must be 30 characters or less")
-    .regex(/^[a-zA-Z0-9_-]*$/, "Only letters, numbers, underscores, and hyphens allowed")
-    .optional(),
-  description: z
-    .string()
-    .max(500, "Bio must be 500 characters or less")
-    .optional(),
-  github: z
-    .string()
-    .url("Must be a valid URL")
-    .regex(/github\.com/, "Must be a GitHub URL")
-    .or(z.literal(""))
-    .optional(),
-  twitter: z
-    .string()
-    .url("Must be a valid URL")
-    .regex(/(twitter\.com|x\.com)/, "Must be a Twitter/X URL")
-    .or(z.literal(""))
-    .optional(),
-  linkedin: z
-    .string()
-    .url("Must be a valid URL")
-    .regex(/linkedin\.com/, "Must be a LinkedIn URL")
-    .or(z.literal(""))
-    .optional(),
-});
 
 type ProfileFormData = z.infer<typeof profileSchema>;
 
@@ -64,7 +35,6 @@ export default function ProfileSection() {
   const [isEditing, setIsEditing] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Partial<Record<keyof ProfileFormData, string>>>({});
 
-  // Form state (local only, not synced to server)
   const [formData, setFormData] = useState<FormData>({
     stageName: "",
     description: "",
@@ -73,7 +43,6 @@ export default function ProfileSection() {
     linkedin: "",
   });
 
-  // Loading state from TanStack Query
   if (isLoading || !user) {
     return (
       <div className="h-full rounded-xl flex flex-col overflow-hidden border-blue-500 border-2">
@@ -94,7 +63,6 @@ export default function ProfileSection() {
     : null;
 
   const openEditModal = () => {
-    // Reset form data to current user values
     setFormData({
       stageName: user.stageName || "",
       description: user.description || "",
