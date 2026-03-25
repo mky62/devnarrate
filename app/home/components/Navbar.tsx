@@ -11,7 +11,8 @@ export default function Navbar() {
     const dropRef = useRef<HTMLDivElement>(null);
 
     const { data: session } = useSession();
-    const showLogin = !session;
+
+    const showLogin = !session; //false
        
 
     return (
