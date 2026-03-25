@@ -1,0 +1,142 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+
+model User {
+  id              String    @id @default(cuid())
+  name          String    // github name
+
+  stageName        String?    @unique
+  
+  email           String?    @unique
+  emailVerified   Boolean
+
+  image           String?
+  description     String?  
+
+  socialLinks     Json?
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  sessions        Session[]
+  accounts        Account[]
+
+  repo             Repo[]
+  post             Post[]
+
+  @@map("user")
+}
+
+model Session {
+  id          String   @id @default(cuid())
+  expiresAt   DateTime
+  token       String   @unique
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  ipAddress   String?
+  userAgent   String?
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@map("session")
+}
+
+model Account {
+  id                   String    @id @default(cuid())
+  accountId            String
+  accountLogin         String?   // GitHub username/login
+  providerId           String
+  userId               String
+  user                 User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken          String?
+  refreshToken         String?
+  idToken              String?
+
+  accessTokenExpiresAt DateTime?
+  refreshTokenExpiresAt DateTime?
+
+  scope                String?
+
+  repo                 Repo[]
+
+  createdAt            DateTime
+  updatedAt            DateTime
+  @@map("account")
+}
+
+model Verification {
+  id         String    @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
+  @@map("verification")
+}
+
+model Repo {
+  id         String   @id @default(cuid())
+    
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  accountId       String
+  account         Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  // GitHub identifiers
+  githubRepoId    Int      @unique
+
+  name            String?
+
+   // Metadata
+  description     String?  @db.Text
+  language        String?
+
+  // Statistics
+  stars           Int      @default(0)
+  forks           Int      @default(0)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([userId])
+  @@index([accountId])
+  @@index([githubRepoId])
+  @@map("repo")
+}
+
+
+model Post {
+  id              String  @id @default(cuid())
+
+  userId          String 
+  user            User    @relation(fields: [userId], references: [id] , onDelete: Cascade)
+
+  title           String
+  projectLink     String?
+
+  bannerImage     String?
+  content         String  @db.Text
+
+  views           Int?      @default(0)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([userId])
+  @@map("post")
+}
