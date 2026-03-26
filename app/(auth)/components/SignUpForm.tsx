@@ -32,7 +32,7 @@ export default function SignUpForm() {
                 {/* Header */}
                 <div className="text-center space-y-5">
                     <h1 className="text-4xl font-geom tracking-[-2px] text-white drop-shadow-sm">
-                        CodePatron
+                        dev.narrate
                     </h1>
 
                     <p className="text-xl text-white/90 flex justify-center items-center gap-2">
@@ -76,7 +76,7 @@ export default function SignUpForm() {
                 <p className="text-center text-sm font-light text-white/70">
                     Be part of the{" "}
                     <span className="font-semibold underline-offset-4 hover:text-white transition-colors cursor-pointer text-white/90">
-                        <a href="/">CodePatron</a>
+                        <a href="/">dev.narrate</a>
                     </span>{" "}
                     community
                 </p>

@@ -26,10 +26,11 @@ export default function HomePage() {
 
       <Navbar />
 
-      {/* Hero section */}
-      <div className="h-[100vh] max-w-7xl mx-auto flex rounded-4xl justify-between items-center px-6 relative z-10 bg-amber-200">
-        {/* Left content */}
-        <div className="w-full md:w-1/2 flex flex-col gap-6">
+      {/* Hero section - Redesigned with glassmorphic card for modern contrast while keeping the exact same dark/blue theme */}
+      <div className="h-[100vh] max-w-7xl mx-auto flex justify-between items-center px-6 relative z-10">
+        
+        {/* Glassmorphic content card (left side) - clean, modern redesign */}
+        <div className="w-full md:w-1/2 flex flex-col gap-6 bg-white/10 backdrop-blur-2xl border border-white/30 rounded-3xl p-10 md:p-12 shadow-2xl">
           <Pill pill={"for developers"} />
           <Title
             title={
@@ -45,26 +46,24 @@ export default function HomePage() {
             align=""
           />
           <div className="flex gap-4">
-            <Button size="lg" className="text-white bg-blue-500">
+            <Button size="lg" className="text-white bg-blue-500 hover:bg-blue-600 transition-colors">
               Get Started
             </Button>
           </div>
         </div>
 
-        {/* Right image */}
+        {/* Right image - slightly enhanced with deeper shadow for better pop */}
         <div className="hidden md:flex md:w-1/2 items-center justify-center">
           <Image
             src={CodeS}
             alt="Developer img"
             width={500}
             height={500}
-            className="object-contain w-full max-w-sm"
+            className="object-contain w-full max-w-sm drop-shadow-2xl"
             priority
           />
         </div>
       </div>
-
-
 
     </div>
   );
