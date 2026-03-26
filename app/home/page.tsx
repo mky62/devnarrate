@@ -27,10 +27,10 @@ export default function HomePage() {
       <Navbar />
 
       {/* Hero section - Redesigned with glassmorphic card for modern contrast while keeping the exact same dark/blue theme */}
-      <div className="h-[100vh] max-w-7xl mx-auto flex justify-between items-center px-6 relative z-10">
+      <div className="h-full max-w-7xl mx-auto flex justify-between items-center p-8 m-4 rounded-4xl bg-amber-200/40 relative z-10">
         
         {/* Glassmorphic content card (left side) - clean, modern redesign */}
-        <div className="w-full md:w-1/2 flex flex-col gap-6 bg-white/10 backdrop-blur-2xl border border-white/30 rounded-3xl p-10 md:p-12 shadow-2xl">
+        <div className="w-full md:w-1/2 flex flex-col gap-6 rounded-3xl p-10 md:p-12 shadow-[0_0_20px_0_rgba(74,222,128,0.2),0_0_40px_0_rgba(59,130,246,0.15)] shadow-green-600/20 shadow-blue-600/20">
           <Pill pill={"for developers"} />
           <Title
             title={
@@ -64,6 +64,52 @@ export default function HomePage() {
           />
         </div>
       </div>
+
+      {/* New section after hero - Community stats & impact (kept 100% relevant to the core theme: developers explaining their code, GitHub storytelling, real builder impact) */}
+      <div className="max-w-7xl mx-auto px-8 py-24 relative z-10">
+        <div className="flex flex-col items-center text-center mb-16">
+          <Pill pill={"community impact"} />
+          <Title
+            title={
+              <>
+                Real developers,{" "}
+                <span className="text-blue-400">real stories</span>
+              </>
+            }
+            description="Thousands of GitHub repos already linked. Architecture explained. Lessons shared. Careers advanced."
+            align="center"
+          />
+        </div>
+
+        {/* Using the already-imported Stat component (perfectly on-theme) */}
+        <Stat />
+      </div>
+
+      {/* Footer - clean, modern, fully on-theme with glassmorphic touch and relevant developer focus */}
+      <footer className="max-w-7xl bg-black/40 mx-auto px-8 py-16 border-t border-white/10 relative z-10 mt-12">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-8 text-white/70">
+          
+          {/* Left - Brand / tagline */}
+          <div className="flex items-center gap-3">
+            <div className="text-3xl font-semibold tracking-tighter text-blue-400">dev.narrate</div>
+            <Pill pill={"beta"} />
+            <span className="text-sm text-white/50 hidden md:block">— storytelling for your code</span>
+          </div>
+
+
+          {/* Right - Social + Copyright */}
+          <div className="flex flex-col md:items-end gap-3">
+            <div className="flex gap-5 text-white/60">
+              <a href="#" className="hover:text-blue-400 transition-colors">𝕏</a>
+              <a href="#" className="hover:text-blue-400 transition-colors">GitHub</a>
+            </div>
+            <p className="text-xs text-white/40">
+              © {new Date().getFullYear()} dev.narrate • Built for developers who ship stories, not just code
+            </p>
+          </div>
+
+        </div>
+      </footer>
 
     </div>
   );

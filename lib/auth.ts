@@ -21,7 +21,6 @@ export const auth = betterAuth({
       // Explicitly set the redirect URI if needed
       redirectURI: `${process.env.BETTER_AUTH_URL}/api/auth/callback/github`,
        mapProfileToUser: (profile) => {
-         console.log("GitHub profile:", profile); // check what fields are available
         return {
          name: `@${profile.login}`,
         };

@@ -1,20 +1,60 @@
-import React from 'react'
+"use client";
+
+import React, { useEffect, useState } from "react";
+
+interface StatsData {
+  developers: number;
+  articles: number;
+  repos: number;
+}
 
 export default function Stat() {
-    return (
-        <div className="w-full p-12 bg-amber-400/20 text-white flex items-center justify-center gap-4">
-            <div className="flex flex-col items-center justify-center">
-                <span className="text-2xl font-bold">100+</span>
-                <span className="text-sm">Developers</span>
-            </div>
-            <div className="flex flex-col items-center justify-center">
-                <span className="text-2xl font-bold">100+</span>
-                <span className="text-sm">Articles</span>
-            </div>
-            <div className="flex flex-col items-center justify-center">
-                <span className="text-2xl font-bold">100+</span>
-                <span className="text-sm">Articles</span>
-            </div>
-        </div>
-    )
+  const [stats, setStats] = useState<StatsData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchStats() {
+      try {
+        const response = await fetch("/api/stats");
+        if (response.ok) {
+          const data: StatsData = await response.json();
+          setStats(data);
+        } else {
+          console.error("API returned non-OK status:", response.status);
+        }
+      } catch (error) {
+        console.error("Failed to fetch stats:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchStats();
+  }, []); // ✅ useEffect is correctly set up and WILL run once on mount
+
+  const statItems = [
+    { key: "developers" as const, label: "Developers" },
+    { key: "articles" as const, label: "Articles" },
+    { key: "repos" as const, label: "Repos" },
+  ];
+
+  return (
+    <div className="w-full p-12 bg-amber-400/20 shadow-[0_0_20px_0_rgba(74,222,128,0.2),0_0_40px_0_rgba(59,130,246,0.15)] shadow-emerald-600/20 shadow-blue-600/20 text-white flex items-center justify-center gap-4">
+      {statItems.map(({ key, label }) => {
+        const displayValue = loading
+          ? "..."
+          : `${stats?.[key] ?? 0}+`;
+
+        return (
+          <div
+            key={key}
+            className="flex flex-col items-center justify-center"
+          >
+            <span className="text-2xl font-bold">{displayValue}</span>
+            <span className="text-sm">{label}</span>
+          </div>
+        );
+      })}
+    </div>
+  );
 }

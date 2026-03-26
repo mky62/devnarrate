@@ -1,51 +1,43 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { useQuery } from "@tanstack/react-query";
+import { useDebouncedValue } from "@/hooks/use-debounced-value";
 
 type SearchResult = {
     stageName: string;
-    username: string;
+    name: string;
     avatarUrl: string | null;
     description: string | null;
     _count: { repos: number };
 };
 
+async function searchUsers(query: string): Promise<SearchResult[]> {
+    if (!query.trim() || query.trim().length < 2) return [];
+    
+    const res = await fetch(`/api/users/search?q=${encodeURIComponent(query.trim())}`);
+    if (!res.ok) throw new Error("Failed to search users");
+    
+    const data = await res.json();
+    return data.users ?? [];
+}
 
 export default function SearchBar() {
     const router = useRouter();
     const [query, setQuery] = useState("");
-    const [results, setResults] = useState<SearchResult[]>([]);
-    const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
-    const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-    useEffect(() => {
-        const cleanup = () => {
-            if (debounceRef.current) clearTimeout(debounceRef.current);
-        };
-
-        const fetchUsers = async () => {
-            try {
-                const res = await fetch(`/api/users/search?q=${encodeURIComponent(query.trim())}`);
-                if (res.ok) setResults((await res.json()).users ?? []);
-            } catch { /* ignore */ } finally {
-                setLoading(false);
-            }
-        };
-
-        cleanup();
-        if (query.trim().length < 2) {
-            setResults([]);
-            setLoading(false);
-            return;
-        }
-
-        setLoading(true);
-        debounceRef.current = setTimeout(fetchUsers, 300);
-        return cleanup;
-    }, [query]);
+    
+    const debouncedQuery = useDebouncedValue(query, 300);
+    
+    const { data: results = [], isLoading: loading } = useQuery({
+        queryKey: ["userSearch", debouncedQuery],
+        queryFn: () => searchUsers(debouncedQuery),
+        enabled: debouncedQuery.trim().length >= 2,
+        staleTime: 1000 * 60 * 2,
+        retry: 1,
+    });
 
     return (
 
@@ -136,24 +128,24 @@ export default function SearchBar() {
                                         {user.avatarUrl ? (
                                             <Image
                                                 src={user.avatarUrl}
-                                                alt={user.stageName}
+                                                alt={user.stageName ?? ""}
                                                 fill
                                                 sizes="40px"
                                                 className="object-cover"
                                             />
                                         ) : (
                                             <div className="flex size-full items-center justify-center text-sm font-bold text-muted-foreground">
-                                                {user.stageName.charAt(0).toUpperCase()}
+                                                {(user.stageName ?? user.name ?? "?").charAt(0).toUpperCase()}
                                             </div>
                                         )}
                                     </div>
 
                                     <div className="min-w-0 flex-1">
                                         <div className="truncate font-semibold">
-                                            {user.stageName}
+                                            {user.stageName ?? user.name}
                                         </div>
                                         <div className="truncate text-sm text-muted-foreground">
-                                            @{user.username} · {user._count.repos} repositories
+                                            {user.name} · {user._count.repos} repositories
                                         </div>
                                     </div>
 
