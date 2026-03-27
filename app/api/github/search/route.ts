@@ -54,35 +54,34 @@ const getAllRepos = async (token: string): Promise<GitHubRepo[]> => {
 }
 
 export async function GET(request: Request) {
-    const session = await auth.api.getSession({
-        headers: await headers(),
-    });
+    try {
+        const session = await auth.api.getSession({
+            headers: await headers(),
+        });
 
-    const userId = session?.user?.id;
-    if (!userId) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+        const userId = session?.user?.id;
+        if (!userId) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
 
-    const { searchParams } = new URL(request.url);
-    const query = searchParams.get("q");
+        const { searchParams } = new URL(request.url);
+        const query = searchParams.get("q");
 
-    if (!query || query.trim().length === 0) {
-        return NextResponse.json({ error: "Query is required" }, { status: 400 });
-    }
+        if (!query || query.trim().length === 0) {
+            return NextResponse.json({ error: "Query is required" }, { status: 400 });
+        }
 
-    const account = await db.account.findFirst({
-        where: { userId, providerId: "github" },
-        select: { accessToken: true },
-    });
+        const account = await db.account.findFirst({
+            where: { userId, providerId: "github" },
+            select: { accessToken: true },
+        });
 
-    const token = account?.accessToken;
-    if (!token) {
-        return NextResponse.json({ error: "GitHub account not connected" }, { status: 400 });
-    }
+        const token = account?.accessToken;
+        if (!token) {
+            return NextResponse.json({ error: "GitHub account not connected" }, { status: 400 });
+        }
 
-    const cacheKey = `github:repos:${userId}`;
-
-    try{
+        const cacheKey = `github:repos:${userId}`;
         let repos: GitHubRepo[] = [];
         
         const redis = await getRedisClient();

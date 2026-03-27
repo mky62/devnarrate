@@ -4,21 +4,20 @@ import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 
 export async function DELETE(request: Request) {
-    const { githubRepoId } = await request.json();
-
-    const session = await auth.api.getSession({
-        headers: await headers(),
-    });
-
-    if (!session?.user?.id) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    if (!githubRepoId) {
-        return NextResponse.json({ error: "githubRepoId is required" }, { status: 400 });
-    }
-
     try {
+        const { githubRepoId } = await request.json();
+
+        const session = await auth.api.getSession({
+            headers: await headers(),
+        });
+
+        if (!session?.user?.id) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
+        if (!githubRepoId) {
+            return NextResponse.json({ error: "githubRepoId is required" }, { status: 400 });
+        }
         const repo = await db.repo.findFirst({
             where: {
                 githubRepoId,

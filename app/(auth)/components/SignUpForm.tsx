@@ -4,6 +4,7 @@ import RotatingText from "./RotatingText"
 import AuthBg from "@/public/herobg.jpg"
 import { FaGithub } from "react-icons/fa"
 import Image from "next/image"
+import Link from "next/link"
 import { signIn } from "@/lib/auth-client"
 import { Button } from "@/components/ui/button"
 
@@ -76,7 +77,7 @@ export default function SignUpForm() {
                 <p className="text-center text-sm font-light text-white/70">
                     Be part of the{" "}
                     <span className="font-semibold underline-offset-4 hover:text-white transition-colors cursor-pointer text-white/90">
-                        <a href="/">dev.narrate</a>
+                        <Link href="/">dev.narrate</Link>
                     </span>{" "}
                     community
                 </p>

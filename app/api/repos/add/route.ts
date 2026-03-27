@@ -4,25 +4,24 @@ import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 
 export async function POST(request: Request) {
-    const repoData = await request.json();
-
-    const session = await auth.api.getSession({
-        headers: await headers(),
-    });
-
-    if (!session?.user?.id) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const userId = session.user.id;
-
-    const { githubRepoId, name, language, stargazers_count, forks_count } = repoData;
-
-    if (!githubRepoId || !name) {
-        return NextResponse.json({ error: "Missing required fields (githubRepoId, name)" }, { status: 400 });
-    }
-
     try {
+        const repoData = await request.json();
+
+        const session = await auth.api.getSession({
+            headers: await headers(),
+        });
+
+        if (!session?.user?.id) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
+        const userId = session.user.id;
+
+        const { githubRepoId, name, language, stargazers_count, forks_count } = repoData;
+
+        if (!githubRepoId || !name) {
+            return NextResponse.json({ error: "Missing required fields (githubRepoId, name)" }, { status: 400 });
+        }
         // Get user's GitHub account
         const account = await db.account.findFirst({
             where: { userId, providerId: "github" },

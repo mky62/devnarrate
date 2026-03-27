@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import Link from "next/link";
 import SearchBar from "./Searchbar";
 import { FaGithub } from "react-icons/fa";
 import { MdArrowOutward } from "react-icons/md";
@@ -11,8 +12,6 @@ export default function Navbar() {
     const dropRef = useRef<HTMLDivElement>(null);
 
     const { data: session } = useSession();
-
-    const showLogin = !session; //false
        
 
     return (
@@ -21,11 +20,11 @@ export default function Navbar() {
                 <div className="flex h-[52px] items-center justify-between px-4">
 
                     {/* Logo */}
-                    <a href="/">
+                    <Link href="/">
                         <h1 className="text-lg font-bold tracking-tight text-blue-600">
                             dev<span className="text-blue-900 font-courgette text-xl">.</span>narrate
                         </h1>
-                    </a>
+                    </Link>
 
                     <SearchBar />
 
@@ -33,21 +32,21 @@ export default function Navbar() {
                     <div className="flex items-center gap-1.5">
 
 
-                      {showLogin ? (
-                        <a
+                      {!session ? (
+                        <Link
                             href="/sign-up"
                             className="inline-flex h-8 items-center gap-2 bg-gradient-to-t from-blue-500 to-blue-600 px-4 rounded-sm px-3.5 text-[13px] font-semibold sm:text-sm text-gray/50 transition-colors hover:text-blue-900/90"
                         >
 
                             sign in with <FaGithub /> <MdArrowOutward />
-                        </a>) :
-                        (<a
+                        </Link>) :
+                        (<Link
                             href="/dashboard"
                             className="inline-flex h-8 items-center gap-2 bg-gradient-to-t from-blue-500 to-blue-600 px-4 rounded-sm px-3.5 text-[13px] font-semibold sm:text-sm text-gray/50 transition-colors hover:text-blue-900/90"
                         >
 
                             dashboard <MdArrowOutward />
-                        </a>)}
+                        </Link>)}
 
 
                         {/* Dropdown */}
@@ -72,7 +71,7 @@ export default function Navbar() {
 
                             {dropOpen && (
                                 <div className="absolute right-0 top-full mt-2.5 w-44 overflow-hidden rounded-2xl border border-white/[0.08] bg-neutral-950/95 p-1.5 shadow-2xl shadow-black/50 backdrop-blur-xl">
-                                    <a
+                                    <Link
                                         href="/blog"
                                         className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-[13px] font-medium text-white/50 transition-colors hover:bg-white/[0.05] hover:text-white/90"
                                     >
@@ -81,9 +80,9 @@ export default function Navbar() {
                                             <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
                                         </svg>
                                         Blog
-                                    </a>
+                                    </Link>
                                     <div className="my-1 h-px bg-white/[0.06]" />
-                                    <a
+                                    <Link
                                         href="/policy"
                                         className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-[13px] font-medium text-white/50 transition-colors hover:bg-white/[0.05] hover:text-white/90"
                                     >
@@ -91,7 +90,7 @@ export default function Navbar() {
                                             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                                         </svg>
                                         Policy
-                                    </a>
+                                    </Link>
                                 </div>
                             )}
                         </div>
