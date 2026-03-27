@@ -117,6 +117,7 @@ export default function ProfileSection() {
       },
       body: user.id,
     });
+
     // This should call an API to generate feedback based on the user's content
   };
 
