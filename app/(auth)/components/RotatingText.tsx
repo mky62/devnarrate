@@ -1,7 +1,7 @@
 'use client';
 
 import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useState } from 'react';
-import { motion, AnimatePresence, Transition } from 'motion/react';
+import { motion, AnimatePresence, Transition, Target } from 'motion/react';
 
 import './RotatingText.css';
 
@@ -19,9 +19,9 @@ export interface RotatingTextRef {
 export interface RotatingTextProps extends Omit<React.ComponentPropsWithoutRef<typeof motion.span>, 'children' | 'transition' | 'initial' | 'animate' | 'exit'> {
   texts: string[];
   transition?: Transition;
-  initial?: any;
-  animate?: any;
-  exit?: any;
+  initial?: Target;
+  animate?: Target;
+  exit?: Target;
   animatePresenceMode?: 'sync' | 'wait' | 'popLayout';
   animatePresenceInitial?: boolean;
   rotationInterval?: number;

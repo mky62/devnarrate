@@ -266,10 +266,10 @@ export const LinkPopover = forwardRef<HTMLButtonElement, LinkPopoverProps>(
     )
 
     useEffect(() => {
-      if (autoOpenOnLinkActive && isActive) {
-        setIsOpen(true)
+      if (autoOpenOnLinkActive && isActive && !isOpen) {
+        queueMicrotask(() => setIsOpen(true))
       }
-    }, [autoOpenOnLinkActive, isActive])
+    }, [autoOpenOnLinkActive, isActive, isOpen])
 
     if (!isVisible) {
       return null

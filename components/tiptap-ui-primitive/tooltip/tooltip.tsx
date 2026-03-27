@@ -177,6 +177,7 @@ export const TooltipTrigger = forwardRef<HTMLElement, TooltipTriggerProps>(
         "data-tooltip-state": context.open ? "open" : "closed",
       }
 
+      /* eslint-disable react-hooks/refs */
       return cloneElement(
         children,
         context.getReferenceProps({
@@ -186,6 +187,7 @@ export const TooltipTrigger = forwardRef<HTMLElement, TooltipTriggerProps>(
           ...dataAttributes,
         })
       )
+      /* eslint-enable react-hooks/refs */
     }
 
     return (

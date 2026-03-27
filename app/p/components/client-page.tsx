@@ -20,7 +20,6 @@ import { Superscript } from "@tiptap/extension-superscript"
 import { Selection } from "@tiptap/extensions"
 
 // --- UI Primitives ---
-import { Spacer } from "@/packages/tiptap/components/tiptap-ui-primitive/spacer"
 import {
   Toolbar,
   ToolbarGroup,

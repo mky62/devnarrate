@@ -2,7 +2,6 @@
 
 import { Calendar, RefreshCw } from "lucide-react";
 import { useState } from "react";
-import { FeedbackSection, generateAIFdb } from "./FeedbackSection";
 import { Button } from "@/components/ui/button";
 import ProfileAvatar from "./ProfileAvatar";
 import ProfileBanner from "./ProfileBanner";
@@ -54,10 +53,6 @@ export default function ProfileSection({ user }: ProfileSectionProps) {
     ? new Date(user.createdAt).toLocaleDateString("en-US", { month: "short", year: "numeric" })
     : null;
 
-  const generateAI = () => {
-    setAiFeedback(generateAIFdb(user.name));
-  };
-
   return (
     <div className="h-full rounded-xl flex flex-col overflow-hidden border-blue-500 border-2">
       <ProfileBanner userId={user.id} onEdit={() => setIsEditing(true)} />
@@ -89,13 +84,6 @@ export default function ProfileSection({ user }: ProfileSectionProps) {
         </div>
 
         <SocialLinks links={socialLinks} />
-
-        <Button className="flex items-center gap-2" onClick={generateAI}>
-          <RefreshCw size={16} />
-          AI Feedback
-        </Button>
-
-        <FeedbackSection feedback={aiFeedback} />
       </div>
 
       <ProfileEditModal

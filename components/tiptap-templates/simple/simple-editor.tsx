@@ -190,6 +190,7 @@ export function SimpleEditor() {
     "main"
   )
   const toolbarRef = useRef<HTMLDivElement>(null)
+  const [toolbarHeight, setToolbarHeight] = useState(0)
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -233,12 +234,26 @@ export function SimpleEditor() {
 
   const rect = useCursorVisibility({
     editor,
-    overlayHeight: toolbarRef.current?.getBoundingClientRect().height ?? 0,
+    overlayHeight: toolbarHeight,
   })
 
   useEffect(() => {
+    const node = toolbarRef.current
+    if (!node) return
+
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setToolbarHeight(entry.contentRect.height)
+      }
+    })
+    observer.observe(node)
+    return () => observer.disconnect()
+  }, [])
+
+  const resolvedMobileView = !isMobile && mobileView !== "main" ? "main" : mobileView
+  useEffect(() => {
     if (!isMobile && mobileView !== "main") {
-      setMobileView("main")
+      queueMicrotask(() => setMobileView("main"))
     }
   }, [isMobile, mobileView])
 
@@ -255,7 +270,7 @@ export function SimpleEditor() {
               : {}),
           }}
         >
-          {mobileView === "main" ? (
+          {resolvedMobileView === "main" ? (
             <MainToolbarContent
               onHighlighterClick={() => setMobileView("highlighter")}
               onLinkClick={() => setMobileView("link")}
@@ -263,7 +278,7 @@ export function SimpleEditor() {
             />
           ) : (
             <MobileToolbarContent
-              type={mobileView === "highlighter" ? "highlighter" : "link"}
+              type={resolvedMobileView === "highlighter" ? "highlighter" : "link"}
               onBack={() => setMobileView("main")}
             />
           )}

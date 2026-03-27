@@ -14,7 +14,14 @@ export function useIsBreakpoint(
   mode: BreakpointMode = "max",
   breakpoint = 768
 ) {
-  const [matches, setMatches] = useState<boolean | undefined>(undefined)
+  const [matches, setMatches] = useState<boolean | undefined>(() => {
+    if (typeof window === "undefined") return undefined
+    const query =
+      mode === "min"
+        ? `(min-width: ${breakpoint}px)`
+        : `(max-width: ${breakpoint - 1}px)`
+    return window.matchMedia(query).matches
+  })
 
   useEffect(() => {
     const query =
@@ -24,9 +31,6 @@ export function useIsBreakpoint(
 
     const mql = window.matchMedia(query)
     const onChange = (e: MediaQueryListEvent) => setMatches(e.matches)
-
-    // Set initial value
-    setMatches(mql.matches)
 
     // Add listener
     mql.addEventListener("change", onChange)

@@ -1,6 +1,7 @@
 import { db } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import NextImage from "next/image";
 import { ArrowLeft, ExternalLink, Calendar } from "lucide-react";
 
 // ✅ Correct static renderer import + function
@@ -103,10 +104,13 @@ export default async function PostPage({ params }: PostPageProps) {
         <div className="flex items-center gap-3 mb-8">
           {/* Optional improvement: use user.image if it exists */}
           {post.user.image ? (
-            <img
+            <NextImage
               src={post.user.image}
               alt={post.user.stageName || post.user.name || ""}
+              width={40}
+              height={40}
               className="w-10 h-10 rounded-full object-cover"
+              unoptimized
             />
           ) : (
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center text-white font-semibold">

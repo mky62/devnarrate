@@ -13,8 +13,13 @@ export default function PostSection() {
             const parsed = JSON.parse(content)
             if (!parsed?.content) return ""
             
-            const extractText = (nodes: any[]): string => {
-                return nodes.map((node: any) => {
+            interface TiptapNode {
+                type?: string;
+                text?: string;
+                content?: TiptapNode[];
+            }
+            const extractText = (nodes: TiptapNode[]): string => {
+                return nodes.map((node) => {
                     if (node.type === "text") return node.text || ""
                     if (node.content) return extractText(node.content)
                     return ""

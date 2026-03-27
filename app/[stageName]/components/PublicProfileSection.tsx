@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Calendar, Globe, Loader2 } from "lucide-react";
+import { Calendar, Globe } from "lucide-react";
 import { useEffect, useState } from "react";
 
 interface SocialLinks {
