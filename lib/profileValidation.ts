@@ -28,4 +28,9 @@ export const profileSchema = z.object({
     .regex(/linkedin\.com/, "Must be a LinkedIn URL")
     .or(z.literal(""))
     .optional(),
+  feedback: z
+    .string()
+    .max(200, "Feedback must be 200 characters or less")
+    .optional(),
 });
+

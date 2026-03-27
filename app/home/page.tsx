@@ -100,8 +100,8 @@ export default function HomePage() {
           {/* Right - Social + Copyright */}
           <div className="flex flex-col md:items-end gap-3">
             <div className="flex gap-5 text-white/60">
-              <a href="#" className="hover:text-blue-400 transition-colors">𝕏</a>
-              <a href="#" className="hover:text-blue-400 transition-colors">GitHub</a>
+              <a href="https://x.com" className="hover:text-blue-400 transition-colors">𝕏</a>
+              <a href="https://github.com/mky62/devnarrate" className="hover:text-blue-400 transition-colors">GitHub</a>
             </div>
             <p className="text-xs text-white/40">
               © {new Date().getFullYear()} dev.narrate • Built for developers who ship stories, not just code

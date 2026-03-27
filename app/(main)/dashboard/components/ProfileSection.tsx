@@ -1,13 +1,15 @@
 "use client";
 
 import Image from "next/image";
-import { Calendar, Globe, Pencil, X, Loader2 } from "lucide-react";
+import { Calendar, Globe, Pencil, X, Loader2, RefreshCw } from "lucide-react";
 import { useState } from "react";
 import { z } from "zod";
 import { useUser } from "@/hooks/useUser";
 import { useUpdateProfile } from "@/hooks/useUpdateProfile";
 import { profileSchema } from "@/lib/profileValidation";
-
+import { FaGithub, FaXTwitter, FaLinkedin } from "react-icons/fa6";
+import FeedbackSection from "./FeedbackSection";
+import { Button } from "@/components/ui/button";
 
 type ProfileFormData = z.infer<typeof profileSchema>;
 
@@ -107,6 +109,17 @@ export default function ProfileSection() {
     );
   };
 
+  const generateAIFeedback = () => {
+    const res = fetch("/api/feedback", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: user.id,
+    });
+    // This should call an API to generate feedback based on the user's content
+  };
+
   return (
     <div className="h-full rounded-xl flex flex-col overflow-hidden border-blue-500 border-2">
       {/* Banner */}
@@ -187,7 +200,7 @@ export default function ProfileSection() {
               className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors text-sm font-medium"
               title="GitHub"
             >
-              GH
+              <FaGithub size={16} />
             </a>
           )}
           {socialLinks.twitter && (
@@ -198,7 +211,7 @@ export default function ProfileSection() {
               className="p-2 text-gray-600 hover:text-blue-400 hover:bg-blue-50 rounded-lg transition-colors text-sm font-medium"
               title="Twitter"
             >
-              X
+             <FaXTwitter size={16} />
             </a>
           )}
           {socialLinks.linkedin && (
@@ -209,7 +222,7 @@ export default function ProfileSection() {
               className="p-2 text-gray-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors text-sm font-medium"
               title="LinkedIn"
             >
-              LI
+             <FaLinkedin size={16} />
             </a>
           )}
           {socialLinks.website && (
@@ -223,7 +236,14 @@ export default function ProfileSection() {
               <Globe size={18} />
             </a>
           )}
+          <Button
+          className="flex items-center gap-2"
+          onClick={generateAIFeedback}>
+            <RefreshCw size={16} />
+            AI Feedback
+          </Button>
         </div>
+        <FeedbackSection />
       </div>
 
       {/* Edit Modal */}
@@ -379,29 +399,24 @@ export default function ProfileSection() {
                   )}
                 </div>
               </div>
+
+             
+
             </div>
 
             {/* Modal Footer */}
-            <div className="px-4 py-3 border-t border-gray-200 flex justify-end gap-2 shrink-0">
-              <button
-                onClick={() => setIsEditing(false)}
-                disabled={updateProfile.isPending}
-                className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50"
-              >
-                Cancel
-              </button>
+            <div className="p-2 border-t border-gray-200 flex justify-end gap-2 shrink-0">
               <button
                 onClick={handleSave}
                 disabled={updateProfile.isPending}
-                className="px-4 py-2 text-sm bg-blue-500 text-white hover:bg-blue-600 rounded-lg transition-colors flex items-center gap-2 disabled:opacity-50"
+                className="p-2 max-h-6 text-sm bg-blue-500 text-white hover:bg-blue-600 rounded-lg transition-colors flex items-center gap-2 disabled:opacity-50"
               >
                 {updateProfile.isPending ? (
                   <>
                     <Loader2 size={14} className="animate-spin" />
-                    Saving...
                   </>
                 ) : (
-                  "Save"
+                  "→"
                 )}
               </button>
             </div>
