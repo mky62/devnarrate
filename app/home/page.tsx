@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useRef } from "react";
+import Lenis from "lenis";
 import Navbar from "./components/Navbar";
 import Image from "next/image";
 import HeroBg from "@/public/herobg.jpg";
@@ -10,6 +12,29 @@ import Pill from "./components/Pill";
 import { Button } from "@/components/ui/button";
 
 export default function HomePage() {
+  const lenisRef = useRef<Lenis | null>(null);
+
+  useEffect(() => {
+    lenisRef.current = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      orientation: "vertical",
+      gestureOrientation: "vertical",
+      smoothWheel: true,
+      touchMultiplier: 2,
+    });
+
+    function raf(time: number) {
+      lenisRef.current?.raf(time);
+      requestAnimationFrame(raf);
+    }
+
+    requestAnimationFrame(raf);
+
+    return () => {
+      lenisRef.current?.destroy();
+    };
+  }, []);
   return (
     <div className="h-full w-full relative text-white p-20">
 

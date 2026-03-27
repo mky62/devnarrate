@@ -47,3 +47,26 @@ export async function updateUserProfile(payload: UpdateProfilePayload): Promise<
 
   return data.user;
 }
+
+// Post API
+export interface Post {
+  id: string;
+  title: string;
+  projectLink: string | null;
+  content: string;
+  createdAt: string;
+}
+
+export async function getPosts(): Promise<Post[]> {
+  const res = await fetch("/api/posts");
+  if (!res.ok) throw new Error("Failed to fetch posts");
+  const data = await res.json();
+  return data.posts ?? [];
+}
+
+export async function deletePost(id: string): Promise<void> {
+  const res = await fetch(`/api/posts/${id}`, {
+    method: "DELETE",
+  });
+  if (!res.ok) throw new Error("Failed to delete post");
+}

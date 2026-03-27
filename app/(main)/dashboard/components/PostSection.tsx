@@ -1,28 +1,12 @@
 "use client"
 
-import { useEffect, useState } from "react"
 import Link from "next/link"
 import { FileText, Plus, ExternalLink, Clock, Loader2 } from "lucide-react"
-
-interface Post {
-    id: string
-    title: string
-    projectLink: string | null
-    content: string
-    createdAt: string
-}
+import { usePosts } from "@/hooks/usePosts"
+import { Post } from "@/lib/api/user"
 
 export default function PostSection() {
-    const [posts, setPosts] = useState<Post[]>([])
-    const [loading, setLoading] = useState(true)
-
-    useEffect(() => {
-        fetch("/api/posts")
-            .then((res) => res.json())
-            .then((data) => setPosts(data.posts ?? []))
-            .catch(() => setPosts([]))
-            .finally(() => setLoading(false))
-    }, [])
+    const { data: posts = [], isLoading, error } = usePosts()
 
     const extractTextFromContent = (content: string): string => {
         try {
@@ -73,10 +57,14 @@ export default function PostSection() {
 
             {/* Content */}
             <div className="flex-1 overflow-y-auto">
-                {loading ? (
+                {isLoading ? (
                     <div className="flex flex-col items-center justify-center h-full text-gray-400 gap-3 p-8">
                         <Loader2 size={24} className="animate-spin opacity-40" />
                         <p className="text-sm">Loading posts…</p>
+                    </div>
+                ) : error ? (
+                    <div className="flex flex-col items-center justify-center h-full text-gray-400 gap-3 p-8">
+                        <p className="text-sm text-red-500">Failed to load posts</p>
                     </div>
                 ) : posts.length === 0 ? (
                     <div className="flex flex-col items-center justify-center h-full text-gray-400 gap-3 p-8">
@@ -99,38 +87,47 @@ export default function PostSection() {
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
-                        {posts.map((post) => (
+                        {posts.map((post: Post) => (
                             <Link
                                 key={post.id}
                                 href={`/p/${post.id}`}
-                                className="flex flex-col p-3 bg-white border border-gray-100 rounded-xl hover:border-blue-200 hover:shadow-md hover:shadow-blue-500/5 transition-all duration-300 group relative overflow-hidden"
+                                className="group flex flex-col p-4 bg-white border border-gray-100 rounded-2xl hover:border-blue-200 hover:shadow-sm transition-all duration-200"
                             >
-                                <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 transform group-hover:translate-x-0 translate-x-1">
-                                    <div className="w-6 h-6 rounded-full bg-blue-50 flex items-center justify-center">
-                                        <ExternalLink size={10} className="text-blue-500" />
+                                {/* Tiny icon + title row (no wasted space) */}
+                                <div className="flex items-start gap-3 mb-3">
+                                    <div className="shrink-0 w-7 h-7 rounded-xl bg-blue-50 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                        <FileText size={15} className="text-blue-600" />
+                                    </div>
+
+                                    <div className="flex-1 min-w-0">
+                                        <h3 className="text-sm font-semibold text-gray-900 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                                            {post.title}
+                                        </h3>
+                                    </div>
+
+                                    {/* Hover peek - only visible on hover, zero space when hidden */}
+                                    <div className="opacity-0 group-hover:opacity-100 transition-opacity -mt-0.5">
+                                        <ExternalLink size={14} className="text-blue-400" />
                                     </div>
                                 </div>
-                                <div className="mb-2 shrink-0 w-8 h-8 rounded-lg bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
-                                    <FileText size={16} className="text-blue-500" />
-                                </div>
-                                <div className="flex-1 min-w-0 flex flex-col">
-                                    <h3 className="text-sm leading-snug font-semibold text-gray-900 line-clamp-1 group-hover:text-blue-600 transition-colors duration-200 mb-1">
-                                        {post.title}
-                                    </h3>
-                                    <p className="text-xs text-gray-500 line-clamp-2 mb-2 flex-1">
-                                        {extractTextFromContent(post.content)}
-                                    </p>
-                                    <div className="flex items-center gap-2 mt-auto pt-2 border-t border-gray-50">
-                                        <span className="inline-flex items-center gap-1 text-[10px] font-medium text-gray-400">
-                                            <Clock size={10} className="text-gray-300" />
-                                            {formatDate(post.createdAt)}
+
+                                {/* Excerpt - tight */}
+                                <p className="text-xs text-gray-500 line-clamp-3 mb-4 flex-1">
+                                    {extractTextFromContent(post.content)}
+                                </p>
+
+                                {/* Footer - minimal, only necessary info */}
+                                <div className="flex items-center justify-between text-[10px] text-gray-400 border-t border-gray-100 pt-3">
+                                    <span className="flex items-center gap-1">
+                                        <Clock size={12} />
+                                        {formatDate(post.createdAt)}
+                                    </span>
+
+                                    {post.projectLink && (
+                                        <span className="text-blue-600 font-medium text-[10px] uppercase tracking-widest">
+                                            Project
                                         </span>
-                                        {post.projectLink && (
-                                            <span className="inline-flex items-center ml-auto px-1.5 py-0.5 text-[9px] font-bold tracking-wide uppercase text-blue-600 bg-blue-50 rounded">
-                                                Project
-                                            </span>
-                                        )}
-                                    </div>
+                                    )}
                                 </div>
                             </Link>
                         ))}

@@ -2,13 +2,13 @@
 
 import Image from "next/image";
 import { Calendar, Globe, Pencil, X, Loader2, RefreshCw } from "lucide-react";
-import { useState } from "react";
+import { useState , useEffect } from "react";
 import { z } from "zod";
 import { useUser } from "@/hooks/useUser";
 import { useUpdateProfile } from "@/hooks/useUpdateProfile";
 import { profileSchema } from "@/lib/profileValidation";
 import { FaGithub, FaXTwitter, FaLinkedin } from "react-icons/fa6";
-import FeedbackSection from "./FeedbackSection";
+import { FeedbackSection, generateAIFdb } from "./FeedbackSection";
 import { Button } from "@/components/ui/button";
 
 type ProfileFormData = z.infer<typeof profileSchema>;
@@ -45,6 +45,14 @@ export default function ProfileSection() {
     linkedin: "",
   });
 
+  const [aiFeedback, setAiFeedback] = useState<string>("");
+
+  useEffect(() => {
+    if (user) {
+      setAiFeedback(generateAIFdb(user.name));
+    }
+  }, [user]);
+
   if (isLoading || !user) {
     return (
       <div className="h-full rounded-xl flex flex-col overflow-hidden border-blue-500 border-2">
@@ -64,6 +72,9 @@ export default function ProfileSection() {
     ? new Date(user.createdAt).toLocaleDateString("en-US", { month: "short", year: "numeric" })
     : null;
 
+
+
+
   const openEditModal = () => {
     setFormData({
       stageName: user.stageName || "",
@@ -74,6 +85,10 @@ export default function ProfileSection() {
     });
     setFieldErrors({});
     setIsEditing(true);
+  };
+
+const generateAI = () => {
+    setAiFeedback(generateAIFdb(user.name));
   };
 
   const handleSave = () => {
@@ -108,19 +123,7 @@ export default function ProfileSection() {
       }
     );
   };
-
-  const generateAIFeedback = () => {
-    const res = fetch("/api/feedback", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: user.id,
-    });
-
-    // This should call an API to generate feedback based on the user's content
-  };
-
+  
   return (
     <div className="h-full rounded-xl flex flex-col overflow-hidden border-blue-500 border-2">
       {/* Banner */}
@@ -239,12 +242,12 @@ export default function ProfileSection() {
           )}
           <Button
           className="flex items-center gap-2"
-          onClick={generateAIFeedback}>
+          onClick={generateAI}>
             <RefreshCw size={16} />
             AI Feedback
           </Button>
         </div>
-        <FeedbackSection />
+      <FeedbackSection feedback={aiFeedback} />
       </div>
 
       {/* Edit Modal */}
