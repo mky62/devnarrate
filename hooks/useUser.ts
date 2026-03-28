@@ -1,6 +1,6 @@
 // hooks/useUser.ts
 import { useQuery } from "@tanstack/react-query";
-import { getCurrentUser } from "@/lib/api/user";
+import { getCurrentUser } from "@/lib/userdata";
 
 export function useUser() {
   return useQuery({

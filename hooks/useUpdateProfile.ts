@@ -1,6 +1,6 @@
 // hooks/useUpdateProfile.ts
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { updateUserProfile, UpdateProfilePayload, User } from "@/lib/api/user";
+import { updateUserProfile, UpdateProfilePayload, User } from "@/lib/userdata";
 
 export function useUpdateProfile() {
   const queryClient = useQueryClient();

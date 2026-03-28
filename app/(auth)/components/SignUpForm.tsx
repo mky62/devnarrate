@@ -9,6 +9,7 @@ import { signIn } from "@/lib/auth-client"
 import { Button } from "@/components/ui/button"
 
 export default function SignUpForm() {
+    
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault()
         signIn.social({

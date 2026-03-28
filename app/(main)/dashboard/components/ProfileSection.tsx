@@ -1,8 +1,7 @@
 "use client";
 
-import { Calendar, RefreshCw } from "lucide-react";
+import { Calendar } from "lucide-react";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import ProfileAvatar from "./ProfileAvatar";
 import ProfileBanner from "./ProfileBanner";
 import SocialLinks from "./SocialLinks";
@@ -32,7 +31,6 @@ interface ProfileSectionProps {
 
 export default function ProfileSection({ user }: ProfileSectionProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const [aiFeedback, setAiFeedback] = useState<string>("");
 
   if (!user) {
     return (
