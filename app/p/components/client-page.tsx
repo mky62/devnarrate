@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button"
 import Link from "next/link";
@@ -48,17 +48,36 @@ import { FontSizeDropdown } from "@/packages/tiptap/components/tiptap-ui/font-si
 // --- Lib ---
 import { handleImageUpload, MAX_FILE_SIZE } from "@/lib/tiptap-utils"
 
+const getInitialState = () => {
+    return {
+        title: sessionStorage.getItem("title") ?? "",
+        link: sessionStorage.getItem("link") ?? "",
+    };
+}
+
 export default function ClientPage() {
     const router = useRouter();
     const { data: session, isPending } = useSession()
-    const [title, setTitle] = useState("")
-    const [link, setLink] = useState("")
+    const [title, setTitle] = useState(() => getInitialState().title)
+    const [link, setLink] = useState(() => getInitialState().link)
     const [loading, setLoading] = useState(false)
+
     const toolbarRef = useRef<HTMLDivElement>(null)
+
+
+    useEffect(() => {
+        sessionStorage.setItem("title", title)
+    }, [title])
+
+    useEffect(() => {
+        sessionStorage.setItem("link", link)
+    }, [link])
+
+    const savedContent = typeof window !== "undefined" ? sessionStorage.getItem("content") : null
 
     const editor = useEditor({
         immediatelyRender: false,
-        content: "",
+        content: savedContent ? JSON.parse(savedContent) : "",
         editorProps: {
             attributes: {
                 autocomplete: "off",
@@ -98,6 +117,15 @@ export default function ClientPage() {
         ],
     })
 
+    useEffect(() => {
+        if (!editor) return
+        const updateHandler = () => {
+            sessionStorage.setItem("content", JSON.stringify(editor.getJSON()))
+        }
+        editor.on("update", updateHandler)
+        return () => { editor.off("update", updateHandler) }
+    }, [editor])
+
     if (isPending || !session) {
         return <div className="flex items-center justify-center h-screen"><Loader /></div>
     }
@@ -114,7 +142,12 @@ export default function ClientPage() {
             })
             if (!res.ok) throw new Error("Failed to create post")
             const data = await res.json()
-            if (data.success) router.push("/dashboard")
+            if (data.success) {
+                sessionStorage.removeItem("title")
+                sessionStorage.removeItem("link")
+                sessionStorage.removeItem("content")
+                router.push("/dashboard")
+            }
         } catch (err) {
             console.error(err)
             router.refresh()

@@ -127,3 +127,22 @@
     @apply bg-background text-foreground;}
   html {
     @apply font-sans;}}
+
+.ProseMirror ul,
+.ProseMirror ol {
+  list-style-type: disc !important;
+  padding-left: 1.5rem !important;
+}
+
+.ProseMirror ol {
+  list-style-type: decimal !important;
+}
+
+.ProseMirror ul ul,
+.ProseMirror ul ul ul {
+  list-style-type: circle !important;
+}
+
+.ProseMirror ul ul ul {
+  list-style-type: square !important;
+}
