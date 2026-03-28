@@ -1,6 +1,6 @@
 // hooks/usePosts.ts
 import { useQuery } from "@tanstack/react-query";
-import { getPosts, Post } from "@/lib/api/user";
+import { getPosts, Post } from "@/lib/userdata";
 
 export function usePosts() {
   return useQuery<Post[]>({

@@ -11,7 +11,7 @@ export const auth = betterAuth({
   rateLimit: {
 		enabled: true,
 		window: 60, // 60 seconds
-		max: 5, // 5 requests per window
+		max: 30, // 30 requests per window
 	},
 
   socialProviders: {

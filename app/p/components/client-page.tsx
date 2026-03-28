@@ -18,12 +18,14 @@ import { Highlight } from "@tiptap/extension-highlight"
 import { Subscript } from "@tiptap/extension-subscript"
 import { Superscript } from "@tiptap/extension-superscript"
 import { Selection } from "@tiptap/extensions"
+import { TextStyle, FontSize } from '@tiptap/extension-text-style'
+
 
 // --- UI Primitives ---
 import {
-  Toolbar,
-  ToolbarGroup,
-  ToolbarSeparator,
+    Toolbar,
+    ToolbarGroup,
+    ToolbarSeparator,
 } from "@/packages/tiptap/components/tiptap-ui-primitive/toolbar"
 
 // --- Tiptap Node ---
@@ -41,6 +43,7 @@ import { LinkPopover } from "@/packages/tiptap/components/tiptap-ui/link-popover
 import { MarkButton } from "@/packages/tiptap/components/tiptap-ui/mark-button"
 import { TextAlignButton } from "@/packages/tiptap/components/tiptap-ui/text-align-button"
 import { UndoRedoButton } from "@/packages/tiptap/components/tiptap-ui/undo-redo-button"
+import { FontSizeDropdown } from "@/packages/tiptap/components/tiptap-ui/font-size-dropdown"
 
 // --- Lib ---
 import { handleImageUpload, MAX_FILE_SIZE } from "@/lib/tiptap-utils"
@@ -79,6 +82,8 @@ export default function ClientPage() {
             TaskItem.configure({ nested: true }),
             Highlight.configure({ multicolor: true }),
             Image,
+            TextStyle,
+            FontSize,
             Typography,
             Superscript,
             Subscript,
@@ -144,6 +149,7 @@ export default function ClientPage() {
                                     <ListDropdownMenu modal={false} types={["bulletList", "orderedList", "taskList"]} />
                                     <BlockquoteButton />
                                     <CodeBlockButton />
+                                    <FontSizeDropdown />
                                 </ToolbarGroup>
                                 <ToolbarSeparator />
                                 <ToolbarGroup>
@@ -168,7 +174,7 @@ export default function ClientPage() {
                     </div>
 
                     {/* Right: Publish */}
-                    <Button 
+                    <Button
                         onClick={handlePost}
                         disabled={loading || !title}
                         className="rounded-full px-5 bg-primary text-primary-foreground font-medium shadow-sm hover:shadow-md transition-all text-sm"

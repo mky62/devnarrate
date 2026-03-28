@@ -1,12 +1,21 @@
 "use client"
 
+import { useState } from "react"
 import Link from "next/link"
-import { FileText, Plus, ExternalLink, Clock, Loader2 } from "lucide-react"
+import { FileText, Plus, ExternalLink, Clock, Loader2, Trash2, X, AlertTriangle } from "lucide-react"
 import { usePosts } from "@/hooks/usePosts"
-import { Post } from "@/lib/api/user"
+import { useDeletePost } from "@/hooks/useDeletePost"
+import { Post } from "@/lib/userdata"
 
 export default function PostSection() {
     const { data: posts = [], isLoading, error } = usePosts()
+    const deletePost = useDeletePost()
+    const [deletingId, setDeletingId] = useState<string | null>(null)
+
+    const handleDelete = async (id: string) => {
+        setDeletingId(null)
+        await deletePost.mutateAsync(id)
+    }
 
     const extractTextFromContent = (content: string): string => {
         try {
@@ -128,17 +137,82 @@ export default function PostSection() {
                                         {formatDate(post.createdAt)}
                                     </span>
 
-                                    {post.projectLink && (
-                                        <span className="text-blue-600 font-medium text-[10px] uppercase tracking-widest">
-                                            Project
-                                        </span>
-                                    )}
+                                    <div className="flex items-center gap-2">
+                                        {post.projectLink && (
+                                            <span className="text-blue-600 font-medium text-[10px] uppercase tracking-widest">
+                                                Project
+                                            </span>
+                                        )}
+                                        <button
+                                            onClick={(e) => {
+                                                e.preventDefault()
+                                                e.stopPropagation()
+                                                setDeletingId(post.id)
+                                            }}
+                                            className="p-1 rounded-md hover:bg-red-50 transition-colors opacity-0 group-hover:opacity-100"
+                                            title="Delete post"
+                                        >
+                                            <Trash2 size={12} className="text-red-400 hover:text-red-600" />
+                                        </button>
+                                    </div>
                                 </div>
                             </Link>
                         ))}
                     </div>
                 )}
             </div>
+
+            {/* Delete Confirmation Modal */}
+            {deletingId && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-xl shadow-xl w-full max-w-sm">
+                        <div className="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <AlertTriangle size={18} className="text-red-500" />
+                                <h3 className="font-semibold text-gray-800 text-sm">Delete Post</h3>
+                            </div>
+                            <button
+                                onClick={() => setDeletingId(null)}
+                                disabled={deletePost.isPending}
+                                className="p-1 hover:bg-gray-100 rounded-md transition-colors"
+                            >
+                                <X size={16} className="text-gray-500" />
+                            </button>
+                        </div>
+                        <div className="p-4">
+                            <p className="text-sm text-gray-600">
+                                Are you sure you want to delete this post? This action cannot be undone.
+                            </p>
+                        </div>
+                        <div className="px-4 py-3 border-t border-gray-200 flex justify-end gap-2">
+                            <button
+                                onClick={() => setDeletingId(null)}
+                                disabled={deletePost.isPending}
+                                className="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={() => handleDelete(deletingId)}
+                                disabled={deletePost.isPending}
+                                className="px-3 py-1.5 text-sm bg-red-600 text-white hover:bg-red-700 rounded-lg transition-colors flex items-center gap-2 disabled:opacity-50"
+                            >
+                                {deletePost.isPending ? (
+                                    <>
+                                        <Loader2 size={14} className="animate-spin" />
+                                        Deleting…
+                                    </>
+                                ) : (
+                                    <>
+                                        <Trash2 size={14} />
+                                        Delete
+                                    </>
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }

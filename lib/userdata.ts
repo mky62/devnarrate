@@ -68,5 +68,8 @@ export async function deletePost(id: string): Promise<void> {
   const res = await fetch(`/api/posts/${id}`, {
     method: "DELETE",
   });
-  if (!res.ok) throw new Error("Failed to delete post");
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.error || "Failed to delete post");
+  }
 }

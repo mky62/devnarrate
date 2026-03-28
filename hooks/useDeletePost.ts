@@ -1,6 +1,6 @@
 // hooks/useDeletePost.ts
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { deletePost, Post } from "@/lib/api/user";
+import { deletePost, Post } from "@/lib/userdata";
 
 export function useDeletePost() {
   const queryClient = useQueryClient();
