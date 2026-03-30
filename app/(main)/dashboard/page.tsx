@@ -1,7 +1,9 @@
-import { redirect } from "next/navigation";
-import { headers } from "next/headers";
-import { auth } from "@/lib/auth";
-import { db } from "@/lib/prisma";
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useSession } from "@/lib/auth-client";
+import { useQuery } from "@tanstack/react-query";
 import DashBg from '@/public/dashbg.jpg'
 import Image from 'next/image'
 import ProfileSection from "./components/ProfileSection";
@@ -27,72 +29,68 @@ interface UserData {
   socialLinks?: SocialLinks | null;
 }
 
-function parseSocialLinks(value: unknown): SocialLinks | null {
-  if (!value || typeof value !== "object") return null;
-  const obj = value as Record<string, unknown>;
-  const result: SocialLinks = {};
-  if (typeof obj.github === "string") result.github = obj.github;
-  if (typeof obj.twitter === "string") result.twitter = obj.twitter;
-  if (typeof obj.linkedin === "string") result.linkedin = obj.linkedin;
-  if (typeof obj.website === "string") result.website = obj.website;
-  return Object.keys(result).length > 0 ? result : null;
+interface Repo {
+  githubRepoId: number;
+  name: string | null;
+  language: string | null;
+  stars: number;
+  forks: number;
 }
 
-export default async function DashboardPage() {
-    const session = await auth.api.getSession({
-        headers: await headers(),
-    });
+async function fetchUserData(): Promise<{ user: UserData | null; repos: Repo[] }> {
+  const [userRes, reposRes] = await Promise.all([
+    fetch("/api/user/me"),
+    fetch("/api/repos"),
+  ]);
 
-    if (!session?.user?.id) {
-        redirect("/sign-up");
+  if (!userRes.ok) throw new Error("Failed to fetch user");
+  if (!reposRes.ok) throw new Error("Failed to fetch repos");
+
+  const user = await userRes.json();
+  const reposData = await reposRes.json();
+
+  return {
+    user,
+    repos: reposData.repos?.map((repo: { githubRepoId: string | number; name: string | null; language: string | null; stars: number; forks: number }) => ({
+      githubRepoId: typeof repo.githubRepoId === 'string' ? parseInt(repo.githubRepoId, 10) : repo.githubRepoId,
+      name: repo.name,
+      language: repo.language,
+      stargazers_count: repo.stars,
+      forks_count: repo.forks,
+      description: null,
+    })) ?? [],
+  };
+}
+
+export default function DashboardPage() {
+  const router = useRouter();
+  const { data: session, isPending: sessionPending } = useSession();
+  const { data, isPending: dataPending } = useQuery({
+    queryKey: ["dashboard"],
+    queryFn: fetchUserData,
+    enabled: !!session?.user?.id,
+  });
+
+  useEffect(() => {
+    if (!sessionPending && !session?.user?.id) {
+      router.push("/sign-up");
     }
+  }, [session, sessionPending, router]);
 
-    const [savedReposFromDb, userData] = await Promise.all([
-        db.repo.findMany({
-            where: { userId: session.user.id },
-            select: {
-                githubRepoId: true,
-                name: true,
-                language: true,
-                stars: true,
-                forks: true,
-            },
-            orderBy: { createdAt: "desc" },
-        }),
-        db.user.findUnique({
-            where: { id: session.user.id },
-            select: {
-                id: true,
-                name: true,
-                email: true,
-                image: true,
-                createdAt: true,
-                stageName: true,
-                description: true,
-                socialLinks: true,
-            },
-        }),
-    ]);
+  if (sessionPending || dataPending || !data) {
+    return (
+      <div className="h-full w-full flex items-center justify-center">
+        <Image
+          src={DashBg}
+          alt="dashboard-bg"
+          className="absolute inset-0 z-[-1] w-full h-full object-cover"
+        />
+        <div className="text-white">Loading...</div>
+      </div>
+    );
+  }
 
-    const user: UserData | null = userData ? {
-        id: userData.id,
-        name: userData.name,
-        email: userData.email,
-        image: userData.image,
-        createdAt: userData.createdAt,
-        stageName: userData.stageName,
-        description: userData.description,
-        socialLinks: parseSocialLinks(userData.socialLinks),
-    } : null;
-
-    const initialSavedRepos = savedReposFromDb.map(repo => ({
-        githubRepoId: repo.githubRepoId,
-        name: repo.name,
-        language: repo.language,
-        stargazers_count: repo.stars,
-        forks_count: repo.forks,
-        description: null,
-    }));
+  const { user, repos } = data;
 
     return (
         <div className="h-full w-full flex">
@@ -121,7 +119,7 @@ export default async function DashboardPage() {
                 {/* Repositories */}
                 <div className="w-1/4 h-full flex flex-col">
                     <div className="flex-1 bg-white/80 backdrop-blur-sm border border-blue-500 rounded-2xl p-2 shadow-sm flex flex-col gap-3 overflow-hidden">
-                        <RepoList initialSavedRepos={initialSavedRepos} />
+                        <RepoList initialSavedRepos={repos} />
                     </div>
                 </div>
             </div>

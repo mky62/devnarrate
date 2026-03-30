@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getCurrentUser } from "@/lib/userdata";
 
 export function useUser() {
-  return useQuery({
+  return useQuery({ 
     queryKey: ["user"],
     queryFn: getCurrentUser,
   });
