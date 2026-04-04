@@ -73,3 +73,51 @@ export async function deletePost(id: string): Promise<void> {
     throw new Error(data.error || "Failed to delete post");
   }
 }
+
+// Repo API
+export interface Repo {
+  githubRepoId: number;
+  name: string | null;
+  language: string | null;
+  stars: number;
+  forks: number;
+  description: string | null;
+}
+
+export async function getRepos(): Promise<Repo[]> {
+  const res = await fetch("/api/repos");
+  if (!res.ok) throw new Error("Failed to fetch repos");
+  const data = await res.json();
+  return data.repos ?? [];
+}
+
+export interface AddRepoPayload {
+  githubRepoId: number;
+  name: string;
+  language?: string | null;
+  stargazers_count?: number;
+  forks_count?: number;
+}
+
+export async function addRepo(payload: AddRepoPayload): Promise<{ repo: Repo }> {
+  const res = await fetch("/api/repos/add", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Failed to add repo");
+  return data;
+}
+
+export async function deleteRepo(githubRepoId: number): Promise<void> {
+  const res = await fetch("/api/repos/delete", {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ githubRepoId }),
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.error || "Failed to delete repo");
+  }
+}
