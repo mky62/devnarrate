@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth"
 import { db } from "@/lib/prisma"
 import { headers } from "next/headers"
 import { NextResponse } from "next/server"
+import { profileUpdateSchema } from "@/lib/validation"
 
 export async function PATCH(request: Request) {
     try {
@@ -17,7 +18,16 @@ export async function PATCH(request: Request) {
         }
 
         const body = await request.json()
-        const { stageName, description, socialLinks } = body
+        const validationResult = profileUpdateSchema.safeParse(body)
+
+        if (!validationResult.success) {
+            return NextResponse.json(
+                { error: validationResult.error.issues[0].message },
+                { status: 400 }
+            )
+        }
+
+        const { stageName, description, socialLinks } = validationResult.data
 
         // Validate stageName uniqueness (if provided)
         if (stageName) {
@@ -44,7 +54,7 @@ export async function PATCH(request: Request) {
             data: {
                 ...(stageName !== undefined && { stageName: stageName || null }),
                 ...(description !== undefined && { description: description || null }),
-                ...(socialLinks !== undefined && { socialLinks: socialLinks || null }),
+                ...(socialLinks !== undefined && { socialLinks: socialLinks as object || null }),
             }
         })
 

@@ -3,8 +3,8 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import NextImage from "next/image";
 import { ArrowLeft, ExternalLink, Calendar } from "lucide-react";
+import { sanitize } from "isomorphic-dompurify";
 
-// ✅ Correct static renderer import + function
 import { renderToHTMLString } from "@tiptap/static-renderer/pm/html-string";
 
 import { StarterKit } from "@tiptap/starter-kit";
@@ -61,13 +61,31 @@ export default async function PostPage({ params }: PostPageProps) {
   let html = "";
   try {
     const json = JSON.parse(post.content);
-    // ✅ Fixed: correct function + correct argument shape
-    html = renderToHTMLString({
+    const rawHtml = renderToHTMLString({
       content: json,
       extensions,
     });
+    html = sanitize(rawHtml, {
+      ALLOWED_TAGS: [
+        "p", "br", "strong", "em", "u", "s", "code", "pre", "blockquote",
+        "h1", "h2", "h3", "h4", "h5", "h6",
+        "ul", "ol", "li",
+        "a", "img",
+        "hr",
+        "span", "div",
+        "sub", "sup",
+        "mark",
+        "table", "thead", "tbody", "tr", "th", "td",
+      ],
+      ALLOWED_ATTR: [
+        "href", "src", "alt", "title", "target", "rel",
+        "style", "class",
+        "data-type",
+      ],
+      ALLOWED_URI_REGEXP: /^(?:(?:(?:f|ht)tps?|mailto|tel|callto|cid|xmpp):|[^a-z]|[a-z+.]+(?:[^a-z+.]+|$))/i,
+    });
   } catch {
-    html = `<p>${post.content}</p>`;
+    html = sanitize(`<p>${post.content}</p>`);
   }
 
   const formattedDate = new Date(post.createdAt).toLocaleDateString("en-US", {

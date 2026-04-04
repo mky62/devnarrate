@@ -5,14 +5,18 @@ import db from "@/lib/prisma"
 
 export const auth = betterAuth({
   database: prismaAdapter(db, {
-    provider: "postgresql", // or "mysql", "sqlite"
+    provider: "postgresql",
   }),
 
   rateLimit: {
-		enabled: true,
-		window: 60, // 60 seconds
-		max: 30, // 30 requests per window
-	},
+    enabled: true,
+    window: 60,
+    max: 30,
+  },
+
+  account: {
+    encryptOAuthTokens: true,
+  },
 
   socialProviders: {
     github: {

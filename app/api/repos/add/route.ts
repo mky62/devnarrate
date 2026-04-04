@@ -2,10 +2,19 @@ import { db } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
+import { repoSchema } from "@/lib/validation";
 
 export async function POST(request: Request) {
     try {
-        const repoData = await request.json();
+        const body = await request.json();
+        const validationResult = repoSchema.safeParse(body);
+
+        if (!validationResult.success) {
+            return NextResponse.json(
+                { error: validationResult.error.issues[0].message },
+                { status: 400 }
+            );
+        }
 
         const session = await auth.api.getSession({
             headers: await headers(),
@@ -16,12 +25,7 @@ export async function POST(request: Request) {
         }
 
         const userId = session.user.id;
-
-        const { githubRepoId, name, language, stargazers_count, forks_count } = repoData;
-
-        if (!githubRepoId || !name) {
-            return NextResponse.json({ error: "Missing required fields (githubRepoId, name)" }, { status: 400 });
-        }
+        const { githubRepoId, name, language, stargazers_count, forks_count } = validationResult.data;
         // Get user's GitHub account
         const account = await db.account.findFirst({
             where: { userId, providerId: "github" },

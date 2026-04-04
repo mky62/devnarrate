@@ -140,7 +140,10 @@ export default function ClientPage() {
                 headers: { "content-type": "application/json" },
                 body: JSON.stringify({ title, link, content })
             })
-            if (!res.ok) throw new Error("Failed to create post")
+            if (!res.ok) {
+                const errorData = await res.json().catch(() => ({}))
+                throw new Error(errorData.error || `Failed to create post (${res.status})`)
+            }
             const data = await res.json()
             if (data.success) {
                 sessionStorage.removeItem("title")
@@ -150,7 +153,7 @@ export default function ClientPage() {
             }
         } catch (err) {
             console.error(err)
-            router.refresh()
+            alert(err instanceof Error ? err.message : "Failed to create post")
         } finally {
             setLoading(false)
         }

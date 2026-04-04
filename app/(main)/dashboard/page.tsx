@@ -6,6 +6,7 @@ import { useSession } from "@/lib/auth-client";
 import { useQuery } from "@tanstack/react-query";
 import DashBg from '@/public/dashbg.jpg'
 import Image from 'next/image'
+import { Loader } from 'lucide-react'
 import ProfileSection from "./components/ProfileSection";
 import RepoList from "./components/RepoList";
 import DeleteProfile from "./components/DeleteProfile";
@@ -79,13 +80,13 @@ export default function DashboardPage() {
 
   if (sessionPending || dataPending || !data) {
     return (
-      <div className="h-full w-full flex items-center justify-center">
+      <div className="min-h-screen w-full flex items-center justify-center relative">
         <Image
           src={DashBg}
           alt="dashboard-bg"
           className="absolute inset-0 z-[-1] w-full h-full object-cover"
         />
-        <div className="text-white">Loading...</div>
+        <Loader className="w-8 h-8 text-white animate-spin" />
       </div>
     );
   }
