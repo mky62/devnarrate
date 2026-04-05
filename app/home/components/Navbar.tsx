@@ -35,8 +35,8 @@ export default function Navbar() {
 
                     {/* Logo */}
                     <Link href="/">
-                        <h1 className="text-base md:text-lg font-bold tracking-tight text-blue-600">
-                            dev<span className="text-blue-900 font-courgette text-lg md:text-xl">.</span>narrate
+                        <h1 className="text-base md:text-lg font-arimo tracking-tight text-blue-600" >
+                            dev<span className="text-blue-900 text-xl md:text-xl">.</span>narrate
                         </h1>
                     </Link>
 
