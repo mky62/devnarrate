@@ -6,6 +6,7 @@ import ProfileAvatar from "./ProfileAvatar";
 import ProfileBanner from "./ProfileBanner";
 import SocialLinks from "./SocialLinks";
 import ProfileEditModal from "./ProfileEditModal";
+import GitStats from "./GitStats";
 
 interface SocialLinksData {
   github?: string;
@@ -83,6 +84,8 @@ export default function ProfileSection({ user }: ProfileSectionProps) {
 
         <SocialLinks links={socialLinks} />
       </div>
+
+      <GitStats />
 
       <ProfileEditModal
         key={isEditing ? "open" : "closed"}

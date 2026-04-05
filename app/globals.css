@@ -11,8 +11,12 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-monteserrat: var(--font-monoteserrat)
-  --font-arimo: var(--font-arimo)
+  --font-monteserrat: var(--font-monoteserrat);
+  --font-arimo: var(--font-arimo);
+  --font-courgette: var(--font-courgette);
+  --font-grape: var(--font-grape-nuts);
+
+
 ;
   --font-heading: var(--font-sans);
   --font-sans: var(--font-sans);

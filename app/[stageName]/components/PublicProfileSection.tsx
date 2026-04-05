@@ -2,7 +2,10 @@
 
 import Image from "next/image";
 import { Calendar, Globe } from "lucide-react";
+import Link from "next/link";
+import { FaGithub, FaLinkedin, FaTwitter } from "react-icons/fa6";
 import { useEffect, useState } from "react";
+import PublicGitStats from "./PublicGitStats";
 
 interface SocialLinks {
   github?: string;
@@ -151,51 +154,49 @@ export default function PublicProfileSection({ stageName }: PublicProfileSection
         {/* Social Links */}
         <div className="flex gap-2 pt-1 flex-wrap">
           {socialLinks.github && (
-            <a
+            <Link
               href={socialLinks.github}
               target="_blank"
               rel="noopener noreferrer"
-              className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors text-sm font-medium"
-              title="GitHub"
+              className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
             >
-              GH
-            </a>
+              <FaGithub size={18} />
+            </Link>
           )}
           {socialLinks.twitter && (
-            <a
+            <Link
               href={socialLinks.twitter}
               target="_blank"
               rel="noopener noreferrer"
-              className="p-2 text-gray-600 hover:text-blue-400 hover:bg-blue-50 rounded-lg transition-colors text-sm font-medium"
-              title="Twitter"
+              className="p-2 text-gray-600 hover:text-blue-400 hover:bg-blue-50 rounded-lg transition-colors"
             >
-              X
-            </a>
+              <FaTwitter size={18} />
+            </Link>
           )}
           {socialLinks.linkedin && (
-            <a
+            <Link
               href={socialLinks.linkedin}
               target="_blank"
               rel="noopener noreferrer"
-              className="p-2 text-gray-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors text-sm font-medium"
-              title="LinkedIn"
+              className="p-2 text-gray-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors"
             >
-              LI
-            </a>
+              <FaLinkedin size={18} />
+            </Link>
           )}
           {socialLinks.website && (
-            <a
+            <Link
               href={socialLinks.website}
               target="_blank"
               rel="noopener noreferrer"
               className="p-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-              title="Website"
             >
               <Globe size={18} />
-            </a>
+            </Link>
           )}
         </div>
       </div>
+
+      <PublicGitStats stageName={stageName} />
     </div>
   );
 }

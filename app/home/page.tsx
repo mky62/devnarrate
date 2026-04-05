@@ -52,10 +52,10 @@ export default function HomePage() {
       <Navbar />
 
       {/* Hero section - Redesigned with glassmorphic card for modern contrast while keeping the exact same dark/blue theme */}
-      <div className="h-full max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center p-4 md:p-8 m-4 rounded-4xl bg-blue-400/20 relative z-10">
+      <div className="h-full max-w-6xl mt-6 mx-auto flex flex-col md:flex-row justify-between items-center p-4 md:p-8 m-4 rounded-4xl bg-blue-400/20 relative z-10">
         
         {/* Glassmorphic content card (left side) - clean, modern redesign */}
-        <div className="w-full flex flex-col gap-6 rounded-3xl p-6 md:p-10 lg:p-12 shadow-[0_0_20px_0_rgba(74,222,128,0.2),0_0_40px_0_rgba(59,130,246,0.15)] shadow-green-600/20 shadow-blue-600/20">
+        <div className="w-full flex flex-col gap-6 rounded-3xl p-6 md:p-10 lg:p-12 min-h-[400px] md:min-h-[500px] shadow-[0_0_20px_0_rgba(74,222,128,0.2),0_0_40px_0_rgba(59,130,246,0.15)] shadow-green-600/20 shadow-blue-600/20">
           <Pill pill={"for developers"} />
           <Title
             title={
