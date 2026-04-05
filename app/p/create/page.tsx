@@ -5,9 +5,5 @@ export default function Create() {
   return (
 
     <ClientPage />
-
-
   )
-
-
 }

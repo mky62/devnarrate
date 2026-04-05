@@ -7,7 +7,7 @@ import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@/components/tiptap-ui-primitive/tooltip"
+} from "@/packages/tiptap/components/tiptap-ui-primitive/tooltip"
 
 // --- Lib ---
 import { cn, parseShortcutKeys } from "@/lib/tiptap-utils"

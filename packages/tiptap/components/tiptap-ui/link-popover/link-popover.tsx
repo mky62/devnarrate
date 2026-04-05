@@ -4,8 +4,8 @@ import { forwardRef, useCallback, useEffect, useState } from "react"
 import type { Editor } from "@tiptap/react"
 
 // --- Hooks ---
-import { useIsBreakpoint } from "@/packages/tiptap/hooks/use-is-breakpoint"
-import { useTiptapEditor } from "@/packages/tiptap/hooks/use-tiptap-editor"
+import { useIsBreakpoint } from "@/hooks/use-is-breakpoint"
+import { useTiptapEditor } from "@/hooks/use-tiptap-editor"
 
 // --- Icons ---
 import { CornerDownLeftIcon } from "@/components/tiptap-icons/corner-down-left-icon"
@@ -266,10 +266,10 @@ export const LinkPopover = forwardRef<HTMLButtonElement, LinkPopoverProps>(
     )
 
     useEffect(() => {
-      if (autoOpenOnLinkActive && isActive) {
-        setIsOpen(true)
+      if (autoOpenOnLinkActive && isActive && !isOpen) {
+        queueMicrotask(() => setIsOpen(true))
       }
-    }, [autoOpenOnLinkActive, isActive])
+    }, [autoOpenOnLinkActive, isActive, isOpen])
 
     if (!isVisible) {
       return null

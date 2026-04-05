@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button"
+import { Button } from "@/packages/tiptap/components/ui/button"
 import Link from "next/link";
 import { ArrowLeft, Loader } from 'lucide-react';
 import { useSession } from "@/lib/auth-client";
@@ -192,7 +192,7 @@ export default function ClientPage() {
                                     <MarkButton type="bold" />
                                     <MarkButton type="italic" />
                                     <MarkButton type="strike" />
-                                    <ColorHighlightPopover />
+                                    <ColorHighlightPopover/>
                                     <LinkPopover />
                                 </ToolbarGroup>
                                 <ToolbarSeparator />

@@ -13,21 +13,20 @@ import { Highlight } from "@tiptap/extension-highlight"
 import { Subscript } from "@tiptap/extension-subscript"
 import { Superscript } from "@tiptap/extension-superscript"
 import { Selection } from "@tiptap/extensions"
-import { JSONContent } from "@tiptap/react"
 
 // --- UI Primitives ---
-import { Button } from "@/packages/tiptap/components/tiptap-ui-primitive/button"
-import { Spacer } from "@/packages/tiptap/components/tiptap-ui-primitive/spacer"
+import { Button } from "@/components/tiptap-ui-primitive/button"
+import { Spacer } from "@/components/tiptap-ui-primitive/spacer"
 import {
   Toolbar,
   ToolbarGroup,
   ToolbarSeparator,
-} from "@/packages/tiptap/components/tiptap-ui-primitive/toolbar"
+} from "@/components/tiptap-ui-primitive/toolbar"
 
 // --- Tiptap Node ---
-import { ImageUploadNode } from "@/packages/tiptap/components/tiptap-node/image-upload-node/image-upload-node-extension"
-import { HorizontalRule } from "@/packages/tiptap/components/tiptap-node/horizontal-rule-node/horizontal-rule-node-extension"
-import "@/packages/tiptap/components/tiptap-node/blockquote-node/blockquote-node.scss"
+import { ImageUploadNode } from "@/components/tiptap-node/image-upload-node/image-upload-node-extension"
+import { HorizontalRule } from "@/components/tiptap-node/horizontal-rule-node/horizontal-rule-node-extension"
+import "@/components/tiptap-node/blockquote-node/blockquote-node.scss"
 import "@/components/tiptap-node/code-block-node/code-block-node.scss"
 import "@/components/tiptap-node/horizontal-rule-node/horizontal-rule-node.scss"
 import "@/components/tiptap-node/list-node/list-node.scss"
@@ -36,34 +35,34 @@ import "@/components/tiptap-node/heading-node/heading-node.scss"
 import "@/components/tiptap-node/paragraph-node/paragraph-node.scss"
 
 // --- Tiptap UI ---
-import { HeadingDropdownMenu } from "@/packages/tiptap/components/tiptap-ui/heading-dropdown-menu"
-import { ImageUploadButton } from "@/packages/tiptap/components/tiptap-ui/image-upload-button"
-import { ListDropdownMenu } from "@/packages/tiptap/components/tiptap-ui/list-dropdown-menu"
-import { BlockquoteButton } from "@/packages/tiptap/components/tiptap-ui/blockquote-button"
-import { CodeBlockButton } from "@/packages/tiptap/components/tiptap-ui/code-block-button"
+import { HeadingDropdownMenu } from "@/components/tiptap-ui/heading-dropdown-menu"
+import { ImageUploadButton } from "@/components/tiptap-ui/image-upload-button"
+import { ListDropdownMenu } from "@/components/tiptap-ui/list-dropdown-menu"
+import { BlockquoteButton } from "@/components/tiptap-ui/blockquote-button"
+import { CodeBlockButton } from "@/components/tiptap-ui/code-block-button"
 import {
   ColorHighlightPopover,
   ColorHighlightPopoverContent,
   ColorHighlightPopoverButton,
-} from "@/packages/tiptap/components/tiptap-ui/color-highlight-popover"
+} from "@/components/tiptap-ui/color-highlight-popover"
 import {
   LinkPopover,
   LinkContent,
   LinkButton,
-} from "@/packages/tiptap/components/tiptap-ui/link-popover"
-import { MarkButton } from "@/packages/tiptap/components/tiptap-ui/mark-button"
-import { TextAlignButton } from "@/packages/tiptap/components/tiptap-ui/text-align-button"
-import { UndoRedoButton } from "@/packages/tiptap/components/tiptap-ui/undo-redo-button"
+} from "@/components/tiptap-ui/link-popover"
+import { MarkButton } from "@/components/tiptap-ui/mark-button"
+import { TextAlignButton } from "@/components/tiptap-ui/text-align-button"
+import { UndoRedoButton } from "@/components/tiptap-ui/undo-redo-button"
 
 // --- Icons ---
-import { ArrowLeftIcon } from "@/packages/tiptap/components/tiptap-icons/arrow-left-icon"
+import { ArrowLeftIcon } from "@/components/tiptap-icons/arrow-left-icon"
 import { HighlighterIcon } from "@/components/tiptap-icons/highlighter-icon"
 import { LinkIcon } from "@/components/tiptap-icons/link-icon"
 
 // --- Hooks ---
-import { useIsBreakpoint } from "@/packages/tiptap/hooks/use-is-breakpoint"
-import { useWindowSize } from "@/packages/tiptap/hooks/use-window-size"
-import { useCursorVisibility } from "@/packages/tiptap/hooks/use-cursor-visibility"
+import { useIsBreakpoint } from "@/hooks/use-is-breakpoint"
+import { useWindowSize } from "@/hooks/use-window-size"
+import { useCursorVisibility } from "@/hooks/use-cursor-visibility"
 
 // --- Components ---
 import { ThemeToggle } from "@/components/tiptap-templates/simple/theme-toggle"
@@ -184,28 +183,17 @@ const MobileToolbarContent = ({
   </>
 )
 
-export function SimpleEditor({
-  content,
-  onChange,
-}: {
-  content: JSONContent | string;
-  onChange: (content: JSONContent) => void
-}) {
+export function SimpleEditor() {
   const isMobile = useIsBreakpoint()
   const { height } = useWindowSize()
   const [mobileView, setMobileView] = useState<"main" | "highlighter" | "link">(
     "main"
   )
   const toolbarRef = useRef<HTMLDivElement>(null)
+  const [toolbarHeight, setToolbarHeight] = useState(0)
 
   const editor = useEditor({
     immediatelyRender: false,
-
-    content,
-    onUpdate: ({ editor }) => {
-      onChange(editor.getJSON())
-    },
-
     editorProps: {
       attributes: {
         autocomplete: "off",
@@ -241,16 +229,31 @@ export function SimpleEditor({
         onError: (error) => console.error("Upload failed:", error),
       }),
     ],
+    content,
   })
 
   const rect = useCursorVisibility({
     editor,
-    overlayHeight: toolbarRef.current?.getBoundingClientRect().height ?? 0,
+    overlayHeight: toolbarHeight,
   })
 
   useEffect(() => {
+    const node = toolbarRef.current
+    if (!node) return
+
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setToolbarHeight(entry.contentRect.height)
+      }
+    })
+    observer.observe(node)
+    return () => observer.disconnect()
+  }, [])
+
+  const resolvedMobileView = !isMobile && mobileView !== "main" ? "main" : mobileView
+  useEffect(() => {
     if (!isMobile && mobileView !== "main") {
-      setMobileView("main")
+      queueMicrotask(() => setMobileView("main"))
     }
   }, [isMobile, mobileView])
 
@@ -262,12 +265,12 @@ export function SimpleEditor({
           style={{
             ...(isMobile
               ? {
-                bottom: `calc(100% - ${height - rect.y}px)`,
-              }
+                  bottom: `calc(100% - ${height - rect.y}px)`,
+                }
               : {}),
           }}
         >
-          {mobileView === "main" ? (
+          {resolvedMobileView === "main" ? (
             <MainToolbarContent
               onHighlighterClick={() => setMobileView("highlighter")}
               onLinkClick={() => setMobileView("link")}
@@ -275,7 +278,7 @@ export function SimpleEditor({
             />
           ) : (
             <MobileToolbarContent
-              type={mobileView === "highlighter" ? "highlighter" : "link"}
+              type={resolvedMobileView === "highlighter" ? "highlighter" : "link"}
               onBack={() => setMobileView("main")}
             />
           )}
