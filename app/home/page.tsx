@@ -36,7 +36,7 @@ export default function HomePage() {
     };
   }, []);
   return (
-    <div className="h-full w-full relative text-white p-20">
+    <div className="h-full w-full relative text-white p-4 md:p-10 lg:p-20">
 
       {/* Fixed background image */}
       <div className="fixed inset-0 z-0 pointer-events-none">
@@ -52,10 +52,10 @@ export default function HomePage() {
       <Navbar />
 
       {/* Hero section - Redesigned with glassmorphic card for modern contrast while keeping the exact same dark/blue theme */}
-      <div className="h-full max-w-7xl mx-auto flex justify-between items-center p-8 m-4 rounded-4xl bg-amber-200/20 relative z-10">
+      <div className="h-full max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center p-4 md:p-8 m-4 rounded-4xl bg-blue-400/20 relative z-10">
         
         {/* Glassmorphic content card (left side) - clean, modern redesign */}
-        <div className="w-full md:w-1/2 flex flex-col gap-6 rounded-3xl p-10 md:p-12 shadow-[0_0_20px_0_rgba(74,222,128,0.2),0_0_40px_0_rgba(59,130,246,0.15)] shadow-green-600/20 shadow-blue-600/20">
+        <div className="w-full flex flex-col gap-6 rounded-3xl p-6 md:p-10 lg:p-12 shadow-[0_0_20px_0_rgba(74,222,128,0.2),0_0_40px_0_rgba(59,130,246,0.15)] shadow-green-600/20 shadow-blue-600/20">
           <Pill pill={"for developers"} />
           <Title
             title={
@@ -78,20 +78,20 @@ export default function HomePage() {
         </div>
 
         {/* Right image - slightly enhanced with deeper shadow for better pop */}
-        <div className="hidden md:flex md:w-1/2 items-center justify-center">
+        <div className="w-full md:w-1/2 flex items-center justify-center mt-6 md:mt-0">
           <Image
             src={CodeS}
             alt="Developer img"
             width={500}
             height={500}
-            className="object-contain w-full max-w-sm drop-shadow-2xl"
+            className="object-contain w-full max-w-[250px] md:max-w-sm drop-shadow-2xl"
             priority
           />
         </div>
       </div>
 
       {/* New section after hero - Community stats & impact (kept 100% relevant to the core theme: developers explaining their code, GitHub storytelling, real builder impact) */}
-      <div className="max-w-7xl mx-auto px-8 py-24 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 md:px-8 py-12 md:py-24 relative z-10">
         <div className="flex flex-col items-center text-center mb-16">
           <Pill pill={"community impact"} />
           <Title
@@ -111,19 +111,19 @@ export default function HomePage() {
       </div>
 
       {/* Footer - clean, modern, fully on-theme with glassmorphic touch and relevant developer focus */}
-      <footer className="max-w-7xl rounded-2xl bg-black/60 mx-auto px-8 py-16 border-t border-white/10 relative z-10 mt-12">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-8 text-white/70">
+      <footer className="max-w-7xl rounded-2xl bg-black/60 mx-auto px-4 md:px-8 py-8 md:py-16 border-t border-white/10 relative z-10 mt-8 md:mt-12">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-6 md:gap-8 text-white/70">
           
           {/* Left - Brand / tagline */}
-          <div className="flex items-center gap-3">
-            <div className="text-3xl font-semibold tracking-tighter text-blue-400">dev.narrate</div>
+          <div className="flex flex-col md:flex-row items-center gap-3 text-center md:text-left">
+            <div className="text-2xl md:text-3xl font-semibold tracking-tighter text-blue-400">dev.narrate</div>
             <Pill pill={"beta"} />
             <span className="text-sm text-white/50 hidden md:block">— storytelling for your code</span>
           </div>
 
 
           {/* Right - Social + Copyright */}
-          <div className="flex flex-col md:items-end gap-3">
+          <div className="flex flex-col items-center md:items-end gap-3">
             <div className="flex gap-5 text-white/70 hover:text-white/100 transition-colors text-sm font-medium tracking-tight border-b border-white-200">
               <a href="https://x.com" className="hover:text-blue-400 transition-colors">𝕏</a>
               <a href="https://github.com/mky62/devnarrate" className="hover:text-blue-400 transition-colors">GitHub</a>

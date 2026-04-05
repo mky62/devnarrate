@@ -39,7 +39,7 @@ export default function Stat() {
   ];
 
   return (
-    <div className="w-full rounded-2xl p-8 bg-amber-400/20 shadow-[0_0_20px_0_rgba(74,222,128,0.2),0_0_40px_0_rgba(59,130,246,0.15)] shadow-emerald-600/20 shadow-blue-600/20 text-white flex items-center justify-center gap-18">
+    <div className="w-full rounded-2xl p-4 md:p-8 bg-blue-400/20 shadow-[0_0_20px_0_rgba(74,222,128,0.8),0_0_40px_0_rgba(59,130,246,0.15)] shadow-emerald-600/20 shadow-blue-600/20 text-black flex flex-wrap items-center justify-center gap-6 md:gap-12 lg:gap-18">
       {statItems.map(({ key, label }) => {
         const displayValue = loading
           ? "..."
@@ -48,10 +48,10 @@ export default function Stat() {
         return (
           <div
             key={key}
-            className="flex flex-col items-center justify-center"
+            className="flex flex-col items-center justify-center min-w-[80px]"
           >
-            <span className="text-2xl font-bold">{displayValue}</span>
-            <span className="text-sm">{label}</span>
+            <span className="text-xl md:text-2xl font-bold">{displayValue}</span>
+            <span className="text-xs md:text-sm">{label}</span>
           </div>
         );
       })}
