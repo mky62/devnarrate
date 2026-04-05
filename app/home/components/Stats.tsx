@@ -39,7 +39,7 @@ export default function Stat() {
   ];
 
   return (
-    <div className="w-full p-12 bg-amber-400/20 shadow-[0_0_20px_0_rgba(74,222,128,0.2),0_0_40px_0_rgba(59,130,246,0.15)] shadow-emerald-600/20 shadow-blue-600/20 text-white flex items-center justify-center gap-4">
+    <div className="w-full rounded-2xl p-8 bg-amber-400/20 shadow-[0_0_20px_0_rgba(74,222,128,0.2),0_0_40px_0_rgba(59,130,246,0.15)] shadow-emerald-600/20 shadow-blue-600/20 text-white flex items-center justify-center gap-18">
       {statItems.map(({ key, label }) => {
         const displayValue = loading
           ? "..."

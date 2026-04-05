@@ -12,7 +12,7 @@ export default function Title({ title, description, align = "left" }: { title: R
         text-4xl md:text-5xl lg:text-6xl
         font-arimo  tracking-tight
         leading-tight
-        bg-gradient-to-b from-gray-400 to-gray-600
+        bg-gradient-to-b from-gray-600 to-gray-800
         bg-clip-text text-transparent
       ">
         {title}

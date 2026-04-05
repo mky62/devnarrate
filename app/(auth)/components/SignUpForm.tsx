@@ -6,9 +6,9 @@ import { FaGithub } from "react-icons/fa"
 import Image from "next/image"
 import Link from "next/link"
 import { signIn } from "@/lib/auth-client"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/packages/tiptap/components/ui/button"
 
-export default function SignUpForm() {
+export default function SignInForm() {
     
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault()
