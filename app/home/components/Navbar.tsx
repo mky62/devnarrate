@@ -62,52 +62,6 @@ export default function Navbar() {
                             dashboard <MdArrowOutward />
                         </Link>)}
 
-                        {/* Dropdown */}
-                        <div ref={dropRef} className="relative">
-                            <button
-                                type="button"
-                                onClick={() => setDropOpen((v) => !v)}
-                                className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-white/[0.07] bg-white/[0.08] text-white/70 transition-colors hover:bg-white/[0.08] hover:text-white/40"
-                            >
-                                <svg
-                                    className={`size-3.5 transition-transform duration-200 ${dropOpen ? "rotate-180" : ""}`}
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="black"
-                                    strokeWidth={2.5}
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                >
-                                    <path d="m6 9 6 6 6-6" />
-                                </svg>
-                            </button>
-
-                            {dropOpen && (
-                                <div className="absolute right-0 top-full mt-2.5 w-44 overflow-hidden rounded-2xl border border-white/[0.08] bg-neutral-950/95 p-1.5 shadow-2xl shadow-black/50 backdrop-blur-xl">
-                                    <Link
-                                        href="/blog"
-                                        className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-[13px] font-medium text-white/50 transition-colors hover:bg-white/[0.05] hover:text-white/90"
-                                    >
-                                        <svg className="size-[15px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                                            <path d="M12 20h9" />
-                                            <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
-                                        </svg>
-                                        Blog
-                                    </Link>
-                                    <div className="my-1 h-px bg-white/[0.06]" />
-                                    <Link
-                                        href="/policy"
-                                        className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-[13px] font-medium text-white/50 transition-colors hover:bg-white/[0.05] hover:text-white/90"
-                                    >
-                                        <svg className="size-[15px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                                        </svg>
-                                        Policy
-                                    </Link>
-                                </div>
-                            )}
-                        </div>
-
                     </div>
 
                     {/* Hamburger button - Mobile */}
@@ -149,7 +103,7 @@ export default function Navbar() {
                                     dashboard <MdArrowOutward />
                                 </Link>
                             )}
-                            <Link
+                            {/* <Link
                                 href="/blog"
                                 onClick={() => setMobileOpen(false)}
                                 className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium text-white/50 transition-colors hover:bg-white/[0.05] hover:text-white/90"
@@ -169,7 +123,7 @@ export default function Navbar() {
                                     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                                 </svg>
                                 Policy
-                            </Link>
+                            </Link> */}
                         </div>
                     </div>
                 )}

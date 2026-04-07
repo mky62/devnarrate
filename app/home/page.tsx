@@ -101,7 +101,7 @@ export default function HomePage() {
                 <span className="text-blue-400">real stories</span>
               </>
             }
-            description="Thousands of GitHub repos already linked. Architecture explained. Lessons shared. Careers advanced."
+            description="Link your GitHub repos on platform. Architecture explained. Lessons shared. Careers advanced."
             align="center"
           />
         </div>

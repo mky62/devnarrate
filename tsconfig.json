@@ -23,6 +23,24 @@
       }
     ],
     "paths": {
+      "@/components/tiptap-ui/*": [
+        "./packages/tiptap/components/tiptap-ui/*"
+      ],
+      "@/components/tiptap-ui-primitive/*": [
+        "./packages/tiptap/components/tiptap-ui-primitive/*"
+      ],
+      "@/components/tiptap-icons/*": [
+        "./packages/tiptap/components/tiptap-icons/*"
+      ],
+      "@/components/tiptap-node/*": [
+        "./packages/tiptap/components/tiptap-node/*"
+      ],
+      "@/components/tiptap-extension/*": [
+        "./packages/tiptap/components/tiptap-extension/*"
+      ],
+      "@/components/tiptap-templates/*": [
+        "./packages/tiptap/components/tiptap-templates/*"
+      ],
       "@/*": [
         "./*"
       ],

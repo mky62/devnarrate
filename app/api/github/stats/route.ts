@@ -1,7 +1,6 @@
 import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
-import { db } from "@/lib/prisma";
 import { getRedisClient } from "@/lib/redis";
 
 interface ContributionDay {
@@ -98,6 +97,14 @@ const calculateStreaks = (weeks: ContributionWeek[]): { currentStreak: number; l
 
 const GITHUB_GRAPHQL_URL = "https://api.github.com/graphql";
 
+const isGitHubAuthError = (status: number, message?: string): boolean => {
+  if (status === 401) {
+    return true;
+  }
+
+  return Boolean(message && /bad credentials|requires authentication|unauthorized/i.test(message));
+};
+
 const fetchContributions = async (token: string, username: string): Promise<GitStats> => {
   const query = `
     query($login: String!) {
@@ -129,13 +136,25 @@ const fetchContributions = async (token: string, username: string): Promise<GitS
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
-    throw new Error(`GitHub API error: ${response.status} - ${error.message || "Unknown error"}`);
+    const message = error.message || "Unknown error";
+    const authError = isGitHubAuthError(response.status, message);
+    throw new Error(
+      authError
+        ? `GitHub auth error: ${response.status} - ${message}`
+        : `GitHub API error: ${response.status} - ${message}`
+    );
   }
 
   const data: GitHubContributionsResponse = await response.json();
   
   if (data.errors) {
-    throw new Error(`GitHub GraphQL error: ${data.errors.map(e => e.message).join(", ")}`);
+    const errorMessage = data.errors.map(e => e.message).join(", ");
+    const authError = isGitHubAuthError(200, errorMessage);
+    throw new Error(
+      authError
+        ? `GitHub auth error: 401 - ${errorMessage}`
+        : `GitHub GraphQL error: ${errorMessage}`
+    );
   }
 
   const calendar = data.data!.user.contributionsCollection.contributionCalendar;
@@ -164,7 +183,7 @@ const fetchContributions = async (token: string, username: string): Promise<GitS
   };
 };
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
@@ -175,12 +194,14 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const account = await db.account.findFirst({
-      where: { userId, providerId: "github" },
-      select: { accessToken: true },
+    const tokenResponse = await auth.api.getAccessToken({
+      headers: await headers(),
+      body: {
+        providerId: "github",
+        userId,
+      },
     });
-
-    const token = account?.accessToken;
+    const token = tokenResponse?.accessToken;
     if (!token) {
       return NextResponse.json({ error: "GitHub account not connected" }, { status: 400 });
     }
@@ -203,9 +224,12 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ stats });
   } catch (error) {
-    console.error("GitHub stats error:", error);
+    if (error instanceof Error && error.message.includes("GitHub auth error")) {
+      return NextResponse.json({ stats: null });
+    }
 
     if (error instanceof Error && error.message.includes("GitHub")) {
+      console.error("GitHub stats error:", error);
       return NextResponse.json(
         { error: "GitHub API error", details: error.message },
         { status: 502 }

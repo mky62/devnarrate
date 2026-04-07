@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
 import { getRedisClient } from "@/lib/redis";
+import { auth } from "@/lib/auth";
 
 interface ContributionDay {
   date: string;
@@ -92,6 +93,14 @@ const calculateStreaks = (weeks: ContributionWeek[]): { currentStreak: number; l
 
 const GITHUB_GRAPHQL_URL = "https://api.github.com/graphql";
 
+const isGitHubAuthError = (status: number, message?: string): boolean => {
+  if (status === 401) {
+    return true;
+  }
+
+  return Boolean(message && /bad credentials|requires authentication|unauthorized/i.test(message));
+};
+
 const fetchContributions = async (token: string, username: string): Promise<GitStats> => {
   const query = `
     query($login: String!) {
@@ -123,13 +132,25 @@ const fetchContributions = async (token: string, username: string): Promise<GitS
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
-    throw new Error(`GitHub API error: ${response.status} - ${error.message || "Unknown error"}`);
+    const message = error.message || "Unknown error";
+    const authError = isGitHubAuthError(response.status, message);
+    throw new Error(
+      authError
+        ? `GitHub auth error: ${response.status} - ${message}`
+        : `GitHub API error: ${response.status} - ${message}`
+    );
   }
 
   const data: GitHubContributionsResponse = await response.json();
   
   if (data.errors) {
-    throw new Error(`GitHub GraphQL error: ${data.errors.map((e: { message: string }) => e.message).join(", ")}`);
+    const errorMessage = data.errors.map((e: { message: string }) => e.message).join(", ");
+    const authError = isGitHubAuthError(200, errorMessage);
+    throw new Error(
+      authError
+        ? `GitHub auth error: 401 - ${errorMessage}`
+        : `GitHub GraphQL error: ${errorMessage}`
+    );
   }
 
   const calendar = data.data!.user.contributionsCollection.contributionCalendar;
@@ -174,12 +195,13 @@ export async function GET(
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const account = await db.account.findFirst({
-      where: { userId: user.id, providerId: "github" },
-      select: { accessToken: true },
+    const tokenResponse = await auth.api.getAccessToken({
+      body: {
+        providerId: "github",
+        userId: user.id,
+      },
     });
-
-    const token = account?.accessToken;
+    const token = tokenResponse?.accessToken;
     if (!token) {
       return NextResponse.json({ error: "GitHub account not connected" }, { status: 400 });
     }
@@ -202,9 +224,12 @@ export async function GET(
 
     return NextResponse.json({ stats });
   } catch (error) {
-    console.error("GitHub public stats error:", error);
+    if (error instanceof Error && error.message.includes("GitHub auth error")) {
+      return NextResponse.json({ stats: null });
+    }
 
     if (error instanceof Error && error.message.includes("GitHub")) {
+      console.error("GitHub public stats error:", error);
       return NextResponse.json(
         { error: "GitHub API error", details: error.message },
         { status: 502 }
