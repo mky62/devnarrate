@@ -26,13 +26,13 @@ import {
 // --- Tiptap Node ---
 import { ImageUploadNode } from "@/components/tiptap-node/image-upload-node/image-upload-node-extension"
 import { HorizontalRule } from "@/components/tiptap-node/horizontal-rule-node/horizontal-rule-node-extension"
-import "@/components/tiptap-node/blockquote-node/blockquote-node.scss"
-import "@/components/tiptap-node/code-block-node/code-block-node.scss"
-import "@/components/tiptap-node/horizontal-rule-node/horizontal-rule-node.scss"
-import "@/components/tiptap-node/list-node/list-node.scss"
-import "@/components/tiptap-node/image-node/image-node.scss"
-import "@/components/tiptap-node/heading-node/heading-node.scss"
-import "@/components/tiptap-node/paragraph-node/paragraph-node.scss"
+import "../../tiptap-node/blockquote-node/blockquote-node.scss"
+import "../../tiptap-node/code-block-node/code-block-node.scss"
+import "../../tiptap-node/horizontal-rule-node/horizontal-rule-node.scss"
+import "../../tiptap-node/list-node/list-node.scss"
+import "../../tiptap-node/image-node/image-node.scss"
+import "../../tiptap-node/heading-node/heading-node.scss"
+import "../../tiptap-node/paragraph-node/paragraph-node.scss"
 
 // --- Tiptap UI ---
 import { HeadingDropdownMenu } from "@/components/tiptap-ui/heading-dropdown-menu"
@@ -71,7 +71,7 @@ import { ThemeToggle } from "@/components/tiptap-templates/simple/theme-toggle"
 import { handleImageUpload, MAX_FILE_SIZE } from "@/lib/tiptap-utils"
 
 // --- Styles ---
-import "@/components/tiptap-templates/simple/simple-editor.scss"
+import "./simple-editor.scss"
 
 import content from "@/components/tiptap-templates/simple/data/content.json"
 
