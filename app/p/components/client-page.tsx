@@ -48,36 +48,61 @@ import { FontSizeDropdown } from "@/packages/tiptap/components/tiptap-ui/font-si
 // --- Lib ---
 import { handleImageUpload, MAX_FILE_SIZE } from "@/lib/tiptap-utils"
 
-const getInitialState = () => {
-    return {
-        title: sessionStorage.getItem("title") ?? "",
-        link: sessionStorage.getItem("link") ?? "",
-    };
+const getSessionStorageItem = (key: string) => {
+    if (typeof window === "undefined") {
+        return null
+    }
+
+    return window.sessionStorage.getItem(key)
+}
+
+const setSessionStorageItem = (key: string, value: string) => {
+    if (typeof window === "undefined") {
+        return
+    }
+
+    window.sessionStorage.setItem(key, value)
+}
+
+const removeSessionStorageItem = (key: string) => {
+    if (typeof window === "undefined") {
+        return
+    }
+
+    window.sessionStorage.removeItem(key)
 }
 
 export default function ClientPage() {
     const router = useRouter();
     const { data: session, isPending } = useSession()
-    const [title, setTitle] = useState(() => getInitialState().title)
-    const [link, setLink] = useState(() => getInitialState().link)
+    const [title, setTitle] = useState("")
+    const [link, setLink] = useState("")
     const [loading, setLoading] = useState(false)
+    const [draftLoaded, setDraftLoaded] = useState(false)
+    const [savedContent, setSavedContent] = useState<string | null>(null)
 
     const toolbarRef = useRef<HTMLDivElement>(null)
 
+    useEffect(() => {
+        setTitle(getSessionStorageItem("title") ?? "")
+        setLink(getSessionStorageItem("link") ?? "")
+        setSavedContent(getSessionStorageItem("content"))
+        setDraftLoaded(true)
+    }, [])
 
     useEffect(() => {
-        sessionStorage.setItem("title", title)
-    }, [title])
+        if (!draftLoaded) return
+        setSessionStorageItem("title", title)
+    }, [draftLoaded, title])
 
     useEffect(() => {
-        sessionStorage.setItem("link", link)
-    }, [link])
-
-    const savedContent = typeof window !== "undefined" ? sessionStorage.getItem("content") : null
+        if (!draftLoaded) return
+        setSessionStorageItem("link", link)
+    }, [draftLoaded, link])
 
     const editor = useEditor({
         immediatelyRender: false,
-        content: savedContent ? JSON.parse(savedContent) : "",
+        content: "",
         editorProps: {
             attributes: {
                 autocomplete: "off",
@@ -119,12 +144,25 @@ export default function ClientPage() {
 
     useEffect(() => {
         if (!editor) return
+        if (!savedContent) return
+
+        try {
+            editor.commands.setContent(JSON.parse(savedContent))
+        } catch (error) {
+            console.error("Failed to restore draft content:", error)
+        }
+    }, [editor, savedContent])
+
+    useEffect(() => {
+        if (!editor) return
+        if (!draftLoaded) return
+
         const updateHandler = () => {
-            sessionStorage.setItem("content", JSON.stringify(editor.getJSON()))
+            setSessionStorageItem("content", JSON.stringify(editor.getJSON()))
         }
         editor.on("update", updateHandler)
         return () => { editor.off("update", updateHandler) }
-    }, [editor])
+    }, [draftLoaded, editor])
 
     if (isPending || !session) {
         return <div className="flex items-center justify-center h-screen"><Loader /></div>
@@ -146,9 +184,9 @@ export default function ClientPage() {
             }
             const data = await res.json()
             if (data.success) {
-                sessionStorage.removeItem("title")
-                sessionStorage.removeItem("link")
-                sessionStorage.removeItem("content")
+                removeSessionStorageItem("title")
+                removeSessionStorageItem("link")
+                removeSessionStorageItem("content")
                 router.push("/dashboard")
             }
         } catch (err) {
