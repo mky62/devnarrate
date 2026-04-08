@@ -3,6 +3,77 @@ import { prismaAdapter } from "better-auth/adapters/prisma"
 import { nextCookies } from "better-auth/next-js"
 import db from "@/lib/prisma"
 
+const parseEnvList = (value?: string) =>
+  value
+    ?.split(",")
+    .map((entry) => entry.trim())
+    .filter(Boolean) ?? []
+
+const normalizeUrl = (value?: string) => {
+  if (!value) return undefined
+
+  const cleaned = value.split("#")[0]?.trim()
+  if (!cleaned) return undefined
+
+  return cleaned.startsWith("http://") || cleaned.startsWith("https://")
+    ? cleaned
+    : `https://${cleaned}`
+}
+
+const toHost = (value?: string) => {
+  const normalized = normalizeUrl(value)
+  if (!normalized) return undefined
+
+  try {
+    return new URL(normalized).host
+  } catch {
+    return undefined
+  }
+}
+
+const normalizedBetterAuthUrl = normalizeUrl(process.env.BETTER_AUTH_URL)
+const vercelDeploymentUrl =
+  normalizeUrl(process.env.VERCEL_PROJECT_PRODUCTION_URL) ??
+  normalizeUrl(process.env.VERCEL_URL) ??
+  "https://devnarrate.vercel.app"
+
+const normalizedBaseUrl =
+  process.env.NODE_ENV === "production"
+    ? vercelDeploymentUrl ?? normalizedBetterAuthUrl
+    : normalizedBetterAuthUrl ?? vercelDeploymentUrl
+
+const defaultAllowedHosts = [
+  "devnarrate.vercel.app",
+]
+
+const allowedHosts = Array.from(
+  new Set(
+    [
+      ...defaultAllowedHosts,
+      ...parseEnvList(process.env.BETTER_AUTH_ALLOWED_HOSTS),
+      toHost(normalizedBetterAuthUrl),
+      toHost(process.env.NEXT_PUBLIC_AUTH_URL),
+      toHost(process.env.VERCEL_PROJECT_PRODUCTION_URL),
+      toHost(process.env.VERCEL_URL),
+    ].filter(Boolean) as string[]
+  )
+)
+
+const trustedOrigins = Array.from(
+  new Set([
+    ...parseEnvList(process.env.BETTER_AUTH_TRUSTED_ORIGINS),
+    ...allowedHosts.flatMap((host) =>
+      host.includes("://")
+        ? [host]
+        : [
+            `https://${host}`,
+            ...(host.includes("localhost") || host.includes("127.0.0.1") ? [`http://${host}`] : []),
+          ]
+    ),
+    ...(normalizedBaseUrl ? [new URL(normalizedBaseUrl).origin] : []),
+  ])
+)
+
 export const auth = betterAuth({
   database: prismaAdapter(db, {
     provider: "postgresql",
@@ -18,22 +89,24 @@ export const auth = betterAuth({
     encryptOAuthTokens: true,
   },
 
+  trustedOrigins,
+
   socialProviders: {
     github: {
       clientId: process.env.GITHUB_CLIENT_ID as string,
       clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
-      // Explicitly set the redirect URI if needed
-      redirectURI: `${process.env.BETTER_AUTH_URL}/api/auth/callback/github`,
-       mapProfileToUser: (profile) => {
+      mapProfileToUser: (profile) => {
         return {
-         name: `@${profile.login}`,
+          name: `@${profile.login}`,
         };
       },
     },
   },
 
-  // Important: Set the base URL
-  baseURL: process.env.BETTER_AUTH_URL as string,
+  baseURL: {
+    fallback: normalizedBaseUrl,
+    allowedHosts,
+  },
 
   // Optional: Configure session settings
   session: {

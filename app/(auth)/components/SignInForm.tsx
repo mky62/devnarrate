@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import RotatingText from "./RotatingText"
 import Image from "next/image"
 import AuthBg from "@/public/dashbg.jpg"
@@ -11,13 +12,30 @@ import { Particles } from "@/components/ui/particles"
 
 
 export default function SignInForm() {
-    
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const [isSigningIn, setIsSigningIn] = useState(false)
+
+    const handleClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault()
-        signIn.social({
-            provider: "github",
-            callbackURL: "/dashboard",
-        })
+        if (isSigningIn) return
+
+        setIsSigningIn(true)
+
+        try {
+            await signIn.social(
+                {
+                    provider: "github",
+                    callbackURL: "/dashboard",
+                },
+                {
+                    onError() {
+                        setIsSigningIn(false)
+                    },
+                }
+            )
+        } catch (error) {
+            console.error("GitHub sign-in failed:", error)
+            setIsSigningIn(false)
+        }
     }
 
     return (
@@ -76,10 +94,11 @@ export default function SignInForm() {
                 <Button
                     type="button"
                     onClick={handleClick}
+                    disabled={isSigningIn}
                     className="w-full py-7 cursor-pointer bg-[#234edc] hover:bg-black active:scale-[0.98] text-white flex items-center justify-center gap-3 text-xl font-semibold rounded-2xl transition-all duration-200 shadow-xl shadow-black/30"
                 >
                     <FaGithub className="text-3xl" />
-                    Sign in with GitHub
+                    {isSigningIn ? "Redirecting to GitHub..." : "Sign in with GitHub"}
                 </Button>
 
                 {/* Footer */}

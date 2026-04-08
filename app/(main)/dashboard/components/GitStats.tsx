@@ -64,9 +64,6 @@ export default function GitStats() {
 
         <div className="flex-1">
           <div className="relative inline-flex items-center justify-center">
-            <div className="w-16 h-16 rounded-full border-4 border-blue-400 flex items-center justify-center">
-              <Flame className="w-6 h-6 text-orange-500" />
-            </div>
             <span className="absolute text-lg font-bold text-gray-900">{data.currentStreak}</span>
           </div>
           <p className="text-sm text-gray-500 mt-2">Current Streak</p>
