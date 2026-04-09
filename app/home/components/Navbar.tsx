@@ -13,7 +13,7 @@ export default function Navbar() {
     const dropRef = useRef<HTMLDivElement>(null);
     const mobileRef = useRef<HTMLDivElement>(null);
 
-    const { data: session } = useSession();
+    const { data: session, isPending } = useSession();
 
     useEffect(() => {
         function handleClickOutside(e: MouseEvent) {
@@ -48,20 +48,17 @@ export default function Navbar() {
                     {/* Right side - Desktop */}
                     <div className="hidden md:flex items-center gap-1.5">
 
-                      {!session ? (
-                        <Link
-                            href="/sign-in"
-                            className="inline-flex h-8 items-center gap-2 bg-gradient-to-t from-blue-500 to-blue-600 px-4 rounded-sm px-3.5 text-[13px] font-semibold sm:text-sm text-gray/50 transition-colors hover:text-blue-900/90"
-                        >
-                            sign in with <FaGithub /> <MdArrowOutward />
-                        </Link>) :
-                        (<Link
-                            href="/dashboard"
-                            className="inline-flex h-8 items-center gap-2 bg-gradient-to-t from-blue-500 to-blue-600 px-4 rounded-sm px-3.5 text-[13px] font-semibold sm:text-sm text-gray/50 transition-colors hover:text-blue-900/90"
-                        >
-                            dashboard <MdArrowOutward />
-                        </Link>)}
-
+                        { isPending ? ( <
+                                div className = "h-8 w-20 animate-pulse rounded-sm bg-white/20" / >
+                            ) : !session ? ( <
+                                Link href = "/sign-in"
+                                className = "..." > sign in </Link>
+                            ) : ( <
+                                Link href = "/dashboard"
+                                className = "..." > dashboard </Link>
+                            )
+                        }
+                        
                     </div>
 
                     {/* Hamburger button - Mobile */}
