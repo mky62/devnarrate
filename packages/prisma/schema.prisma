@@ -154,10 +154,11 @@ model Like {
   userId          String 
   user            User    @relation(fields: [userId], references: [id] , onDelete: Cascade)
 
-    createdAt       DateTime  @default(now())
+  createdAt       DateTime  @default(now())
 
 
-  unique([postId,userid])
+  @@unique([postId,userId])
+
   @@index([userId])
   @@index([postId])
   @@map("like")
