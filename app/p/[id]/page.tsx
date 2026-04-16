@@ -48,7 +48,7 @@ export default async function PostPage({ params }: PostPageProps) {
           id: true,
           name: true,
           stageName: true,
-          image: true, // you fetch it but never use it — see suggestion below
+          image: true,
         },
       },
     },

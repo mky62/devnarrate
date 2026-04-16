@@ -100,7 +100,6 @@ export default function PostSection() {
                                 href={`/p/${post.id}`}
                                 className="group flex flex-col p-4 bg-white border border-gray-100 rounded-2xl hover:border-blue-200 hover:shadow-sm transition-all duration-200"
                             >
-                                {/* Tiny icon + title row (no wasted space) */}
                                 <div className="flex items-start gap-3 mb-3">
                                     <div className="shrink-0 w-7 h-7 rounded-xl bg-blue-50 flex items-center justify-center group-hover:scale-110 transition-transform">
                                         <FileText size={15} className="text-blue-600" />
