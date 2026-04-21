@@ -23,15 +23,21 @@ export default function RepoList({ initialSavedRepos = [] }: RepoListProps) {
     const [showSearchModal, setShowSearchModal] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [isSearching, setIsSearching] = useState(false);
+    const [searchError, setSearchError] = useState<string | null>(null);
     const [searchResults, setSearchResults] = useState<Repo[]>([]);
     const [savedRepos, setSavedRepos] = useState<Repo[]>(initialSavedRepos);
     const [addingRepoId, setAddingRepoId] = useState<number | null>(null);
     const [deletingRepoId, setDeletingRepoId] = useState<number | null>(null);
 
     const debouncedSearch = useDebounce(async (query: string) => {
-        if (query.trim().length === 0) return;
+        if (query.trim().length === 0) {
+            setSearchResults([]);
+            setSearchError(null);
+            return;
+        }
 
         setIsSearching(true);
+        setSearchError(null);
 
         try {
             const response = await fetch(`/api/github/search?q=${encodeURIComponent(query)}`);
@@ -39,11 +45,15 @@ export default function RepoList({ initialSavedRepos = [] }: RepoListProps) {
 
             if (response.ok) {
                 setSearchResults(data.repos);
+                setSearchError(null);
             } else {
-                console.error("Search failed:", data.error);
+                setSearchResults([]);
+                setSearchError(data.error || "GitHub search failed. Please try again.");
             }
         } catch (error) {
             console.error("Search error:", error);
+            setSearchResults([]);
+            setSearchError("GitHub search failed. Please try again.");
         } finally {
             setIsSearching(false);
         }
@@ -180,7 +190,7 @@ export default function RepoList({ initialSavedRepos = [] }: RepoListProps) {
                         <div className="px-4 py-3 flex items-center justify-between">
                             <h3 className="font-semibold text-gray-800">Search GitHub Repositories</h3>
                             <button
-                                onClick={() => { setShowSearchModal(false); setSearchResults([]); setSearchQuery(""); }}
+                                onClick={() => { setShowSearchModal(false); setSearchResults([]); setSearchQuery(""); setSearchError(null); }}
                                 className="p-1 hover:bg-gray-100 rounded-md transition-colors"
                             >
                                 <X size={18} className="text-gray-500" />
@@ -205,6 +215,12 @@ export default function RepoList({ initialSavedRepos = [] }: RepoListProps) {
                         </div>
 
                         <div className="overflow-y-auto flex-1 divide-y divide-gray-100">
+                            {searchError && (
+                                <p className="px-4 py-3 text-sm text-red-600 border-b border-gray-100">
+                                    {searchError}
+                                </p>
+                            )}
+
                             {searchResults.map((repo) => {
                                 const isSaved = savedRepos.some(r => r.githubRepoId === repo.githubRepoId);
                                 const isAdding = addingRepoId === repo.githubRepoId;
@@ -229,7 +245,7 @@ export default function RepoList({ initialSavedRepos = [] }: RepoListProps) {
                                 );
                             })}
 
-                            {!isSearching && searchQuery && searchResults.length === 0 && (
+                            {!isSearching && searchQuery && searchResults.length === 0 && !searchError && (
                                 <p className="text-sm text-gray-500 text-center py-6">No repositories found.</p>
                             )}
                         </div>

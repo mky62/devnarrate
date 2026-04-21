@@ -1,7 +1,6 @@
 import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
-import { db } from "@/lib/prisma";
 import { getRedisClient } from "@/lib/redis";
 
 
@@ -14,6 +13,13 @@ interface GitHubRepo {
     forks_count?: number;
 }
 
+const isGitHubAuthError = (status: number, message?: string): boolean => {
+    if (status === 401) {
+        return true;
+    }
+
+    return Boolean(message && /bad credentials|requires authentication|unauthorized/i.test(message));
+};
 
 const getAllRepos = async (token: string): Promise<GitHubRepo[]> => {
     const allRepos: GitHubRepo[] = [];
@@ -34,7 +40,14 @@ const getAllRepos = async (token: string): Promise<GitHubRepo[]> => {
 
     if (!res.ok) {
       const error = await res.json().catch(() => ({}));
-      throw new Error(`GitHub API error: ${res.status} - ${error.message || "Unknown error"}`);
+      const message = error.message || "Unknown error";
+      const authError = isGitHubAuthError(res.status, message);
+
+      throw new Error(
+        authError
+          ? `GitHub auth error: ${res.status} - ${message}`
+          : `GitHub API error: ${res.status} - ${message}`
+      );
     }
 
     const repos: GitHubRepo[] = await res.json();
@@ -71,14 +84,19 @@ export async function GET(request: Request) {
             return NextResponse.json({ error: "Query is required" }, { status: 400 });
         }
 
-        const account = await db.account.findFirst({
-            where: { userId, providerId: "github" },
-            select: { accessToken: true },
+        const tokenResponse = await auth.api.getAccessToken({
+            headers: await headers(),
+            body: {
+                providerId: "github",
+                userId,
+            },
         });
-
-        const token = account?.accessToken;
+        const token = tokenResponse?.accessToken;
         if (!token) {
-            return NextResponse.json({ error: "GitHub account not connected" }, { status: 400 });
+            return NextResponse.json(
+                { error: "GitHub account not connected. Please reconnect GitHub and try again." },
+                { status: 400 }
+            );
         }
 
         const cacheKey = `github:repos:${userId}`;
@@ -115,14 +133,22 @@ export async function GET(request: Request) {
     }
 
     catch (error) {
-    console.error("GitHub search error:", error);
+    if (error instanceof Error && error.message.includes("GitHub auth error")) {
+      return NextResponse.json(
+        { error: "GitHub authentication expired. Please reconnect GitHub and try again.", repos: [] },
+        { status: 401 }
+      );
+    }
 
     if (error instanceof Error && error.message.includes("GitHub API")) {
+      console.error("GitHub search error:", error);
       return NextResponse.json(
         { error: "GitHub API error", details: error.message },
         { status: 502 }
       );
     }
+
+    console.error("GitHub search error:", error);
 
     return NextResponse.json(
       { error: "Internal server error" },
