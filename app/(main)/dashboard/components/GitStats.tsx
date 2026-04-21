@@ -49,7 +49,7 @@ export default function GitStats() {
   }
 
   return (
-    <div className="bg-white/70 p-4 border-t border-gray-200">
+    <div className="bg-white/40 p-4 border-t border-gray-200">
       <div className="flex items-center justify-between text-center">
         <div className="flex-1">
           <p className="text-2xl font-bold text-gray-900">{data.totalContributions.toLocaleString()}</p>
