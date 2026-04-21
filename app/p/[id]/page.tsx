@@ -89,48 +89,48 @@ export default async function PostPage({ params }: PostPageProps) {
 
       {/* Main Content */}
       <main className="max-w-3xl mx-auto px-4 py-12">
-        {/* Author Info */}
-        <div className="flex items-center gap-3 mb-8">
-          {/* Optional improvement: use user.image if it exists */}
-          {post.user.image ? (
-            <NextImage
-              src={post.user.image}
-              alt={post.user.stageName || post.user.name || ""}
-              width={40}
-              height={40}
-              className="w-10 h-10 rounded-full object-cover"
-              unoptimized
-            />
-          ) : (
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center text-white font-semibold">
-              {post.user.stageName?.[0] || post.user.name?.[0] || "U"}
+        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          {/* Author Info */}
+          <div className="flex items-center gap-3">
+            {post.user.image ? (
+              <NextImage
+                src={post.user.image}
+                alt={post.user.stageName || post.user.name || ""}
+                width={40}
+                height={40}
+                className="w-10 h-10 rounded-full object-cover"
+                unoptimized
+              />
+            ) : (
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center text-white font-semibold">
+                {post.user.stageName?.[0] || post.user.name?.[0] || "U"}
+              </div>
+            )}
+            <div>
+              <p className="font-semibold text-gray-900">
+                {post.user.stageName || post.user.name}
+              </p>
+              <p className="text-sm text-gray-500 flex items-center gap-1">
+                <Calendar size={14} />
+                {formattedDate}
+              </p>
             </div>
-          )}
-          <div>
-            <p className="font-semibold text-gray-900">
-              {post.user.stageName || post.user.name}
-            </p>
-            <p className="text-sm text-gray-500 flex items-center gap-1">
-              <Calendar size={14} />
-              {formattedDate}
-            </p>
           </div>
-        </div>
 
-        {/* Title */}
-        <h1 className="text-4xl font-bold text-gray-900 mb-8 leading-tight">
-          {post.title}
-        </h1>
-
-        <div className="mb-8">
           <PostLikeButton
             postId={post.id}
             initialLiked={post.likedByViewer}
             initialLikeCount={post.likeCount}
             canLike={post.canLike}
             size="detail"
+            className="self-start sm:self-center"
           />
         </div>
+
+        {/* Title */}
+        <h1 className="text-4xl font-bold text-gray-900 mb-8 leading-tight">
+          {post.title}
+        </h1>
 
         {/* Content */}
         <article
