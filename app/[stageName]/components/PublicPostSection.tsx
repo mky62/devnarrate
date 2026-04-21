@@ -3,14 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { FileText, ExternalLink, Clock, Loader2 } from "lucide-react";
-
-interface Post {
-  id: string;
-  title: string;
-  projectLink: string | null;
-  content: string;
-  createdAt: string;
-}
+import PostLikeButton from "@/components/posts/PostLikeButton";
+import type { Post } from "@/lib/userdata";
 
 interface PublicPostSectionProps {
   stageName: string;
@@ -117,16 +111,25 @@ export default function PublicPostSection({ stageName }: PublicPostSectionProps)
                   <p className="text-xs text-gray-500 line-clamp-2 mb-2 flex-1">
                     {extractTextFromContent(post.content)}
                   </p>
-                  <div className="flex items-center gap-2 mt-auto pt-2 border-t border-gray-50">
+                  <div className="flex items-center justify-between gap-2 mt-auto pt-2 border-t border-gray-50">
                     <span className="inline-flex items-center gap-1 text-[10px] font-medium text-gray-400">
                       <Clock size={10} className="text-gray-300" />
                       {formatDate(post.createdAt)}
                     </span>
-                    {post.projectLink && (
-                      <span className="inline-flex items-center ml-auto px-1.5 py-0.5 text-[9px] font-bold tracking-wide uppercase text-blue-600 bg-blue-50 rounded">
-                        Project
-                      </span>
-                    )}
+                    <div className="flex items-center gap-2">
+                      <PostLikeButton
+                        postId={post.id}
+                        initialLiked={post.likedByViewer}
+                        initialLikeCount={post.likeCount}
+                        canLike={post.canLike}
+                        stopPropagation
+                      />
+                      {post.projectLink && (
+                        <span className="inline-flex items-center px-1.5 py-0.5 text-[9px] font-bold tracking-wide uppercase text-blue-600 bg-blue-50 rounded">
+                          Project
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
               </Link>

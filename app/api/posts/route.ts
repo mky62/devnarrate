@@ -1,4 +1,5 @@
 import { auth } from "@/lib/auth";
+import { serializePostSummaries } from "@/lib/posts";
 import { db } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
@@ -29,22 +30,32 @@ export async function GET(request: Request) {
     );
     const skip = (page - 1) * limit;
 
-    const [posts, total] = await Promise.all([
+    const [rawPosts, total] = await Promise.all([
       db.post.findMany({
         where: { userId },
         orderBy: { createdAt: "desc" },
         select: {
           id: true,
+          userId: true,
           title: true,
           projectLink: true,
           content: true,
           createdAt: true,
+          _count: {
+            select: {
+              likes: true,
+            },
+          },
         },
         skip,
         take: limit,
       }),
       db.post.count({ where: { userId } }),
     ]);
+
+    const posts = await serializePostSummaries(rawPosts, userId, {
+      readOnly: true,
+    });
 
     return NextResponse.json({
       posts,

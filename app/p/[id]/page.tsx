@@ -1,9 +1,13 @@
 import { db } from "@/lib/prisma";
+import { auth } from "@/lib/auth";
+import { serializePostDetail } from "@/lib/posts";
 import { getSafeExternalUrl, renderPostContent } from "@/lib/post-content";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import NextImage from "next/image";
+import { headers } from "next/headers";
 import { ArrowLeft, ExternalLink, Calendar } from "lucide-react";
+import PostLikeButton from "@/components/posts/PostLikeButton";
 
 interface PostPageProps {
   params: Promise<{ id: string }>;
@@ -11,10 +15,25 @@ interface PostPageProps {
 
 export default async function PostPage({ params }: PostPageProps) {
   const { id } = await params;
+  const requestHeaders = await headers();
+  const session = await auth.api.getSession({
+    headers: requestHeaders,
+  });
 
-  const post = await db.post.findUnique({
+  const rawPost = await db.post.findUnique({
     where: { id },
-    include: {
+    select: {
+      id: true,
+      userId: true,
+      title: true,
+      projectLink: true,
+      content: true,
+      createdAt: true,
+      _count: {
+        select: {
+          likes: true,
+        },
+      },
       user: {
         select: {
           id: true,
@@ -26,9 +45,11 @@ export default async function PostPage({ params }: PostPageProps) {
     },
   });
 
-  if (!post) {
+  if (!rawPost) {
     notFound();
   }
+
+  const post = await serializePostDetail(rawPost, session?.user?.id);
 
   const renderedContent = renderPostContent(post.content);
   const safeProjectLink = getSafeExternalUrl(post.projectLink);
@@ -100,6 +121,16 @@ export default async function PostPage({ params }: PostPageProps) {
         <h1 className="text-4xl font-bold text-gray-900 mb-8 leading-tight">
           {post.title}
         </h1>
+
+        <div className="mb-8">
+          <PostLikeButton
+            postId={post.id}
+            initialLiked={post.likedByViewer}
+            initialLikeCount={post.likeCount}
+            canLike={post.canLike}
+            size="detail"
+          />
+        </div>
 
         {/* Content */}
         <article

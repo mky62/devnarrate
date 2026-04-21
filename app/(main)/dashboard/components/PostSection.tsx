@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { FileText, Plus, ExternalLink, Clock, Loader2, Trash2, X, AlertTriangle } from "lucide-react"
+import { FileText, Plus, ExternalLink, Clock, Heart, Loader2, Trash2, X, AlertTriangle } from "lucide-react"
 import { usePosts } from "@/hooks/usePosts"
 import { useDeletePost } from "@/hooks/useDeletePost"
 import { Post } from "@/lib/userdata"
@@ -128,10 +128,16 @@ export default function PostSection({ initialPosts = [] }: PostSectionProps) {
 
                                 {/* Footer - minimal, only necessary info */}
                                 <div className="flex items-center justify-between text-[10px] text-gray-400 border-t border-gray-100 pt-3">
-                                    <span className="flex items-center gap-1">
-                                        <Clock size={12} />
-                                        {formatDate(post.createdAt)}
-                                    </span>
+                                    <div className="flex items-center gap-3">
+                                        <span className="flex items-center gap-1">
+                                            <Clock size={12} />
+                                            {formatDate(post.createdAt)}
+                                        </span>
+                                        <span className="inline-flex items-center gap-1 rounded-full border border-gray-200 px-2 py-1 text-[10px] font-medium text-gray-500">
+                                            <Heart size={11} />
+                                            {post.likeCount}
+                                        </span>
+                                    </div>
 
                                     <div className="flex items-center gap-2">
                                         {post.projectLink && (

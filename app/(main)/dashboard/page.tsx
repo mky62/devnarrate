@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import DashBg from "@/public/dashbg.jpg";
 import Image from "next/image";
 import { auth } from "@/lib/auth";
+import { serializePostSummaries } from "@/lib/posts";
 import { db } from "@/lib/prisma";
 import { getGitStatsForUser } from "@/lib/github-stats";
 import ProfileSection from "./components/ProfileSection";
@@ -41,7 +42,7 @@ export default async function DashboardPage() {
 
   const userId = session.user.id;
 
-  const [user, repos, posts, initialGitStats] = await Promise.all([
+  const [user, repos, rawPosts, initialGitStats] = await Promise.all([
     db.user.findUnique({
       where: { id: userId },
       select: {
@@ -73,10 +74,16 @@ export default async function DashboardPage() {
       orderBy: { createdAt: "desc" },
       select: {
         id: true,
+        userId: true,
         title: true,
         projectLink: true,
         content: true,
         createdAt: true,
+        _count: {
+          select: {
+            likes: true,
+          },
+        },
       },
       take: 20,
     }),
@@ -92,10 +99,9 @@ export default async function DashboardPage() {
     redirect("/sign-in");
   }
 
-  const initialPosts: Post[] = posts.map((post) => ({
-    ...post,
-    createdAt: post.createdAt.toISOString(),
-  }));
+  const initialPosts: Post[] = await serializePostSummaries(rawPosts, userId, {
+    readOnly: true,
+  });
 
   return (
     <div className="h-full w-full flex">

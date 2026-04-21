@@ -1,4 +1,5 @@
 import { auth } from "@/lib/auth";
+import { serializePostDetail } from "@/lib/posts";
 import { db } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
@@ -7,15 +8,27 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    await auth.api.getSession({
+    const session = await auth.api.getSession({
       headers: request.headers,
     });
+    const viewerId = session?.user?.id;
 
     const { id } = await params;
 
-    const post = await db.post.findUnique({
+    const rawPost = await db.post.findUnique({
       where: { id },
-      include: {
+      select: {
+        id: true,
+        userId: true,
+        title: true,
+        projectLink: true,
+        content: true,
+        createdAt: true,
+        _count: {
+          select: {
+            likes: true,
+          },
+        },
         user: {
           select: {
             id: true,
@@ -27,12 +40,14 @@ export async function GET(
       },
     });
 
-    if (!post) {
+    if (!rawPost) {
       return NextResponse.json(
         { error: "Post not found" },
         { status: 404 }
       );
     }
+
+    const post = await serializePostDetail(rawPost, viewerId);
 
     return NextResponse.json({ post });
   } catch (error) {

@@ -55,6 +55,9 @@ export interface Post {
   projectLink: string | null;
   content: string;
   createdAt: string;
+  likeCount: number;
+  likedByViewer: boolean;
+  canLike: boolean;
 }
 
 export async function getPosts(): Promise<Post[]> {
