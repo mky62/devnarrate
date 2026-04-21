@@ -1,7 +1,6 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { Flame } from "lucide-react";
 
 interface GitStatsData {
   totalContributions: number;
@@ -54,12 +53,12 @@ export default function PublicGitStats({ stageName }: PublicGitStatsProps) {
   }
 
   return (
-    <div className="p-4 border-t border-gray-200">
+    <div className="bg-white/70 p-4 border-t border-gray-200">
       <div className="flex items-center justify-between text-center">
         <div className="flex-1">
           <p className="text-2xl font-bold text-gray-900">{data.totalContributions.toLocaleString()}</p>
-          <p className="text-sm text-gray-500 mt-1">Total Contributions</p>
-          <p className="text-xs text-gray-400 mt-1">
+          <p className="text-sm font-medium text-gray-700 mt-1">Total Contributions</p>
+          <p className="text-xs text-gray-600 mt-1">
             {formatDate(data.startDate)} - Present
           </p>
         </div>
@@ -67,11 +66,9 @@ export default function PublicGitStats({ stageName }: PublicGitStatsProps) {
         <div className="w-px h-16 bg-gray-300 mx-4" />
 
         <div className="flex-1">
-          <div className="relative inline-flex items-center justify-center">
-            <span className="absolute text-lg font-bold text-gray-900">{data.currentStreak}</span>
-          </div>
-          <p className="text-sm text-gray-500 mt-2">Current Streak</p>
-          <p className="text-xs text-gray-400 mt-1">
+          <p className="text-2xl font-bold text-gray-900">{data.currentStreak}</p>
+          <p className="text-sm font-medium text-gray-700 mt-1">Current Streak</p>
+          <p className="text-xs text-gray-600 mt-1">
             {formatDate(data.currentStreakStart)} - {formatDate(data.currentStreakEnd)}
           </p>
         </div>
@@ -80,8 +77,8 @@ export default function PublicGitStats({ stageName }: PublicGitStatsProps) {
 
         <div className="flex-1">
           <p className="text-2xl font-bold text-gray-900">{data.longestStreak}</p>
-          <p className="text-sm text-gray-500 mt-1">Longest Streak</p>
-          <p className="text-xs text-gray-400 mt-1">
+          <p className="text-sm font-medium text-gray-700 mt-1">Longest Streak</p>
+          <p className="text-xs text-gray-600 mt-1">
             {formatDate(data.longestStreakStart)} - {formatDate(data.longestStreakEnd)}
           </p>
         </div>

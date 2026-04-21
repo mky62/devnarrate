@@ -104,7 +104,7 @@ export default function DashboardPage() {
             <div className="relative flex gap-2 min-h-screen w-full p-4">
                 {/* Profile */}
                 <div className="w-1/4 h-full flex flex-col">
-                    <div className="flex-1 backdrop-blur-sm border border-blue-500 rounded-2xl p-2 shadow-sm flex flex-col gap-3 overflow-hidden">
+                    <div className="flex-1 bg-white/80 backdrop-blur-sm border border-blue-500 rounded-2xl p-2 shadow-sm flex flex-col gap-3 overflow-hidden">
                         <ProfileSection user={user} />
                         <DeleteProfile />
                     </div>
@@ -112,14 +112,14 @@ export default function DashboardPage() {
 
                 {/* Posts */}
                 <div className="w-2/4 h-full flex flex-col">
-                    <div className="flex-1 backdrop-blur-sm border border-blue-500 rounded-2xl p-2 shadow-sm flex flex-col gap-3 overflow-hidden">
+                    <div className="flex-1 bg-white/80 backdrop-blur-sm border border-blue-500 rounded-2xl p-2 shadow-sm flex flex-col gap-3 overflow-hidden">
                         <PostSection />
                     </div>
                 </div>
 
                 {/* Repositories */}
                 <div className="w-1/4 h-full flex flex-col">
-                    <div className="flex-1 backdrop-blur-sm border border-blue-500 rounded-2xl p-2 shadow-sm flex flex-col gap-3 overflow-hidden">
+                    <div className="flex-1 bg-white/80 backdrop-blur-sm border border-blue-500 rounded-2xl p-2 shadow-sm flex flex-col gap-3 overflow-hidden">
                         <RepoList initialSavedRepos={repos} />
                     </div>
                 </div>
