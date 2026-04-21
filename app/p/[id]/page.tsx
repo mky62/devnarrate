@@ -1,41 +1,13 @@
 import { db } from "@/lib/prisma";
+import { getSafeExternalUrl, renderPostContent } from "@/lib/post-content";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import NextImage from "next/image";
 import { ArrowLeft, ExternalLink, Calendar } from "lucide-react";
-import { sanitize } from "isomorphic-dompurify";
-
-import { renderToHTMLString } from "@tiptap/static-renderer/pm/html-string";
-
-import { StarterKit } from "@tiptap/starter-kit";
-import { Image } from "@tiptap/extension-image";
-import { TaskItem, TaskList } from "@tiptap/extension-list";
-import { TextAlign } from "@tiptap/extension-text-align";
-import { Typography } from "@tiptap/extension-typography";
-import { Highlight } from "@tiptap/extension-highlight";
-import { Subscript } from "@tiptap/extension-subscript";
-import { Superscript } from "@tiptap/extension-superscript";
-import { TextStyle, FontSize } from "@tiptap/extension-text-style";
-import { Selection } from "@tiptap/extensions";
 
 interface PostPageProps {
   params: Promise<{ id: string }>;
 }
-
-const extensions = [
-  StarterKit,
-  Image,
-  TextAlign.configure({ types: ["heading", "paragraph"] }),
-  TaskList,
-  TaskItem.configure({ nested: true }),
-  Highlight.configure({ multicolor: true }),
-  Typography,
-  Superscript,
-  Subscript,
-  TextStyle,
-  FontSize,
-  Selection,
-];
 
 export default async function PostPage({ params }: PostPageProps) {
   const { id } = await params;
@@ -58,35 +30,8 @@ export default async function PostPage({ params }: PostPageProps) {
     notFound();
   }
 
-  let html = "";
-  try {
-    const json = JSON.parse(post.content);
-    const rawHtml = renderToHTMLString({
-      content: json,
-      extensions,
-    });
-    html = sanitize(rawHtml, {
-      ALLOWED_TAGS: [
-        "p", "br", "strong", "em", "u", "s", "code", "pre", "blockquote",
-        "h1", "h2", "h3", "h4", "h5", "h6",
-        "ul", "ol", "li",
-        "a", "img",
-        "hr",
-        "span", "div",
-        "sub", "sup",
-        "mark",
-        "table", "thead", "tbody", "tr", "th", "td",
-      ],
-      ALLOWED_ATTR: [
-        "href", "src", "alt", "title", "target", "rel",
-        "style", "class",
-        "data-type",
-      ],
-      ALLOWED_URI_REGEXP: /^(?:(?:(?:f|ht)tps?|mailto|tel|callto|cid|xmpp):|[^a-z]|[a-z+.]+(?:[^a-z+.]+|$))/i,
-    });
-  } catch {
-    html = sanitize(`<p>${post.content}</p>`);
-  }
+  const renderedContent = renderPostContent(post.content);
+  const safeProjectLink = getSafeExternalUrl(post.projectLink);
 
   const formattedDate = new Date(post.createdAt).toLocaleDateString("en-US", {
     month: "long",
@@ -107,9 +52,9 @@ export default async function PostPage({ params }: PostPageProps) {
             <span className="text-sm font-medium">Back</span>
           </Link>
 
-          {post.projectLink && (
+          {safeProjectLink && (
             <a
-              href={post.projectLink}
+              href={safeProjectLink}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-1.5 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
@@ -163,8 +108,9 @@ export default async function PostPage({ params }: PostPageProps) {
             '--tw-prose-body': '#374151',
             '--tw-prose-headings': '#111827',
           } as React.CSSProperties}
-          dangerouslySetInnerHTML={{ __html: html }}
-        />
+        >
+          {renderedContent}
+        </article>
         <style dangerouslySetInnerHTML={{__html: `
           .prose p { margin-bottom: 1rem; }
           .prose p:empty { min-height: 0.5rem; margin-bottom: 0.5rem; }
