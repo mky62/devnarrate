@@ -6,16 +6,17 @@ import Image from "next/image"
 import AuthBg from "@/public/dashbg.jpg"
 import { FaGithub } from "react-icons/fa"
 import Link from "next/link"
-import { useSearchParams } from "next/navigation"
 import { signIn } from "@/lib/auth-client"
-import { getAuthCallbackUrl } from "@/lib/auth-redirect"
 import { Button } from "@/packages/tiptap/components/ui/button"
 import { Particles } from "@/components/ui/particles"
 
 
-export default function SignInForm() {
+interface SignInFormProps {
+    callbackURL: string
+}
+
+export default function SignInForm({ callbackURL }: SignInFormProps) {
     const [isSigningIn, setIsSigningIn] = useState(false)
-    const searchParams = useSearchParams()
 
     const handleClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault()
@@ -27,7 +28,7 @@ export default function SignInForm() {
             await signIn.social(
                 {
                     provider: "github",
-                    callbackURL: getAuthCallbackUrl(searchParams.get("next")),
+                    callbackURL,
                 },
                 {
                     onError() {
