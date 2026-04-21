@@ -7,8 +7,12 @@ import { usePosts } from "@/hooks/usePosts"
 import { useDeletePost } from "@/hooks/useDeletePost"
 import { Post } from "@/lib/userdata"
 
-export default function PostSection() {
-    const { data: posts = [], isLoading, error } = usePosts()
+interface PostSectionProps {
+    initialPosts?: Post[];
+}
+
+export default function PostSection({ initialPosts = [] }: PostSectionProps) {
+    const { data: posts = [], isLoading, error } = usePosts(initialPosts)
     const deletePost = useDeletePost()
     const [deletingId, setDeletingId] = useState<string | null>(null)
 

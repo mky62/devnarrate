@@ -7,6 +7,8 @@ import ProfileBanner from "./ProfileBanner";
 import SocialLinks from "./SocialLinks";
 import ProfileEditModal from "./ProfileEditModal";
 import GitStats from "./GitStats";
+import { useUser } from "@/hooks/useUser";
+import type { GitStats as GitStatsData } from "@/lib/github-stats";
 
 interface SocialLinksData {
   github?: string;
@@ -28,12 +30,16 @@ interface User {
 
 interface ProfileSectionProps {
   user: User | null;
+  initialGitStats?: GitStatsData | null;
 }
 
-export default function ProfileSection({ user }: ProfileSectionProps) {
+export default function ProfileSection({ user, initialGitStats }: ProfileSectionProps) {
+  const { data: currentUser } = useUser(user);
   const [isEditing, setIsEditing] = useState(false);
 
-  if (!user) {
+  const resolvedUser = currentUser ?? user;
+
+  if (!resolvedUser) {
     return (
       <div className="h-full rounded-xl flex flex-col overflow-hidden border-blue-500 border-2">
         <div className="relative w-full h-28 animate-pulse bg-gray-200" />
@@ -46,30 +52,30 @@ export default function ProfileSection({ user }: ProfileSectionProps) {
     );
   }
 
-  const displayName = user.stageName || user.name;
-  const socialLinks = user.socialLinks || {};
-  const joinedDate = user.createdAt
-    ? new Date(user.createdAt).toLocaleDateString("en-US", { month: "short", year: "numeric" })
+  const displayName = resolvedUser.stageName || resolvedUser.name;
+  const socialLinks = resolvedUser.socialLinks || {};
+  const joinedDate = resolvedUser.createdAt
+    ? new Date(resolvedUser.createdAt).toLocaleDateString("en-US", { month: "short", year: "numeric" })
     : null;
 
   return (
     <div className="h-full rounded-xl flex flex-col overflow-hidden border-blue-500 border-2">
-      <ProfileBanner userId={user.id} onEdit={() => setIsEditing(true)} />
-      <ProfileAvatar image={user.image} displayName={displayName} />
+      <ProfileBanner userId={resolvedUser.id} onEdit={() => setIsEditing(true)} />
+      <ProfileAvatar image={resolvedUser.image} displayName={displayName} />
 
       <div className="flex-1 p-4 pt-3 space-y-3 min-h-0 overflow-y-auto">
         <div>
           <h2 className="font-bold text-gray-900 text-lg leading-tight truncate">
             {displayName || "Anonymous"}
           </h2>
-          {user.stageName && user.name !== user.stageName && (
-            <p className="text-sm text-gray-500">{user.name}</p>
+          {resolvedUser.stageName && resolvedUser.name !== resolvedUser.stageName && (
+            <p className="text-sm text-gray-500">{resolvedUser.name}</p>
           )}
         </div>
 
-        {user.description && (
+        {resolvedUser.description && (
           <p className="text-sm text-gray-600 break-words whitespace-pre-wrap">
-            {user.description}
+            {resolvedUser.description}
           </p>
         )}
 
@@ -85,11 +91,11 @@ export default function ProfileSection({ user }: ProfileSectionProps) {
         <SocialLinks links={socialLinks} />
       </div>
 
-      <GitStats />
+      <GitStats initialStats={initialGitStats} />
 
       <ProfileEditModal
         key={isEditing ? "open" : "closed"}
-        user={user}
+        user={resolvedUser}
         isOpen={isEditing}
         onClose={() => setIsEditing(false)}
       />

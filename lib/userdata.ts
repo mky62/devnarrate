@@ -11,9 +11,9 @@ export interface User {
   id: string;
   name: string;
   email?: string | null;
-  emailVerified: boolean;
+  emailVerified?: boolean;
   image?: string | null;
-  createdAt?: string;
+  createdAt?: string | Date;
   stageName?: string | null;
   description?: string | null;
   socialLinks?: SocialLinks | null;

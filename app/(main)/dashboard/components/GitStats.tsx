@@ -1,18 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-
-interface GitStatsData {
-  totalContributions: number;
-  currentStreak: number;
-  longestStreak: number;
-  startDate: string;
-  endDate: string;
-  currentStreakStart: string;
-  currentStreakEnd: string;
-  longestStreakStart: string;
-  longestStreakEnd: string;
-}
+import type { GitStats as GitStatsData } from "@/lib/github-stats";
 
 const formatDate = (dateStr: string): string => {
   if (!dateStr) return "";
@@ -20,8 +9,12 @@ const formatDate = (dateStr: string): string => {
   return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 };
 
-export default function GitStats() {
-  const { data, isLoading, error } = useQuery<GitStatsData>({
+interface GitStatsProps {
+  initialStats?: GitStatsData | null;
+}
+
+export default function GitStats({ initialStats }: GitStatsProps) {
+  const { data, isLoading, error } = useQuery<GitStatsData | null>({
     queryKey: ["github-stats"],
     queryFn: async () => {
       const res = await fetch("/api/github/stats");
@@ -29,7 +22,9 @@ export default function GitStats() {
       const json = await res.json();
       return json.stats;
     },
+    initialData: initialStats,
     staleTime: 1000 * 60 * 30,
+    refetchOnMount: initialStats === undefined,
   });
 
   if (isLoading) {

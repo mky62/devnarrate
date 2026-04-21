@@ -1,16 +1,15 @@
-"use client";
-
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useSession } from "@/lib/auth-client";
-import { useQuery } from "@tanstack/react-query";
-import DashBg from '@/public/dashbg.jpg'
-import Image from 'next/image'
-import { Loader2 } from 'lucide-react'
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+import DashBg from "@/public/dashbg.jpg";
+import Image from "next/image";
+import { auth } from "@/lib/auth";
+import { db } from "@/lib/prisma";
+import { getGitStatsForUser } from "@/lib/github-stats";
 import ProfileSection from "./components/ProfileSection";
 import RepoList from "./components/RepoList";
 import DeleteProfile from "./components/DeleteProfile";
 import PostSection from "./components/PostSection";
+import type { Post } from "@/lib/userdata";
 
 interface SocialLinks {
   github?: string;
@@ -30,100 +29,111 @@ interface UserData {
   socialLinks?: SocialLinks | null;
 }
 
-interface Repo {
-  githubRepoId: number;
-  name: string | null;
-  language: string | null;
-  stars: number;
-  forks: number;
-}
-
-async function fetchUserData(): Promise<{ user: UserData | null; repos: Repo[] }> {
-  const [userRes, reposRes] = await Promise.all([
-    fetch("/api/user/me"),
-    fetch("/api/repos"),
-  ]);
-
-  if (!userRes.ok) throw new Error("Failed to fetch user");
-  if (!reposRes.ok) throw new Error("Failed to fetch repos");
-
-  const user = await userRes.json();
-  const reposData = await reposRes.json();
-
-  return {
-    user,
-    repos: reposData.repos?.map((repo: { githubRepoId: string | number; name: string | null; language: string | null; stars: number; forks: number }) => ({
-      githubRepoId: typeof repo.githubRepoId === 'string' ? parseInt(repo.githubRepoId, 10) : repo.githubRepoId,
-      name: repo.name,
-      language: repo.language,
-      stargazers_count: repo.stars,
-      forks_count: repo.forks,
-      description: null,
-    })) ?? [],
-  };
-}
-
-export default function DashboardPage() {
-  const router = useRouter();
-  const { data: session, isPending: sessionPending } = useSession();
-  const { data, isPending: dataPending } = useQuery({
-    queryKey: ["dashboard"],
-    queryFn: fetchUserData,
-    enabled: !!session?.user?.id,
+export default async function DashboardPage() {
+  const requestHeaders = await headers();
+  const session = await auth.api.getSession({
+    headers: requestHeaders,
   });
 
-  useEffect(() => {
-    if (!sessionPending && !session?.user?.id) {
-      router.push("/sign-in");
-    }
-  }, [session, sessionPending, router]);
-
-  if (sessionPending || dataPending || !data) {
-    return (
-      <div className="min-h-screen w-full flex items-center justify-center relative">
-        <Image
-          src={DashBg}
-          alt="dashboard-bg"
-          className="absolute inset-0 z-[-1] w-full h-full object-cover"
-        />
-        <Loader2 className="w-8 h-8 text-blue-400 animate-spin" />
-      </div>
-    );
+  if (!session?.user?.id) {
+    redirect("/sign-in");
   }
 
-  const { user, repos } = data;
+  const userId = session.user.id;
 
-    return (
-        <div className="h-full w-full flex">
-            <Image
-                src={DashBg}
-                alt="dashboard-bg"
-                className="absolute inset-0 z-[-1] w-full h-full object-cover"
-            />
+  const [user, repos, posts, initialGitStats] = await Promise.all([
+    db.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        image: true,
+        createdAt: true,
+        stageName: true,
+        description: true,
+        socialLinks: true,
+      },
+    }),
+    db.repo.findMany({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+      select: {
+        githubRepoId: true,
+        name: true,
+        language: true,
+        stars: true,
+        forks: true,
+        description: true,
+      },
+      take: 20,
+    }),
+    db.post.findMany({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        title: true,
+        projectLink: true,
+        content: true,
+        createdAt: true,
+      },
+      take: 20,
+    }),
+    getGitStatsForUser({
+      userId,
+      username: session.user.name?.replace("@", "") || "",
+      cacheKey: `github:stats:${userId}`,
+      requestHeaders,
+    }),
+  ]);
 
-            <div className="relative flex gap-2 min-h-screen w-full p-4">
-                {/* Profile */}
-                <div className="w-1/4 h-full flex flex-col">
-                    <div className="flex-1 bg-white/80 backdrop-blur-sm border border-blue-500 rounded-2xl p-2 shadow-sm flex flex-col gap-3 overflow-hidden">
-                        <ProfileSection user={user} />
-                        <DeleteProfile />
-                    </div>
-                </div>
+  if (!user) {
+    redirect("/sign-in");
+  }
 
-                {/* Posts */}
-                <div className="w-2/4 h-full flex flex-col">
-                    <div className="flex-1 bg-white/80 backdrop-blur-sm border border-blue-500 rounded-2xl p-2 shadow-sm flex flex-col gap-3 overflow-hidden">
-                        <PostSection />
-                    </div>
-                </div>
+  const initialPosts: Post[] = posts.map((post) => ({
+    ...post,
+    createdAt: post.createdAt.toISOString(),
+  }));
 
-                {/* Repositories */}
-                <div className="w-1/4 h-full flex flex-col">
-                    <div className="flex-1 bg-white/80 backdrop-blur-sm border border-blue-500 rounded-2xl p-2 shadow-sm flex flex-col gap-3 overflow-hidden">
-                        <RepoList initialSavedRepos={repos} />
-                    </div>
-                </div>
-            </div>
+  return (
+    <div className="h-full w-full flex">
+      <Image
+        src={DashBg}
+        alt="dashboard-bg"
+        className="absolute inset-0 z-[-1] w-full h-full object-cover"
+      />
+
+      <div className="relative flex gap-2 min-h-screen w-full p-4">
+        <div className="w-1/4 h-full flex flex-col">
+          <div className="flex-1 bg-white/80 backdrop-blur-sm border border-blue-500 rounded-2xl p-2 shadow-sm flex flex-col gap-3 overflow-hidden">
+            <ProfileSection user={user as UserData} initialGitStats={initialGitStats} />
+            <DeleteProfile />
+          </div>
         </div>
-    );
+
+        <div className="w-2/4 h-full flex flex-col">
+          <div className="flex-1 bg-white/80 backdrop-blur-sm border border-blue-500 rounded-2xl p-2 shadow-sm flex flex-col gap-3 overflow-hidden">
+            <PostSection initialPosts={initialPosts} />
+          </div>
+        </div>
+
+        <div className="w-1/4 h-full flex flex-col">
+          <div className="flex-1 bg-white/80 backdrop-blur-sm border border-blue-500 rounded-2xl p-2 shadow-sm flex flex-col gap-3 overflow-hidden">
+            <RepoList
+              initialSavedRepos={repos.map((repo) => ({
+                githubRepoId: repo.githubRepoId,
+                name: repo.name,
+                language: repo.language,
+                stargazers_count: repo.stars,
+                forks_count: repo.forks,
+                description: repo.description,
+              }))}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
