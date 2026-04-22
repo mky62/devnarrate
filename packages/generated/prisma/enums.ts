@@ -9,7 +9,37 @@
 * 🟢 You can import this file directly.
 */
 
+export const ReviewStatus = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  FLAGGED: 'FLAGGED',
+  REVIEW_FAILED: 'REVIEW_FAILED'
+} as const
+
+export type ReviewStatus = (typeof ReviewStatus)[keyof typeof ReviewStatus]
 
 
-// This file is empty because there are no enums in the schema.
-export {}
+export const PostVisibility = {
+  AUTHOR_ONLY: 'AUTHOR_ONLY',
+  PUBLIC: 'PUBLIC',
+  HIDDEN_BY_MODERATION: 'HIDDEN_BY_MODERATION'
+} as const
+
+export type PostVisibility = (typeof PostVisibility)[keyof typeof PostVisibility]
+
+
+export const InboxMessageType = {
+  MODERATION_WARNING: 'MODERATION_WARNING',
+  MODERATION_UPDATE: 'MODERATION_UPDATE'
+} as const
+
+export type InboxMessageType = (typeof InboxMessageType)[keyof typeof InboxMessageType]
+
+
+export const InboxMessageStatus = {
+  UNREAD: 'UNREAD',
+  READ: 'READ',
+  RESOLVED: 'RESOLVED'
+} as const
+
+export type InboxMessageStatus = (typeof InboxMessageStatus)[keyof typeof InboxMessageStatus]

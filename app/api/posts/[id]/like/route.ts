@@ -1,4 +1,5 @@
 import { auth } from "@/lib/auth";
+import { POST_VISIBILITY } from "@/lib/post-moderation";
 import { db } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
@@ -8,6 +9,7 @@ async function getPostForLike(postId: string) {
     select: {
       id: true,
       userId: true,
+      visibility: true,
     },
   });
 }
@@ -44,6 +46,10 @@ export async function POST(
     const post = await getPostForLike(id);
 
     if (!post) {
+      return NextResponse.json({ error: "Post not found" }, { status: 404 });
+    }
+
+    if (post.visibility !== POST_VISIBILITY.PUBLIC) {
       return NextResponse.json({ error: "Post not found" }, { status: 404 });
     }
 
@@ -94,6 +100,10 @@ export async function DELETE(
     const post = await getPostForLike(id);
 
     if (!post) {
+      return NextResponse.json({ error: "Post not found" }, { status: 404 });
+    }
+
+    if (post.visibility !== POST_VISIBILITY.PUBLIC) {
       return NextResponse.json({ error: "Post not found" }, { status: 404 });
     }
 

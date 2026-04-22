@@ -13,6 +13,29 @@ datasource db {
   provider = "postgresql"
 }
 
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  FLAGGED
+  REVIEW_FAILED
+}
+
+enum PostVisibility {
+  AUTHOR_ONLY
+  PUBLIC
+  HIDDEN_BY_MODERATION
+}
+
+enum InboxMessageType {
+  MODERATION_WARNING
+  MODERATION_UPDATE
+}
+
+enum InboxMessageStatus {
+  UNREAD
+  READ
+  RESOLVED
+}
 
 model User {
   id              String    @id @default(cuid())
@@ -35,6 +58,7 @@ model User {
   accounts        Account[]
 
   likes           Like[]
+  inboxMessages   InboxMessage[]
 
   repo             Repo[]
   post             Post[]
@@ -135,13 +159,27 @@ model Post {
   content         String  @db.Text
 
   views           Int?      @default(0)
+  reviewStatus    ReviewStatus   @default(APPROVED)
+  visibility      PostVisibility @default(PUBLIC)
+  reviewedAt      DateTime?
+  flaggedAt       DateTime?
+  deletionScheduledFor DateTime?
+  reviewAttemptCount   Int       @default(0)
+  reviewLeaseUntil     DateTime?
+  latestReviewSummary  String?   @db.Text
+  latestFlaggedContent Json?
+  latestWritingFeedback Json?
 
   likes           Like[]
+  inboxMessages   InboxMessage[]
   
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
   @@index([userId])
+  @@index([visibility, createdAt])
+  @@index([reviewStatus, reviewLeaseUntil])
+  @@index([deletionScheduledFor])
   @@map("post")
 }
 
@@ -162,4 +200,23 @@ model Like {
   @@index([userId])
   @@index([postId])
   @@map("like")
+}
+
+model InboxMessage {
+  id        String             @id @default(cuid())
+  userId    String
+  user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  postId    String?
+  post      Post?              @relation(fields: [postId], references: [id], onDelete: SetNull)
+  type      InboxMessageType
+  title     String
+  body      String             @db.Text
+  status    InboxMessageStatus @default(UNREAD)
+  metadata  Json?
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+
+  @@index([userId, status, createdAt])
+  @@index([postId])
+  @@map("inbox_message")
 }

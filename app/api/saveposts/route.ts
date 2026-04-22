@@ -1,4 +1,5 @@
 import { auth } from "@/lib/auth";
+import { getPendingModerationData } from "@/lib/moderation";
 import { db } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { postSchema } from "@/lib/validation";
@@ -36,6 +37,7 @@ export async function POST(request: Request) {
         title,
         projectLink: link || null,
         content: JSON.stringify(content),
+        ...getPendingModerationData(),
       },
     });
 

@@ -1,4 +1,5 @@
 import { auth } from "@/lib/auth";
+import { POST_VISIBILITY, REVIEW_STATUS } from "@/lib/post-moderation";
 import { serializePostSummaries } from "@/lib/posts";
 import { db } from "@/lib/prisma";
 import { NextResponse } from "next/server";
@@ -46,7 +47,11 @@ export async function GET(
 
     const [rawPosts, total] = await Promise.all([
       db.post.findMany({
-        where: { userId: user.id },
+        where: {
+          userId: user.id,
+          visibility: POST_VISIBILITY.PUBLIC,
+          reviewStatus: REVIEW_STATUS.APPROVED,
+        },
         orderBy: { createdAt: "desc" },
         select: {
           id: true,
@@ -55,6 +60,12 @@ export async function GET(
           projectLink: true,
           content: true,
           createdAt: true,
+          reviewStatus: true,
+          visibility: true,
+          deletionScheduledFor: true,
+          latestFlaggedContent: true,
+          latestReviewSummary: true,
+          latestWritingFeedback: true,
           _count: {
             select: {
               likes: true,
@@ -64,7 +75,13 @@ export async function GET(
         skip,
         take: limit,
       }),
-      db.post.count({ where: { userId: user.id } }),
+      db.post.count({
+        where: {
+          userId: user.id,
+          visibility: POST_VISIBILITY.PUBLIC,
+          reviewStatus: REVIEW_STATUS.APPROVED,
+        },
+      }),
     ]);
 
     const posts = await serializePostSummaries(rawPosts, viewerId);

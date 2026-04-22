@@ -72,33 +72,55 @@ const removeSessionStorageItem = (key: string) => {
     window.sessionStorage.removeItem(key)
 }
 
-export default function ClientPage() {
+interface ClientPageProps {
+    mode?: "create" | "edit";
+    postId?: string;
+    initialTitle?: string;
+    initialLink?: string;
+    initialContent?: string;
+}
+
+export default function ClientPage({
+    mode = "create",
+    postId,
+    initialTitle = "",
+    initialLink = "",
+    initialContent = "",
+}: ClientPageProps) {
     const router = useRouter();
     const { data: session, isPending } = useSession()
-    const [title, setTitle] = useState("")
-    const [link, setLink] = useState("")
+    const isEditMode = mode === "edit"
+    const [title, setTitle] = useState(initialTitle)
+    const [link, setLink] = useState(initialLink)
     const [loading, setLoading] = useState(false)
     const [draftLoaded, setDraftLoaded] = useState(false)
-    const [savedContent, setSavedContent] = useState<string | null>(null)
+    const [savedContent, setSavedContent] = useState<string | null>(initialContent || null)
 
     const toolbarRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
-        setTitle(getSessionStorageItem("title") ?? "")
-        setLink(getSessionStorageItem("link") ?? "")
-        setSavedContent(getSessionStorageItem("content"))
+        if (isEditMode) {
+            setDraftLoaded(true)
+            return
+        }
+
+        setTitle(getSessionStorageItem("title") ?? initialTitle)
+        setLink(getSessionStorageItem("link") ?? initialLink)
+        setSavedContent(getSessionStorageItem("content") ?? initialContent)
         setDraftLoaded(true)
-    }, [])
+    }, [initialContent, initialLink, initialTitle, isEditMode])
 
     useEffect(() => {
+        if (isEditMode) return
         if (!draftLoaded) return
         setSessionStorageItem("title", title)
-    }, [draftLoaded, title])
+    }, [draftLoaded, isEditMode, title])
 
     useEffect(() => {
+        if (isEditMode) return
         if (!draftLoaded) return
         setSessionStorageItem("link", link)
-    }, [draftLoaded, link])
+    }, [draftLoaded, isEditMode, link])
 
     const editor = useEditor({
         immediatelyRender: false,
@@ -155,6 +177,7 @@ export default function ClientPage() {
 
     useEffect(() => {
         if (!editor) return
+        if (isEditMode) return
         if (!draftLoaded) return
 
         const updateHandler = () => {
@@ -162,7 +185,7 @@ export default function ClientPage() {
         }
         editor.on("update", updateHandler)
         return () => { editor.off("update", updateHandler) }
-    }, [draftLoaded, editor])
+    }, [draftLoaded, editor, isEditMode])
 
     if (isPending || !session) {
         return <div className="flex items-center justify-center h-screen"><Loader /></div>
@@ -173,8 +196,8 @@ export default function ClientPage() {
         setLoading(true)
         try {
             const content = editor.getJSON()
-            const res = await fetch('/api/saveposts', {
-                method: "POST",
+            const res = await fetch(isEditMode ? `/api/posts/${postId}` : '/api/saveposts', {
+                method: isEditMode ? "PATCH" : "POST",
                 headers: { "content-type": "application/json" },
                 body: JSON.stringify({ title, link, content })
             })
@@ -184,14 +207,17 @@ export default function ClientPage() {
             }
             const data = await res.json()
             if (data.success) {
-                removeSessionStorageItem("title")
-                removeSessionStorageItem("link")
-                removeSessionStorageItem("content")
+                if (!isEditMode) {
+                    removeSessionStorageItem("title")
+                    removeSessionStorageItem("link")
+                    removeSessionStorageItem("content")
+                }
                 router.push("/dashboard")
+                router.refresh()
             }
         } catch (err) {
             console.error(err)
-            alert(err instanceof Error ? err.message : "Failed to create post")
+            alert(err instanceof Error ? err.message : `Failed to ${isEditMode ? "update" : "create"} post`)
         } finally {
             setLoading(false)
         }
@@ -253,13 +279,18 @@ export default function ClientPage() {
                         disabled={loading || !title}
                         className="rounded-full px-5 bg-primary text-primary-foreground font-medium shadow-sm hover:shadow-md transition-all text-sm"
                     >
-                        {loading ? <Loader className="w-4 h-4" /> : "Publish"}
+                        {loading ? <Loader className="w-4 h-4" /> : isEditMode ? "Resubmit" : "Publish"}
                     </Button>
                 </div>
             </header>
 
             {/* Main Content */}
             <main className="flex-1 max-w-3xl mx-auto w-full px-4 md:px-8 py-8">
+                {isEditMode && (
+                    <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                        Editing this post will send it back through automated review before it becomes public again.
+                    </div>
+                )}
                 {/* Title & Link */}
                 <div className="mb-8 space-y-3">
                     <input

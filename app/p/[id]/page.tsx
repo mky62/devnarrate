@@ -1,12 +1,13 @@
 import { db } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
-import { serializePostDetail } from "@/lib/posts";
+import { canViewerAccessPost, serializePostDetail } from "@/lib/posts";
+import { formatDeletionDeadline } from "@/lib/post-moderation";
 import { getSafeExternalUrl, renderPostContent } from "@/lib/post-content";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import NextImage from "next/image";
 import { headers } from "next/headers";
-import { ArrowLeft, ExternalLink, Calendar } from "lucide-react";
+import { ArrowLeft, ExternalLink, Calendar, PencilLine, ShieldAlert, ShieldCheck } from "lucide-react";
 import PostLikeButton from "@/components/posts/PostLikeButton";
 
 interface PostPageProps {
@@ -29,6 +30,12 @@ export default async function PostPage({ params }: PostPageProps) {
       projectLink: true,
       content: true,
       createdAt: true,
+      reviewStatus: true,
+      visibility: true,
+      deletionScheduledFor: true,
+      latestFlaggedContent: true,
+      latestReviewSummary: true,
+      latestWritingFeedback: true,
       _count: {
         select: {
           likes: true,
@@ -49,7 +56,12 @@ export default async function PostPage({ params }: PostPageProps) {
     notFound();
   }
 
+  if (!canViewerAccessPost(rawPost, session?.user?.id)) {
+    notFound();
+  }
+
   const post = await serializePostDetail(rawPost, session?.user?.id);
+  const isOwner = session?.user?.id === rawPost.userId;
 
   const renderedContent = renderPostContent(post.content);
   const safeProjectLink = getSafeExternalUrl(post.projectLink);
@@ -73,17 +85,29 @@ export default async function PostPage({ params }: PostPageProps) {
             <span className="text-sm font-medium">Back</span>
           </Link>
 
-          {safeProjectLink && (
-            <a
-              href={safeProjectLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1.5 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
-            >
-              <ExternalLink size={16} />
-              View Project
-            </a>
-          )}
+          <div className="flex items-center gap-3">
+            {isOwner && post.reviewStatus !== "APPROVED" && (
+              <Link
+                href={`/p/${post.id}/edit`}
+                className="flex items-center gap-1.5 text-sm font-medium text-amber-700 hover:text-amber-800 transition-colors"
+              >
+                <PencilLine size={16} />
+                Edit
+              </Link>
+            )}
+
+            {safeProjectLink && (
+              <a
+                href={safeProjectLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
+              >
+                <ExternalLink size={16} />
+                View Project
+              </a>
+            )}
+          </div>
         </div>
       </header>
 
@@ -131,6 +155,63 @@ export default async function PostPage({ params }: PostPageProps) {
         <h1 className="text-4xl font-bold text-gray-900 mb-8 leading-tight">
           {post.title}
         </h1>
+
+        {isOwner && post.reviewStatus !== "APPROVED" && (
+          <div className={`mb-8 rounded-2xl border px-4 py-4 ${
+            post.reviewStatus === "FLAGGED"
+              ? "border-rose-200 bg-rose-50"
+              : post.reviewStatus === "REVIEW_FAILED"
+                ? "border-amber-200 bg-amber-50"
+                : "border-slate-200 bg-slate-50"
+          }`}>
+            <div className="flex items-start gap-3">
+              {post.reviewStatus === "FLAGGED" ? (
+                <ShieldAlert className="mt-0.5 text-rose-600" size={18} />
+              ) : (
+                <ShieldCheck className="mt-0.5 text-slate-600" size={18} />
+              )}
+              <div>
+                <p className="text-sm font-semibold text-gray-900">
+                  {post.reviewStatus === "FLAGGED"
+                    ? "This post is hidden after moderation."
+                    : post.reviewStatus === "REVIEW_FAILED"
+                      ? "Automated review failed."
+                      : "This post is waiting for review."}
+                </p>
+                <p className="mt-1 text-sm text-gray-700">
+                  {post.latestReviewSummary ||
+                    "The post is not public until the moderation process completes."}
+                </p>
+                {post.latestFlaggedContent.length > 0 && (
+                  <p className="mt-2 text-sm text-rose-700">
+                    Flagged content: “{post.latestFlaggedContent[0]}”
+                  </p>
+                )}
+                {post.deletionScheduledFor && (
+                  <p className="mt-2 text-xs font-semibold uppercase tracking-wide text-rose-700">
+                    Deletes {formatDeletionDeadline(post.deletionScheduledFor)}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {isOwner && post.latestWritingFeedback && (post.latestWritingFeedback.summary || post.latestWritingFeedback.suggestions.length > 0) && (
+          <div className="mb-8 rounded-2xl border border-blue-200 bg-blue-50 px-4 py-4">
+            <p className="text-sm font-semibold text-blue-900">Writing feedback</p>
+            {post.latestWritingFeedback.summary && (
+              <p className="mt-2 text-sm text-blue-800">{post.latestWritingFeedback.summary}</p>
+            )}
+            {post.latestWritingFeedback.suggestions.length > 0 && (
+              <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-blue-800">
+                {post.latestWritingFeedback.suggestions.map((suggestion) => (
+                  <li key={suggestion}>{suggestion}</li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
 
         {/* Content */}
         <article

@@ -4,6 +4,7 @@ import DashBg from "@/public/dashbg.jpg";
 import Image from "next/image";
 import { auth } from "@/lib/auth";
 import { serializePostSummaries } from "@/lib/posts";
+import { serializeInboxMessages } from "@/lib/inbox";
 import { db } from "@/lib/prisma";
 import { getGitStatsForUser } from "@/lib/github-stats";
 import ProfileSection from "./components/ProfileSection";
@@ -11,6 +12,8 @@ import RepoList from "./components/RepoList";
 import DeleteProfile from "./components/DeleteProfile";
 import PostSection from "./components/PostSection";
 import type { Post } from "@/lib/userdata";
+import type { InboxMessage } from "@/lib/userdata";
+import InboxPanel from "./components/InboxPanel";
 
 interface SocialLinks {
   github?: string;
@@ -42,7 +45,7 @@ export default async function DashboardPage() {
 
   const userId = session.user.id;
 
-  const [user, repos, rawPosts, initialGitStats] = await Promise.all([
+  const [user, repos, rawPosts, inboxMessages, initialGitStats] = await Promise.all([
     db.user.findUnique({
       where: { id: userId },
       select: {
@@ -79,6 +82,12 @@ export default async function DashboardPage() {
         projectLink: true,
         content: true,
         createdAt: true,
+        reviewStatus: true,
+        visibility: true,
+        deletionScheduledFor: true,
+        latestFlaggedContent: true,
+        latestReviewSummary: true,
+        latestWritingFeedback: true,
         _count: {
           select: {
             likes: true,
@@ -86,6 +95,25 @@ export default async function DashboardPage() {
         },
       },
       take: 20,
+    }),
+    db.inboxMessage.findMany({
+      where: { userId },
+      orderBy: [
+        { status: "asc" },
+        { createdAt: "desc" },
+      ],
+      take: 10,
+      select: {
+        id: true,
+        postId: true,
+        type: true,
+        title: true,
+        body: true,
+        status: true,
+        metadata: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     }),
     getGitStatsForUser({
       userId,
@@ -102,6 +130,7 @@ export default async function DashboardPage() {
   const initialPosts: Post[] = await serializePostSummaries(rawPosts, userId, {
     readOnly: true,
   });
+  const initialInboxMessages: InboxMessage[] = serializeInboxMessages(inboxMessages);
 
   return (
     <div className="h-full w-full flex">
@@ -112,11 +141,12 @@ export default async function DashboardPage() {
       />
 
       <div className="relative flex gap-2 min-h-screen w-full p-4">
-        <div className="w-1/4 h-full flex flex-col">
-          <div className="flex-1 bg-white/80 backdrop-blur-sm border border-blue-500 rounded-2xl p-2 shadow-sm flex flex-col gap-3 overflow-hidden">
+        <div className="w-1/4 h-full flex flex-col gap-2">
+          <div className="flex-1 min-h-0 bg-white/80 backdrop-blur-sm border border-blue-500 rounded-2xl p-2 shadow-sm flex flex-col gap-3 overflow-hidden">
             <ProfileSection user={user as UserData} initialGitStats={initialGitStats} />
-            <DeleteProfile />
           </div>
+          <InboxPanel initialMessages={initialInboxMessages} />
+          <DeleteProfile />
         </div>
 
         <div className="w-2/4 h-full flex flex-col">
