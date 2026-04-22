@@ -41,6 +41,12 @@ export async function GET(request: Request) {
           projectLink: true,
           content: true,
           createdAt: true,
+          reviewStatus: true,
+          visibility: true,
+          deletionScheduledFor: true,
+          latestFlaggedContent: true,
+          latestReviewSummary: true,
+          latestWritingFeedback: true,
           _count: {
             select: {
               likes: true,

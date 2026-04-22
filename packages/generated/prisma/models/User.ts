@@ -221,6 +221,7 @@ export type UserWhereInput = {
   sessions?: Prisma.SessionListRelationFilter
   accounts?: Prisma.AccountListRelationFilter
   likes?: Prisma.LikeListRelationFilter
+  inboxMessages?: Prisma.InboxMessageListRelationFilter
   repo?: Prisma.RepoListRelationFilter
   post?: Prisma.PostListRelationFilter
 }
@@ -239,6 +240,7 @@ export type UserOrderByWithRelationInput = {
   sessions?: Prisma.SessionOrderByRelationAggregateInput
   accounts?: Prisma.AccountOrderByRelationAggregateInput
   likes?: Prisma.LikeOrderByRelationAggregateInput
+  inboxMessages?: Prisma.InboxMessageOrderByRelationAggregateInput
   repo?: Prisma.RepoOrderByRelationAggregateInput
   post?: Prisma.PostOrderByRelationAggregateInput
 }
@@ -260,6 +262,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   sessions?: Prisma.SessionListRelationFilter
   accounts?: Prisma.AccountListRelationFilter
   likes?: Prisma.LikeListRelationFilter
+  inboxMessages?: Prisma.InboxMessageListRelationFilter
   repo?: Prisma.RepoListRelationFilter
   post?: Prisma.PostListRelationFilter
 }, "id" | "stageName" | "email">
@@ -310,6 +313,7 @@ export type UserCreateInput = {
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   likes?: Prisma.LikeCreateNestedManyWithoutUserInput
+  inboxMessages?: Prisma.InboxMessageCreateNestedManyWithoutUserInput
   repo?: Prisma.RepoCreateNestedManyWithoutUserInput
   post?: Prisma.PostCreateNestedManyWithoutUserInput
 }
@@ -328,6 +332,7 @@ export type UserUncheckedCreateInput = {
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   likes?: Prisma.LikeUncheckedCreateNestedManyWithoutUserInput
+  inboxMessages?: Prisma.InboxMessageUncheckedCreateNestedManyWithoutUserInput
   repo?: Prisma.RepoUncheckedCreateNestedManyWithoutUserInput
   post?: Prisma.PostUncheckedCreateNestedManyWithoutUserInput
 }
@@ -346,6 +351,7 @@ export type UserUpdateInput = {
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   likes?: Prisma.LikeUpdateManyWithoutUserNestedInput
+  inboxMessages?: Prisma.InboxMessageUpdateManyWithoutUserNestedInput
   repo?: Prisma.RepoUpdateManyWithoutUserNestedInput
   post?: Prisma.PostUpdateManyWithoutUserNestedInput
 }
@@ -364,6 +370,7 @@ export type UserUncheckedUpdateInput = {
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   likes?: Prisma.LikeUncheckedUpdateManyWithoutUserNestedInput
+  inboxMessages?: Prisma.InboxMessageUncheckedUpdateManyWithoutUserNestedInput
   repo?: Prisma.RepoUncheckedUpdateManyWithoutUserNestedInput
   post?: Prisma.PostUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -535,6 +542,20 @@ export type UserUpdateOneRequiredWithoutLikesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutLikesInput, Prisma.UserUpdateWithoutLikesInput>, Prisma.UserUncheckedUpdateWithoutLikesInput>
 }
 
+export type UserCreateNestedOneWithoutInboxMessagesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutInboxMessagesInput, Prisma.UserUncheckedCreateWithoutInboxMessagesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutInboxMessagesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutInboxMessagesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutInboxMessagesInput, Prisma.UserUncheckedCreateWithoutInboxMessagesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutInboxMessagesInput
+  upsert?: Prisma.UserUpsertWithoutInboxMessagesInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutInboxMessagesInput, Prisma.UserUpdateWithoutInboxMessagesInput>, Prisma.UserUncheckedUpdateWithoutInboxMessagesInput>
+}
+
 export type UserCreateWithoutSessionsInput = {
   id?: string
   name: string
@@ -548,6 +569,7 @@ export type UserCreateWithoutSessionsInput = {
   updatedAt?: Date | string
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   likes?: Prisma.LikeCreateNestedManyWithoutUserInput
+  inboxMessages?: Prisma.InboxMessageCreateNestedManyWithoutUserInput
   repo?: Prisma.RepoCreateNestedManyWithoutUserInput
   post?: Prisma.PostCreateNestedManyWithoutUserInput
 }
@@ -565,6 +587,7 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   updatedAt?: Date | string
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   likes?: Prisma.LikeUncheckedCreateNestedManyWithoutUserInput
+  inboxMessages?: Prisma.InboxMessageUncheckedCreateNestedManyWithoutUserInput
   repo?: Prisma.RepoUncheckedCreateNestedManyWithoutUserInput
   post?: Prisma.PostUncheckedCreateNestedManyWithoutUserInput
 }
@@ -598,6 +621,7 @@ export type UserUpdateWithoutSessionsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   likes?: Prisma.LikeUpdateManyWithoutUserNestedInput
+  inboxMessages?: Prisma.InboxMessageUpdateManyWithoutUserNestedInput
   repo?: Prisma.RepoUpdateManyWithoutUserNestedInput
   post?: Prisma.PostUpdateManyWithoutUserNestedInput
 }
@@ -615,6 +639,7 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   likes?: Prisma.LikeUncheckedUpdateManyWithoutUserNestedInput
+  inboxMessages?: Prisma.InboxMessageUncheckedUpdateManyWithoutUserNestedInput
   repo?: Prisma.RepoUncheckedUpdateManyWithoutUserNestedInput
   post?: Prisma.PostUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -632,6 +657,7 @@ export type UserCreateWithoutAccountsInput = {
   updatedAt?: Date | string
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   likes?: Prisma.LikeCreateNestedManyWithoutUserInput
+  inboxMessages?: Prisma.InboxMessageCreateNestedManyWithoutUserInput
   repo?: Prisma.RepoCreateNestedManyWithoutUserInput
   post?: Prisma.PostCreateNestedManyWithoutUserInput
 }
@@ -649,6 +675,7 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   likes?: Prisma.LikeUncheckedCreateNestedManyWithoutUserInput
+  inboxMessages?: Prisma.InboxMessageUncheckedCreateNestedManyWithoutUserInput
   repo?: Prisma.RepoUncheckedCreateNestedManyWithoutUserInput
   post?: Prisma.PostUncheckedCreateNestedManyWithoutUserInput
 }
@@ -682,6 +709,7 @@ export type UserUpdateWithoutAccountsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   likes?: Prisma.LikeUpdateManyWithoutUserNestedInput
+  inboxMessages?: Prisma.InboxMessageUpdateManyWithoutUserNestedInput
   repo?: Prisma.RepoUpdateManyWithoutUserNestedInput
   post?: Prisma.PostUpdateManyWithoutUserNestedInput
 }
@@ -699,6 +727,7 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   likes?: Prisma.LikeUncheckedUpdateManyWithoutUserNestedInput
+  inboxMessages?: Prisma.InboxMessageUncheckedUpdateManyWithoutUserNestedInput
   repo?: Prisma.RepoUncheckedUpdateManyWithoutUserNestedInput
   post?: Prisma.PostUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -717,6 +746,7 @@ export type UserCreateWithoutRepoInput = {
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   likes?: Prisma.LikeCreateNestedManyWithoutUserInput
+  inboxMessages?: Prisma.InboxMessageCreateNestedManyWithoutUserInput
   post?: Prisma.PostCreateNestedManyWithoutUserInput
 }
 
@@ -734,6 +764,7 @@ export type UserUncheckedCreateWithoutRepoInput = {
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   likes?: Prisma.LikeUncheckedCreateNestedManyWithoutUserInput
+  inboxMessages?: Prisma.InboxMessageUncheckedCreateNestedManyWithoutUserInput
   post?: Prisma.PostUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -767,6 +798,7 @@ export type UserUpdateWithoutRepoInput = {
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   likes?: Prisma.LikeUpdateManyWithoutUserNestedInput
+  inboxMessages?: Prisma.InboxMessageUpdateManyWithoutUserNestedInput
   post?: Prisma.PostUpdateManyWithoutUserNestedInput
 }
 
@@ -784,6 +816,7 @@ export type UserUncheckedUpdateWithoutRepoInput = {
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   likes?: Prisma.LikeUncheckedUpdateManyWithoutUserNestedInput
+  inboxMessages?: Prisma.InboxMessageUncheckedUpdateManyWithoutUserNestedInput
   post?: Prisma.PostUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -801,6 +834,7 @@ export type UserCreateWithoutPostInput = {
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   likes?: Prisma.LikeCreateNestedManyWithoutUserInput
+  inboxMessages?: Prisma.InboxMessageCreateNestedManyWithoutUserInput
   repo?: Prisma.RepoCreateNestedManyWithoutUserInput
 }
 
@@ -818,6 +852,7 @@ export type UserUncheckedCreateWithoutPostInput = {
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   likes?: Prisma.LikeUncheckedCreateNestedManyWithoutUserInput
+  inboxMessages?: Prisma.InboxMessageUncheckedCreateNestedManyWithoutUserInput
   repo?: Prisma.RepoUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -851,6 +886,7 @@ export type UserUpdateWithoutPostInput = {
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   likes?: Prisma.LikeUpdateManyWithoutUserNestedInput
+  inboxMessages?: Prisma.InboxMessageUpdateManyWithoutUserNestedInput
   repo?: Prisma.RepoUpdateManyWithoutUserNestedInput
 }
 
@@ -868,6 +904,7 @@ export type UserUncheckedUpdateWithoutPostInput = {
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   likes?: Prisma.LikeUncheckedUpdateManyWithoutUserNestedInput
+  inboxMessages?: Prisma.InboxMessageUncheckedUpdateManyWithoutUserNestedInput
   repo?: Prisma.RepoUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -884,6 +921,7 @@ export type UserCreateWithoutLikesInput = {
   updatedAt?: Date | string
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  inboxMessages?: Prisma.InboxMessageCreateNestedManyWithoutUserInput
   repo?: Prisma.RepoCreateNestedManyWithoutUserInput
   post?: Prisma.PostCreateNestedManyWithoutUserInput
 }
@@ -901,6 +939,7 @@ export type UserUncheckedCreateWithoutLikesInput = {
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  inboxMessages?: Prisma.InboxMessageUncheckedCreateNestedManyWithoutUserInput
   repo?: Prisma.RepoUncheckedCreateNestedManyWithoutUserInput
   post?: Prisma.PostUncheckedCreateNestedManyWithoutUserInput
 }
@@ -934,6 +973,7 @@ export type UserUpdateWithoutLikesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  inboxMessages?: Prisma.InboxMessageUpdateManyWithoutUserNestedInput
   repo?: Prisma.RepoUpdateManyWithoutUserNestedInput
   post?: Prisma.PostUpdateManyWithoutUserNestedInput
 }
@@ -951,6 +991,95 @@ export type UserUncheckedUpdateWithoutLikesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  inboxMessages?: Prisma.InboxMessageUncheckedUpdateManyWithoutUserNestedInput
+  repo?: Prisma.RepoUncheckedUpdateManyWithoutUserNestedInput
+  post?: Prisma.PostUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutInboxMessagesInput = {
+  id?: string
+  name: string
+  stageName?: string | null
+  email?: string | null
+  emailVerified: boolean
+  image?: string | null
+  description?: string | null
+  socialLinks?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  likes?: Prisma.LikeCreateNestedManyWithoutUserInput
+  repo?: Prisma.RepoCreateNestedManyWithoutUserInput
+  post?: Prisma.PostCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutInboxMessagesInput = {
+  id?: string
+  name: string
+  stageName?: string | null
+  email?: string | null
+  emailVerified: boolean
+  image?: string | null
+  description?: string | null
+  socialLinks?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  likes?: Prisma.LikeUncheckedCreateNestedManyWithoutUserInput
+  repo?: Prisma.RepoUncheckedCreateNestedManyWithoutUserInput
+  post?: Prisma.PostUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutInboxMessagesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutInboxMessagesInput, Prisma.UserUncheckedCreateWithoutInboxMessagesInput>
+}
+
+export type UserUpsertWithoutInboxMessagesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutInboxMessagesInput, Prisma.UserUncheckedUpdateWithoutInboxMessagesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutInboxMessagesInput, Prisma.UserUncheckedCreateWithoutInboxMessagesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutInboxMessagesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutInboxMessagesInput, Prisma.UserUncheckedUpdateWithoutInboxMessagesInput>
+}
+
+export type UserUpdateWithoutInboxMessagesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  stageName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  socialLinks?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  likes?: Prisma.LikeUpdateManyWithoutUserNestedInput
+  repo?: Prisma.RepoUpdateManyWithoutUserNestedInput
+  post?: Prisma.PostUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutInboxMessagesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  stageName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  socialLinks?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  likes?: Prisma.LikeUncheckedUpdateManyWithoutUserNestedInput
   repo?: Prisma.RepoUncheckedUpdateManyWithoutUserNestedInput
   post?: Prisma.PostUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -964,6 +1093,7 @@ export type UserCountOutputType = {
   sessions: number
   accounts: number
   likes: number
+  inboxMessages: number
   repo: number
   post: number
 }
@@ -972,6 +1102,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   sessions?: boolean | UserCountOutputTypeCountSessionsArgs
   accounts?: boolean | UserCountOutputTypeCountAccountsArgs
   likes?: boolean | UserCountOutputTypeCountLikesArgs
+  inboxMessages?: boolean | UserCountOutputTypeCountInboxMessagesArgs
   repo?: boolean | UserCountOutputTypeCountRepoArgs
   post?: boolean | UserCountOutputTypeCountPostArgs
 }
@@ -1010,6 +1141,13 @@ export type UserCountOutputTypeCountLikesArgs<ExtArgs extends runtime.Types.Exte
 /**
  * UserCountOutputType without action
  */
+export type UserCountOutputTypeCountInboxMessagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.InboxMessageWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
 export type UserCountOutputTypeCountRepoArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.RepoWhereInput
 }
@@ -1036,6 +1174,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
   accounts?: boolean | Prisma.User$accountsArgs<ExtArgs>
   likes?: boolean | Prisma.User$likesArgs<ExtArgs>
+  inboxMessages?: boolean | Prisma.User$inboxMessagesArgs<ExtArgs>
   repo?: boolean | Prisma.User$repoArgs<ExtArgs>
   post?: boolean | Prisma.User$postArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
@@ -1085,6 +1224,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
   accounts?: boolean | Prisma.User$accountsArgs<ExtArgs>
   likes?: boolean | Prisma.User$likesArgs<ExtArgs>
+  inboxMessages?: boolean | Prisma.User$inboxMessagesArgs<ExtArgs>
   repo?: boolean | Prisma.User$repoArgs<ExtArgs>
   post?: boolean | Prisma.User$postArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
@@ -1098,6 +1238,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     sessions: Prisma.$SessionPayload<ExtArgs>[]
     accounts: Prisma.$AccountPayload<ExtArgs>[]
     likes: Prisma.$LikePayload<ExtArgs>[]
+    inboxMessages: Prisma.$InboxMessagePayload<ExtArgs>[]
     repo: Prisma.$RepoPayload<ExtArgs>[]
     post: Prisma.$PostPayload<ExtArgs>[]
   }
@@ -1509,6 +1650,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   sessions<T extends Prisma.User$sessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   accounts<T extends Prisma.User$accountsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$accountsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   likes<T extends Prisma.User$likesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$likesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LikePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  inboxMessages<T extends Prisma.User$inboxMessagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$inboxMessagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InboxMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   repo<T extends Prisma.User$repoArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$repoArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RepoPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   post<T extends Prisma.User$postArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$postArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PostPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -2012,6 +2154,30 @@ export type User$likesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
   take?: number
   skip?: number
   distinct?: Prisma.LikeScalarFieldEnum | Prisma.LikeScalarFieldEnum[]
+}
+
+/**
+ * User.inboxMessages
+ */
+export type User$inboxMessagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the InboxMessage
+   */
+  select?: Prisma.InboxMessageSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the InboxMessage
+   */
+  omit?: Prisma.InboxMessageOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.InboxMessageInclude<ExtArgs> | null
+  where?: Prisma.InboxMessageWhereInput
+  orderBy?: Prisma.InboxMessageOrderByWithRelationInput | Prisma.InboxMessageOrderByWithRelationInput[]
+  cursor?: Prisma.InboxMessageWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.InboxMessageScalarFieldEnum | Prisma.InboxMessageScalarFieldEnum[]
 }
 
 /**

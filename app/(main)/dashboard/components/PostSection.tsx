@@ -2,7 +2,10 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { FileText, Plus, ExternalLink, Clock, Heart, Loader2, Trash2, X, AlertTriangle } from "lucide-react"
+import { FileText, Plus, ExternalLink, Clock, Heart, Loader2, Trash2, X, AlertTriangle, PencilLine } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { formatDeletionDeadline } from "@/lib/post-moderation"
+import { extractPlainTextFromTiptapJson } from "@/lib/tiptap-text"
 import { usePosts } from "@/hooks/usePosts"
 import { useDeletePost } from "@/hooks/useDeletePost"
 import { Post } from "@/lib/userdata"
@@ -12,6 +15,7 @@ interface PostSectionProps {
 }
 
 export default function PostSection({ initialPosts = [] }: PostSectionProps) {
+    const router = useRouter()
     const { data: posts = [], isLoading, error } = usePosts(initialPosts)
     const deletePost = useDeletePost()
     const [deletingId, setDeletingId] = useState<string | null>(null)
@@ -21,27 +25,29 @@ export default function PostSection({ initialPosts = [] }: PostSectionProps) {
         await deletePost.mutateAsync(id)
     }
 
-    const extractTextFromContent = (content: string): string => {
-        try {
-            const parsed = JSON.parse(content)
-            if (!parsed?.content) return ""
-            
-            interface TiptapNode {
-                type?: string;
-                text?: string;
-                content?: TiptapNode[];
-            }
-            const extractText = (nodes: TiptapNode[]): string => {
-                return nodes.map((node) => {
-                    if (node.type === "text") return node.text || ""
-                    if (node.content) return extractText(node.content)
-                    return ""
-                }).join(" ")
-            }
-            
-            return extractText(parsed.content).slice(0, 200)
-        } catch {
-            return content.slice(0, 200)
+    const getModerationBadge = (post: Post) => {
+        switch (post.reviewStatus) {
+            case "APPROVED":
+                return "bg-emerald-50 text-emerald-700 border-emerald-200"
+            case "FLAGGED":
+                return "bg-rose-50 text-rose-700 border-rose-200"
+            case "REVIEW_FAILED":
+                return "bg-amber-50 text-amber-700 border-amber-200"
+            default:
+                return "bg-slate-100 text-slate-700 border-slate-200"
+        }
+    }
+
+    const getModerationLabel = (post: Post) => {
+        switch (post.reviewStatus) {
+            case "APPROVED":
+                return "Approved"
+            case "FLAGGED":
+                return "Flagged"
+            case "REVIEW_FAILED":
+                return "Review failed"
+            default:
+                return "Pending review"
         }
     }
 
@@ -113,6 +119,9 @@ export default function PostSection({ initialPosts = [] }: PostSectionProps) {
                                         <h3 className="text-sm font-semibold text-gray-900 line-clamp-2 group-hover:text-blue-600 transition-colors">
                                             {post.title}
                                         </h3>
+                                        <span className={`mt-2 inline-flex rounded-full border px-2 py-0.5 text-[10px] font-semibold ${getModerationBadge(post)}`}>
+                                            {getModerationLabel(post)}
+                                        </span>
                                     </div>
 
                                     {/* Hover peek - only visible on hover, zero space when hidden */}
@@ -123,8 +132,22 @@ export default function PostSection({ initialPosts = [] }: PostSectionProps) {
 
                                 {/* Excerpt - tight */}
                                 <p className="text-xs text-gray-500 line-clamp-3 mb-4 flex-1">
-                                    {extractTextFromContent(post.content)}
+                                    {extractPlainTextFromTiptapJson(post.content).slice(0, 200)}
                                 </p>
+
+                                {post.reviewStatus === "FLAGGED" && (
+                                    <div className="mb-3 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-[11px] text-rose-700">
+                                        <p className="font-semibold">Flagged content</p>
+                                        <p className="mt-1 line-clamp-2">
+                                            {post.latestFlaggedContent[0] || post.latestReviewSummary || "Unsafe content detected."}
+                                        </p>
+                                        {post.deletionScheduledFor && (
+                                            <p className="mt-1 text-[10px] font-medium uppercase tracking-wide">
+                                                Deletes {formatDeletionDeadline(post.deletionScheduledFor)}
+                                            </p>
+                                        )}
+                                    </div>
+                                )}
 
                                 {/* Footer - minimal, only necessary info */}
                                 <div className="flex items-center justify-between text-[10px] text-gray-400 border-t border-gray-100 pt-3">
@@ -144,6 +167,20 @@ export default function PostSection({ initialPosts = [] }: PostSectionProps) {
                                             <span className="text-blue-600 font-medium text-[10px] uppercase tracking-widest">
                                                 Project
                                             </span>
+                                        )}
+                                        {post.reviewStatus !== "APPROVED" && (
+                                            <button
+                                                type="button"
+                                                onClick={(e) => {
+                                                    e.preventDefault()
+                                                    e.stopPropagation()
+                                                    router.push(`/p/${post.id}/edit`)
+                                                }}
+                                                className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-[10px] font-semibold text-blue-600 hover:bg-blue-50"
+                                            >
+                                                <PencilLine size={11} />
+                                                Edit
+                                            </button>
                                         )}
                                         <button
                                             onClick={(e) => {

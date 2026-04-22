@@ -57,7 +57,8 @@ export const ModelName = {
   Verification: 'Verification',
   Repo: 'Repo',
   Post: 'Post',
-  Like: 'Like'
+  Like: 'Like',
+  InboxMessage: 'InboxMessage'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -162,6 +163,16 @@ export const PostScalarFieldEnum = {
   bannerImage: 'bannerImage',
   content: 'content',
   views: 'views',
+  reviewStatus: 'reviewStatus',
+  visibility: 'visibility',
+  reviewedAt: 'reviewedAt',
+  flaggedAt: 'flaggedAt',
+  deletionScheduledFor: 'deletionScheduledFor',
+  reviewAttemptCount: 'reviewAttemptCount',
+  reviewLeaseUntil: 'reviewLeaseUntil',
+  latestReviewSummary: 'latestReviewSummary',
+  latestFlaggedContent: 'latestFlaggedContent',
+  latestWritingFeedback: 'latestWritingFeedback',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -177,6 +188,22 @@ export const LikeScalarFieldEnum = {
 } as const
 
 export type LikeScalarFieldEnum = (typeof LikeScalarFieldEnum)[keyof typeof LikeScalarFieldEnum]
+
+
+export const InboxMessageScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  postId: 'postId',
+  type: 'type',
+  title: 'title',
+  body: 'body',
+  status: 'status',
+  metadata: 'metadata',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type InboxMessageScalarFieldEnum = (typeof InboxMessageScalarFieldEnum)[keyof typeof InboxMessageScalarFieldEnum]
 
 
 export const SortOrder = {

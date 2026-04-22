@@ -28,10 +28,12 @@ export type AggregatePost = {
 
 export type PostAvgAggregateOutputType = {
   views: number | null
+  reviewAttemptCount: number | null
 }
 
 export type PostSumAggregateOutputType = {
   views: number | null
+  reviewAttemptCount: number | null
 }
 
 export type PostMinAggregateOutputType = {
@@ -42,6 +44,14 @@ export type PostMinAggregateOutputType = {
   bannerImage: string | null
   content: string | null
   views: number | null
+  reviewStatus: $Enums.ReviewStatus | null
+  visibility: $Enums.PostVisibility | null
+  reviewedAt: Date | null
+  flaggedAt: Date | null
+  deletionScheduledFor: Date | null
+  reviewAttemptCount: number | null
+  reviewLeaseUntil: Date | null
+  latestReviewSummary: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -54,6 +64,14 @@ export type PostMaxAggregateOutputType = {
   bannerImage: string | null
   content: string | null
   views: number | null
+  reviewStatus: $Enums.ReviewStatus | null
+  visibility: $Enums.PostVisibility | null
+  reviewedAt: Date | null
+  flaggedAt: Date | null
+  deletionScheduledFor: Date | null
+  reviewAttemptCount: number | null
+  reviewLeaseUntil: Date | null
+  latestReviewSummary: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -66,6 +84,16 @@ export type PostCountAggregateOutputType = {
   bannerImage: number
   content: number
   views: number
+  reviewStatus: number
+  visibility: number
+  reviewedAt: number
+  flaggedAt: number
+  deletionScheduledFor: number
+  reviewAttemptCount: number
+  reviewLeaseUntil: number
+  latestReviewSummary: number
+  latestFlaggedContent: number
+  latestWritingFeedback: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -74,10 +102,12 @@ export type PostCountAggregateOutputType = {
 
 export type PostAvgAggregateInputType = {
   views?: true
+  reviewAttemptCount?: true
 }
 
 export type PostSumAggregateInputType = {
   views?: true
+  reviewAttemptCount?: true
 }
 
 export type PostMinAggregateInputType = {
@@ -88,6 +118,14 @@ export type PostMinAggregateInputType = {
   bannerImage?: true
   content?: true
   views?: true
+  reviewStatus?: true
+  visibility?: true
+  reviewedAt?: true
+  flaggedAt?: true
+  deletionScheduledFor?: true
+  reviewAttemptCount?: true
+  reviewLeaseUntil?: true
+  latestReviewSummary?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -100,6 +138,14 @@ export type PostMaxAggregateInputType = {
   bannerImage?: true
   content?: true
   views?: true
+  reviewStatus?: true
+  visibility?: true
+  reviewedAt?: true
+  flaggedAt?: true
+  deletionScheduledFor?: true
+  reviewAttemptCount?: true
+  reviewLeaseUntil?: true
+  latestReviewSummary?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -112,6 +158,16 @@ export type PostCountAggregateInputType = {
   bannerImage?: true
   content?: true
   views?: true
+  reviewStatus?: true
+  visibility?: true
+  reviewedAt?: true
+  flaggedAt?: true
+  deletionScheduledFor?: true
+  reviewAttemptCount?: true
+  reviewLeaseUntil?: true
+  latestReviewSummary?: true
+  latestFlaggedContent?: true
+  latestWritingFeedback?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -211,6 +267,16 @@ export type PostGroupByOutputType = {
   bannerImage: string | null
   content: string
   views: number | null
+  reviewStatus: $Enums.ReviewStatus
+  visibility: $Enums.PostVisibility
+  reviewedAt: Date | null
+  flaggedAt: Date | null
+  deletionScheduledFor: Date | null
+  reviewAttemptCount: number
+  reviewLeaseUntil: Date | null
+  latestReviewSummary: string | null
+  latestFlaggedContent: runtime.JsonValue | null
+  latestWritingFeedback: runtime.JsonValue | null
   createdAt: Date
   updatedAt: Date
   _count: PostCountAggregateOutputType | null
@@ -246,10 +312,21 @@ export type PostWhereInput = {
   bannerImage?: Prisma.StringNullableFilter<"Post"> | string | null
   content?: Prisma.StringFilter<"Post"> | string
   views?: Prisma.IntNullableFilter<"Post"> | number | null
+  reviewStatus?: Prisma.EnumReviewStatusFilter<"Post"> | $Enums.ReviewStatus
+  visibility?: Prisma.EnumPostVisibilityFilter<"Post"> | $Enums.PostVisibility
+  reviewedAt?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
+  flaggedAt?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
+  deletionScheduledFor?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
+  reviewAttemptCount?: Prisma.IntFilter<"Post"> | number
+  reviewLeaseUntil?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
+  latestReviewSummary?: Prisma.StringNullableFilter<"Post"> | string | null
+  latestFlaggedContent?: Prisma.JsonNullableFilter<"Post">
+  latestWritingFeedback?: Prisma.JsonNullableFilter<"Post">
   createdAt?: Prisma.DateTimeFilter<"Post"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Post"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   likes?: Prisma.LikeListRelationFilter
+  inboxMessages?: Prisma.InboxMessageListRelationFilter
 }
 
 export type PostOrderByWithRelationInput = {
@@ -260,10 +337,21 @@ export type PostOrderByWithRelationInput = {
   bannerImage?: Prisma.SortOrderInput | Prisma.SortOrder
   content?: Prisma.SortOrder
   views?: Prisma.SortOrderInput | Prisma.SortOrder
+  reviewStatus?: Prisma.SortOrder
+  visibility?: Prisma.SortOrder
+  reviewedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  flaggedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  deletionScheduledFor?: Prisma.SortOrderInput | Prisma.SortOrder
+  reviewAttemptCount?: Prisma.SortOrder
+  reviewLeaseUntil?: Prisma.SortOrderInput | Prisma.SortOrder
+  latestReviewSummary?: Prisma.SortOrderInput | Prisma.SortOrder
+  latestFlaggedContent?: Prisma.SortOrderInput | Prisma.SortOrder
+  latestWritingFeedback?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   likes?: Prisma.LikeOrderByRelationAggregateInput
+  inboxMessages?: Prisma.InboxMessageOrderByRelationAggregateInput
 }
 
 export type PostWhereUniqueInput = Prisma.AtLeast<{
@@ -277,10 +365,21 @@ export type PostWhereUniqueInput = Prisma.AtLeast<{
   bannerImage?: Prisma.StringNullableFilter<"Post"> | string | null
   content?: Prisma.StringFilter<"Post"> | string
   views?: Prisma.IntNullableFilter<"Post"> | number | null
+  reviewStatus?: Prisma.EnumReviewStatusFilter<"Post"> | $Enums.ReviewStatus
+  visibility?: Prisma.EnumPostVisibilityFilter<"Post"> | $Enums.PostVisibility
+  reviewedAt?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
+  flaggedAt?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
+  deletionScheduledFor?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
+  reviewAttemptCount?: Prisma.IntFilter<"Post"> | number
+  reviewLeaseUntil?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
+  latestReviewSummary?: Prisma.StringNullableFilter<"Post"> | string | null
+  latestFlaggedContent?: Prisma.JsonNullableFilter<"Post">
+  latestWritingFeedback?: Prisma.JsonNullableFilter<"Post">
   createdAt?: Prisma.DateTimeFilter<"Post"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Post"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   likes?: Prisma.LikeListRelationFilter
+  inboxMessages?: Prisma.InboxMessageListRelationFilter
 }, "id">
 
 export type PostOrderByWithAggregationInput = {
@@ -291,6 +390,16 @@ export type PostOrderByWithAggregationInput = {
   bannerImage?: Prisma.SortOrderInput | Prisma.SortOrder
   content?: Prisma.SortOrder
   views?: Prisma.SortOrderInput | Prisma.SortOrder
+  reviewStatus?: Prisma.SortOrder
+  visibility?: Prisma.SortOrder
+  reviewedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  flaggedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  deletionScheduledFor?: Prisma.SortOrderInput | Prisma.SortOrder
+  reviewAttemptCount?: Prisma.SortOrder
+  reviewLeaseUntil?: Prisma.SortOrderInput | Prisma.SortOrder
+  latestReviewSummary?: Prisma.SortOrderInput | Prisma.SortOrder
+  latestFlaggedContent?: Prisma.SortOrderInput | Prisma.SortOrder
+  latestWritingFeedback?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.PostCountOrderByAggregateInput
@@ -311,6 +420,16 @@ export type PostScalarWhereWithAggregatesInput = {
   bannerImage?: Prisma.StringNullableWithAggregatesFilter<"Post"> | string | null
   content?: Prisma.StringWithAggregatesFilter<"Post"> | string
   views?: Prisma.IntNullableWithAggregatesFilter<"Post"> | number | null
+  reviewStatus?: Prisma.EnumReviewStatusWithAggregatesFilter<"Post"> | $Enums.ReviewStatus
+  visibility?: Prisma.EnumPostVisibilityWithAggregatesFilter<"Post"> | $Enums.PostVisibility
+  reviewedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Post"> | Date | string | null
+  flaggedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Post"> | Date | string | null
+  deletionScheduledFor?: Prisma.DateTimeNullableWithAggregatesFilter<"Post"> | Date | string | null
+  reviewAttemptCount?: Prisma.IntWithAggregatesFilter<"Post"> | number
+  reviewLeaseUntil?: Prisma.DateTimeNullableWithAggregatesFilter<"Post"> | Date | string | null
+  latestReviewSummary?: Prisma.StringNullableWithAggregatesFilter<"Post"> | string | null
+  latestFlaggedContent?: Prisma.JsonNullableWithAggregatesFilter<"Post">
+  latestWritingFeedback?: Prisma.JsonNullableWithAggregatesFilter<"Post">
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Post"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Post"> | Date | string
 }
@@ -322,10 +441,21 @@ export type PostCreateInput = {
   bannerImage?: string | null
   content: string
   views?: number | null
+  reviewStatus?: $Enums.ReviewStatus
+  visibility?: $Enums.PostVisibility
+  reviewedAt?: Date | string | null
+  flaggedAt?: Date | string | null
+  deletionScheduledFor?: Date | string | null
+  reviewAttemptCount?: number
+  reviewLeaseUntil?: Date | string | null
+  latestReviewSummary?: string | null
+  latestFlaggedContent?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  latestWritingFeedback?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutPostInput
   likes?: Prisma.LikeCreateNestedManyWithoutPostInput
+  inboxMessages?: Prisma.InboxMessageCreateNestedManyWithoutPostInput
 }
 
 export type PostUncheckedCreateInput = {
@@ -336,9 +466,20 @@ export type PostUncheckedCreateInput = {
   bannerImage?: string | null
   content: string
   views?: number | null
+  reviewStatus?: $Enums.ReviewStatus
+  visibility?: $Enums.PostVisibility
+  reviewedAt?: Date | string | null
+  flaggedAt?: Date | string | null
+  deletionScheduledFor?: Date | string | null
+  reviewAttemptCount?: number
+  reviewLeaseUntil?: Date | string | null
+  latestReviewSummary?: string | null
+  latestFlaggedContent?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  latestWritingFeedback?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   likes?: Prisma.LikeUncheckedCreateNestedManyWithoutPostInput
+  inboxMessages?: Prisma.InboxMessageUncheckedCreateNestedManyWithoutPostInput
 }
 
 export type PostUpdateInput = {
@@ -348,10 +489,21 @@ export type PostUpdateInput = {
   bannerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   content?: Prisma.StringFieldUpdateOperationsInput | string
   views?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  reviewStatus?: Prisma.EnumReviewStatusFieldUpdateOperationsInput | $Enums.ReviewStatus
+  visibility?: Prisma.EnumPostVisibilityFieldUpdateOperationsInput | $Enums.PostVisibility
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  flaggedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionScheduledFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewAttemptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  reviewLeaseUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  latestReviewSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latestFlaggedContent?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  latestWritingFeedback?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutPostNestedInput
   likes?: Prisma.LikeUpdateManyWithoutPostNestedInput
+  inboxMessages?: Prisma.InboxMessageUpdateManyWithoutPostNestedInput
 }
 
 export type PostUncheckedUpdateInput = {
@@ -362,9 +514,20 @@ export type PostUncheckedUpdateInput = {
   bannerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   content?: Prisma.StringFieldUpdateOperationsInput | string
   views?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  reviewStatus?: Prisma.EnumReviewStatusFieldUpdateOperationsInput | $Enums.ReviewStatus
+  visibility?: Prisma.EnumPostVisibilityFieldUpdateOperationsInput | $Enums.PostVisibility
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  flaggedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionScheduledFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewAttemptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  reviewLeaseUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  latestReviewSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latestFlaggedContent?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  latestWritingFeedback?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   likes?: Prisma.LikeUncheckedUpdateManyWithoutPostNestedInput
+  inboxMessages?: Prisma.InboxMessageUncheckedUpdateManyWithoutPostNestedInput
 }
 
 export type PostCreateManyInput = {
@@ -375,6 +538,16 @@ export type PostCreateManyInput = {
   bannerImage?: string | null
   content: string
   views?: number | null
+  reviewStatus?: $Enums.ReviewStatus
+  visibility?: $Enums.PostVisibility
+  reviewedAt?: Date | string | null
+  flaggedAt?: Date | string | null
+  deletionScheduledFor?: Date | string | null
+  reviewAttemptCount?: number
+  reviewLeaseUntil?: Date | string | null
+  latestReviewSummary?: string | null
+  latestFlaggedContent?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  latestWritingFeedback?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -386,6 +559,16 @@ export type PostUpdateManyMutationInput = {
   bannerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   content?: Prisma.StringFieldUpdateOperationsInput | string
   views?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  reviewStatus?: Prisma.EnumReviewStatusFieldUpdateOperationsInput | $Enums.ReviewStatus
+  visibility?: Prisma.EnumPostVisibilityFieldUpdateOperationsInput | $Enums.PostVisibility
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  flaggedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionScheduledFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewAttemptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  reviewLeaseUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  latestReviewSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latestFlaggedContent?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  latestWritingFeedback?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -398,6 +581,16 @@ export type PostUncheckedUpdateManyInput = {
   bannerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   content?: Prisma.StringFieldUpdateOperationsInput | string
   views?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  reviewStatus?: Prisma.EnumReviewStatusFieldUpdateOperationsInput | $Enums.ReviewStatus
+  visibility?: Prisma.EnumPostVisibilityFieldUpdateOperationsInput | $Enums.PostVisibility
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  flaggedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionScheduledFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewAttemptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  reviewLeaseUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  latestReviewSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latestFlaggedContent?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  latestWritingFeedback?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -420,12 +613,23 @@ export type PostCountOrderByAggregateInput = {
   bannerImage?: Prisma.SortOrder
   content?: Prisma.SortOrder
   views?: Prisma.SortOrder
+  reviewStatus?: Prisma.SortOrder
+  visibility?: Prisma.SortOrder
+  reviewedAt?: Prisma.SortOrder
+  flaggedAt?: Prisma.SortOrder
+  deletionScheduledFor?: Prisma.SortOrder
+  reviewAttemptCount?: Prisma.SortOrder
+  reviewLeaseUntil?: Prisma.SortOrder
+  latestReviewSummary?: Prisma.SortOrder
+  latestFlaggedContent?: Prisma.SortOrder
+  latestWritingFeedback?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type PostAvgOrderByAggregateInput = {
   views?: Prisma.SortOrder
+  reviewAttemptCount?: Prisma.SortOrder
 }
 
 export type PostMaxOrderByAggregateInput = {
@@ -436,6 +640,14 @@ export type PostMaxOrderByAggregateInput = {
   bannerImage?: Prisma.SortOrder
   content?: Prisma.SortOrder
   views?: Prisma.SortOrder
+  reviewStatus?: Prisma.SortOrder
+  visibility?: Prisma.SortOrder
+  reviewedAt?: Prisma.SortOrder
+  flaggedAt?: Prisma.SortOrder
+  deletionScheduledFor?: Prisma.SortOrder
+  reviewAttemptCount?: Prisma.SortOrder
+  reviewLeaseUntil?: Prisma.SortOrder
+  latestReviewSummary?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -448,17 +660,31 @@ export type PostMinOrderByAggregateInput = {
   bannerImage?: Prisma.SortOrder
   content?: Prisma.SortOrder
   views?: Prisma.SortOrder
+  reviewStatus?: Prisma.SortOrder
+  visibility?: Prisma.SortOrder
+  reviewedAt?: Prisma.SortOrder
+  flaggedAt?: Prisma.SortOrder
+  deletionScheduledFor?: Prisma.SortOrder
+  reviewAttemptCount?: Prisma.SortOrder
+  reviewLeaseUntil?: Prisma.SortOrder
+  latestReviewSummary?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type PostSumOrderByAggregateInput = {
   views?: Prisma.SortOrder
+  reviewAttemptCount?: Prisma.SortOrder
 }
 
 export type PostScalarRelationFilter = {
   is?: Prisma.PostWhereInput
   isNot?: Prisma.PostWhereInput
+}
+
+export type PostNullableScalarRelationFilter = {
+  is?: Prisma.PostWhereInput | null
+  isNot?: Prisma.PostWhereInput | null
 }
 
 export type PostCreateNestedManyWithoutUserInput = {
@@ -511,6 +737,14 @@ export type NullableIntFieldUpdateOperationsInput = {
   divide?: number
 }
 
+export type EnumReviewStatusFieldUpdateOperationsInput = {
+  set?: $Enums.ReviewStatus
+}
+
+export type EnumPostVisibilityFieldUpdateOperationsInput = {
+  set?: $Enums.PostVisibility
+}
+
 export type PostCreateNestedOneWithoutLikesInput = {
   create?: Prisma.XOR<Prisma.PostCreateWithoutLikesInput, Prisma.PostUncheckedCreateWithoutLikesInput>
   connectOrCreate?: Prisma.PostCreateOrConnectWithoutLikesInput
@@ -525,6 +759,22 @@ export type PostUpdateOneRequiredWithoutLikesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.PostUpdateToOneWithWhereWithoutLikesInput, Prisma.PostUpdateWithoutLikesInput>, Prisma.PostUncheckedUpdateWithoutLikesInput>
 }
 
+export type PostCreateNestedOneWithoutInboxMessagesInput = {
+  create?: Prisma.XOR<Prisma.PostCreateWithoutInboxMessagesInput, Prisma.PostUncheckedCreateWithoutInboxMessagesInput>
+  connectOrCreate?: Prisma.PostCreateOrConnectWithoutInboxMessagesInput
+  connect?: Prisma.PostWhereUniqueInput
+}
+
+export type PostUpdateOneWithoutInboxMessagesNestedInput = {
+  create?: Prisma.XOR<Prisma.PostCreateWithoutInboxMessagesInput, Prisma.PostUncheckedCreateWithoutInboxMessagesInput>
+  connectOrCreate?: Prisma.PostCreateOrConnectWithoutInboxMessagesInput
+  upsert?: Prisma.PostUpsertWithoutInboxMessagesInput
+  disconnect?: Prisma.PostWhereInput | boolean
+  delete?: Prisma.PostWhereInput | boolean
+  connect?: Prisma.PostWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PostUpdateToOneWithWhereWithoutInboxMessagesInput, Prisma.PostUpdateWithoutInboxMessagesInput>, Prisma.PostUncheckedUpdateWithoutInboxMessagesInput>
+}
+
 export type PostCreateWithoutUserInput = {
   id?: string
   title: string
@@ -532,9 +782,20 @@ export type PostCreateWithoutUserInput = {
   bannerImage?: string | null
   content: string
   views?: number | null
+  reviewStatus?: $Enums.ReviewStatus
+  visibility?: $Enums.PostVisibility
+  reviewedAt?: Date | string | null
+  flaggedAt?: Date | string | null
+  deletionScheduledFor?: Date | string | null
+  reviewAttemptCount?: number
+  reviewLeaseUntil?: Date | string | null
+  latestReviewSummary?: string | null
+  latestFlaggedContent?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  latestWritingFeedback?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   likes?: Prisma.LikeCreateNestedManyWithoutPostInput
+  inboxMessages?: Prisma.InboxMessageCreateNestedManyWithoutPostInput
 }
 
 export type PostUncheckedCreateWithoutUserInput = {
@@ -544,9 +805,20 @@ export type PostUncheckedCreateWithoutUserInput = {
   bannerImage?: string | null
   content: string
   views?: number | null
+  reviewStatus?: $Enums.ReviewStatus
+  visibility?: $Enums.PostVisibility
+  reviewedAt?: Date | string | null
+  flaggedAt?: Date | string | null
+  deletionScheduledFor?: Date | string | null
+  reviewAttemptCount?: number
+  reviewLeaseUntil?: Date | string | null
+  latestReviewSummary?: string | null
+  latestFlaggedContent?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  latestWritingFeedback?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   likes?: Prisma.LikeUncheckedCreateNestedManyWithoutPostInput
+  inboxMessages?: Prisma.InboxMessageUncheckedCreateNestedManyWithoutPostInput
 }
 
 export type PostCreateOrConnectWithoutUserInput = {
@@ -586,6 +858,16 @@ export type PostScalarWhereInput = {
   bannerImage?: Prisma.StringNullableFilter<"Post"> | string | null
   content?: Prisma.StringFilter<"Post"> | string
   views?: Prisma.IntNullableFilter<"Post"> | number | null
+  reviewStatus?: Prisma.EnumReviewStatusFilter<"Post"> | $Enums.ReviewStatus
+  visibility?: Prisma.EnumPostVisibilityFilter<"Post"> | $Enums.PostVisibility
+  reviewedAt?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
+  flaggedAt?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
+  deletionScheduledFor?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
+  reviewAttemptCount?: Prisma.IntFilter<"Post"> | number
+  reviewLeaseUntil?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
+  latestReviewSummary?: Prisma.StringNullableFilter<"Post"> | string | null
+  latestFlaggedContent?: Prisma.JsonNullableFilter<"Post">
+  latestWritingFeedback?: Prisma.JsonNullableFilter<"Post">
   createdAt?: Prisma.DateTimeFilter<"Post"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Post"> | Date | string
 }
@@ -597,9 +879,20 @@ export type PostCreateWithoutLikesInput = {
   bannerImage?: string | null
   content: string
   views?: number | null
+  reviewStatus?: $Enums.ReviewStatus
+  visibility?: $Enums.PostVisibility
+  reviewedAt?: Date | string | null
+  flaggedAt?: Date | string | null
+  deletionScheduledFor?: Date | string | null
+  reviewAttemptCount?: number
+  reviewLeaseUntil?: Date | string | null
+  latestReviewSummary?: string | null
+  latestFlaggedContent?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  latestWritingFeedback?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutPostInput
+  inboxMessages?: Prisma.InboxMessageCreateNestedManyWithoutPostInput
 }
 
 export type PostUncheckedCreateWithoutLikesInput = {
@@ -610,8 +903,19 @@ export type PostUncheckedCreateWithoutLikesInput = {
   bannerImage?: string | null
   content: string
   views?: number | null
+  reviewStatus?: $Enums.ReviewStatus
+  visibility?: $Enums.PostVisibility
+  reviewedAt?: Date | string | null
+  flaggedAt?: Date | string | null
+  deletionScheduledFor?: Date | string | null
+  reviewAttemptCount?: number
+  reviewLeaseUntil?: Date | string | null
+  latestReviewSummary?: string | null
+  latestFlaggedContent?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  latestWritingFeedback?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
+  inboxMessages?: Prisma.InboxMessageUncheckedCreateNestedManyWithoutPostInput
 }
 
 export type PostCreateOrConnectWithoutLikesInput = {
@@ -637,9 +941,20 @@ export type PostUpdateWithoutLikesInput = {
   bannerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   content?: Prisma.StringFieldUpdateOperationsInput | string
   views?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  reviewStatus?: Prisma.EnumReviewStatusFieldUpdateOperationsInput | $Enums.ReviewStatus
+  visibility?: Prisma.EnumPostVisibilityFieldUpdateOperationsInput | $Enums.PostVisibility
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  flaggedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionScheduledFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewAttemptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  reviewLeaseUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  latestReviewSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latestFlaggedContent?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  latestWritingFeedback?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutPostNestedInput
+  inboxMessages?: Prisma.InboxMessageUpdateManyWithoutPostNestedInput
 }
 
 export type PostUncheckedUpdateWithoutLikesInput = {
@@ -650,8 +965,127 @@ export type PostUncheckedUpdateWithoutLikesInput = {
   bannerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   content?: Prisma.StringFieldUpdateOperationsInput | string
   views?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  reviewStatus?: Prisma.EnumReviewStatusFieldUpdateOperationsInput | $Enums.ReviewStatus
+  visibility?: Prisma.EnumPostVisibilityFieldUpdateOperationsInput | $Enums.PostVisibility
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  flaggedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionScheduledFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewAttemptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  reviewLeaseUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  latestReviewSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latestFlaggedContent?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  latestWritingFeedback?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  inboxMessages?: Prisma.InboxMessageUncheckedUpdateManyWithoutPostNestedInput
+}
+
+export type PostCreateWithoutInboxMessagesInput = {
+  id?: string
+  title: string
+  projectLink?: string | null
+  bannerImage?: string | null
+  content: string
+  views?: number | null
+  reviewStatus?: $Enums.ReviewStatus
+  visibility?: $Enums.PostVisibility
+  reviewedAt?: Date | string | null
+  flaggedAt?: Date | string | null
+  deletionScheduledFor?: Date | string | null
+  reviewAttemptCount?: number
+  reviewLeaseUntil?: Date | string | null
+  latestReviewSummary?: string | null
+  latestFlaggedContent?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  latestWritingFeedback?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutPostInput
+  likes?: Prisma.LikeCreateNestedManyWithoutPostInput
+}
+
+export type PostUncheckedCreateWithoutInboxMessagesInput = {
+  id?: string
+  userId: string
+  title: string
+  projectLink?: string | null
+  bannerImage?: string | null
+  content: string
+  views?: number | null
+  reviewStatus?: $Enums.ReviewStatus
+  visibility?: $Enums.PostVisibility
+  reviewedAt?: Date | string | null
+  flaggedAt?: Date | string | null
+  deletionScheduledFor?: Date | string | null
+  reviewAttemptCount?: number
+  reviewLeaseUntil?: Date | string | null
+  latestReviewSummary?: string | null
+  latestFlaggedContent?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  latestWritingFeedback?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  likes?: Prisma.LikeUncheckedCreateNestedManyWithoutPostInput
+}
+
+export type PostCreateOrConnectWithoutInboxMessagesInput = {
+  where: Prisma.PostWhereUniqueInput
+  create: Prisma.XOR<Prisma.PostCreateWithoutInboxMessagesInput, Prisma.PostUncheckedCreateWithoutInboxMessagesInput>
+}
+
+export type PostUpsertWithoutInboxMessagesInput = {
+  update: Prisma.XOR<Prisma.PostUpdateWithoutInboxMessagesInput, Prisma.PostUncheckedUpdateWithoutInboxMessagesInput>
+  create: Prisma.XOR<Prisma.PostCreateWithoutInboxMessagesInput, Prisma.PostUncheckedCreateWithoutInboxMessagesInput>
+  where?: Prisma.PostWhereInput
+}
+
+export type PostUpdateToOneWithWhereWithoutInboxMessagesInput = {
+  where?: Prisma.PostWhereInput
+  data: Prisma.XOR<Prisma.PostUpdateWithoutInboxMessagesInput, Prisma.PostUncheckedUpdateWithoutInboxMessagesInput>
+}
+
+export type PostUpdateWithoutInboxMessagesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  projectLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bannerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  content?: Prisma.StringFieldUpdateOperationsInput | string
+  views?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  reviewStatus?: Prisma.EnumReviewStatusFieldUpdateOperationsInput | $Enums.ReviewStatus
+  visibility?: Prisma.EnumPostVisibilityFieldUpdateOperationsInput | $Enums.PostVisibility
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  flaggedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionScheduledFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewAttemptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  reviewLeaseUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  latestReviewSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latestFlaggedContent?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  latestWritingFeedback?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutPostNestedInput
+  likes?: Prisma.LikeUpdateManyWithoutPostNestedInput
+}
+
+export type PostUncheckedUpdateWithoutInboxMessagesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  projectLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bannerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  content?: Prisma.StringFieldUpdateOperationsInput | string
+  views?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  reviewStatus?: Prisma.EnumReviewStatusFieldUpdateOperationsInput | $Enums.ReviewStatus
+  visibility?: Prisma.EnumPostVisibilityFieldUpdateOperationsInput | $Enums.PostVisibility
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  flaggedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionScheduledFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewAttemptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  reviewLeaseUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  latestReviewSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latestFlaggedContent?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  latestWritingFeedback?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  likes?: Prisma.LikeUncheckedUpdateManyWithoutPostNestedInput
 }
 
 export type PostCreateManyUserInput = {
@@ -661,6 +1095,16 @@ export type PostCreateManyUserInput = {
   bannerImage?: string | null
   content: string
   views?: number | null
+  reviewStatus?: $Enums.ReviewStatus
+  visibility?: $Enums.PostVisibility
+  reviewedAt?: Date | string | null
+  flaggedAt?: Date | string | null
+  deletionScheduledFor?: Date | string | null
+  reviewAttemptCount?: number
+  reviewLeaseUntil?: Date | string | null
+  latestReviewSummary?: string | null
+  latestFlaggedContent?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  latestWritingFeedback?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -672,9 +1116,20 @@ export type PostUpdateWithoutUserInput = {
   bannerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   content?: Prisma.StringFieldUpdateOperationsInput | string
   views?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  reviewStatus?: Prisma.EnumReviewStatusFieldUpdateOperationsInput | $Enums.ReviewStatus
+  visibility?: Prisma.EnumPostVisibilityFieldUpdateOperationsInput | $Enums.PostVisibility
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  flaggedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionScheduledFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewAttemptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  reviewLeaseUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  latestReviewSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latestFlaggedContent?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  latestWritingFeedback?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   likes?: Prisma.LikeUpdateManyWithoutPostNestedInput
+  inboxMessages?: Prisma.InboxMessageUpdateManyWithoutPostNestedInput
 }
 
 export type PostUncheckedUpdateWithoutUserInput = {
@@ -684,9 +1139,20 @@ export type PostUncheckedUpdateWithoutUserInput = {
   bannerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   content?: Prisma.StringFieldUpdateOperationsInput | string
   views?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  reviewStatus?: Prisma.EnumReviewStatusFieldUpdateOperationsInput | $Enums.ReviewStatus
+  visibility?: Prisma.EnumPostVisibilityFieldUpdateOperationsInput | $Enums.PostVisibility
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  flaggedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionScheduledFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewAttemptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  reviewLeaseUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  latestReviewSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latestFlaggedContent?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  latestWritingFeedback?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   likes?: Prisma.LikeUncheckedUpdateManyWithoutPostNestedInput
+  inboxMessages?: Prisma.InboxMessageUncheckedUpdateManyWithoutPostNestedInput
 }
 
 export type PostUncheckedUpdateManyWithoutUserInput = {
@@ -696,6 +1162,16 @@ export type PostUncheckedUpdateManyWithoutUserInput = {
   bannerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   content?: Prisma.StringFieldUpdateOperationsInput | string
   views?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  reviewStatus?: Prisma.EnumReviewStatusFieldUpdateOperationsInput | $Enums.ReviewStatus
+  visibility?: Prisma.EnumPostVisibilityFieldUpdateOperationsInput | $Enums.PostVisibility
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  flaggedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletionScheduledFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewAttemptCount?: Prisma.IntFieldUpdateOperationsInput | number
+  reviewLeaseUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  latestReviewSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latestFlaggedContent?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  latestWritingFeedback?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -707,10 +1183,12 @@ export type PostUncheckedUpdateManyWithoutUserInput = {
 
 export type PostCountOutputType = {
   likes: number
+  inboxMessages: number
 }
 
 export type PostCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   likes?: boolean | PostCountOutputTypeCountLikesArgs
+  inboxMessages?: boolean | PostCountOutputTypeCountInboxMessagesArgs
 }
 
 /**
@@ -730,6 +1208,13 @@ export type PostCountOutputTypeCountLikesArgs<ExtArgs extends runtime.Types.Exte
   where?: Prisma.LikeWhereInput
 }
 
+/**
+ * PostCountOutputType without action
+ */
+export type PostCountOutputTypeCountInboxMessagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.InboxMessageWhereInput
+}
+
 
 export type PostSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -739,10 +1224,21 @@ export type PostSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   bannerImage?: boolean
   content?: boolean
   views?: boolean
+  reviewStatus?: boolean
+  visibility?: boolean
+  reviewedAt?: boolean
+  flaggedAt?: boolean
+  deletionScheduledFor?: boolean
+  reviewAttemptCount?: boolean
+  reviewLeaseUntil?: boolean
+  latestReviewSummary?: boolean
+  latestFlaggedContent?: boolean
+  latestWritingFeedback?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   likes?: boolean | Prisma.Post$likesArgs<ExtArgs>
+  inboxMessages?: boolean | Prisma.Post$inboxMessagesArgs<ExtArgs>
   _count?: boolean | Prisma.PostCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["post"]>
 
@@ -754,6 +1250,16 @@ export type PostSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   bannerImage?: boolean
   content?: boolean
   views?: boolean
+  reviewStatus?: boolean
+  visibility?: boolean
+  reviewedAt?: boolean
+  flaggedAt?: boolean
+  deletionScheduledFor?: boolean
+  reviewAttemptCount?: boolean
+  reviewLeaseUntil?: boolean
+  latestReviewSummary?: boolean
+  latestFlaggedContent?: boolean
+  latestWritingFeedback?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -767,6 +1273,16 @@ export type PostSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   bannerImage?: boolean
   content?: boolean
   views?: boolean
+  reviewStatus?: boolean
+  visibility?: boolean
+  reviewedAt?: boolean
+  flaggedAt?: boolean
+  deletionScheduledFor?: boolean
+  reviewAttemptCount?: boolean
+  reviewLeaseUntil?: boolean
+  latestReviewSummary?: boolean
+  latestFlaggedContent?: boolean
+  latestWritingFeedback?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -780,14 +1296,25 @@ export type PostSelectScalar = {
   bannerImage?: boolean
   content?: boolean
   views?: boolean
+  reviewStatus?: boolean
+  visibility?: boolean
+  reviewedAt?: boolean
+  flaggedAt?: boolean
+  deletionScheduledFor?: boolean
+  reviewAttemptCount?: boolean
+  reviewLeaseUntil?: boolean
+  latestReviewSummary?: boolean
+  latestFlaggedContent?: boolean
+  latestWritingFeedback?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type PostOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "title" | "projectLink" | "bannerImage" | "content" | "views" | "createdAt" | "updatedAt", ExtArgs["result"]["post"]>
+export type PostOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "title" | "projectLink" | "bannerImage" | "content" | "views" | "reviewStatus" | "visibility" | "reviewedAt" | "flaggedAt" | "deletionScheduledFor" | "reviewAttemptCount" | "reviewLeaseUntil" | "latestReviewSummary" | "latestFlaggedContent" | "latestWritingFeedback" | "createdAt" | "updatedAt", ExtArgs["result"]["post"]>
 export type PostInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   likes?: boolean | Prisma.Post$likesArgs<ExtArgs>
+  inboxMessages?: boolean | Prisma.Post$inboxMessagesArgs<ExtArgs>
   _count?: boolean | Prisma.PostCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type PostIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -802,6 +1329,7 @@ export type $PostPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   objects: {
     user: Prisma.$UserPayload<ExtArgs>
     likes: Prisma.$LikePayload<ExtArgs>[]
+    inboxMessages: Prisma.$InboxMessagePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -811,6 +1339,16 @@ export type $PostPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     bannerImage: string | null
     content: string
     views: number | null
+    reviewStatus: $Enums.ReviewStatus
+    visibility: $Enums.PostVisibility
+    reviewedAt: Date | null
+    flaggedAt: Date | null
+    deletionScheduledFor: Date | null
+    reviewAttemptCount: number
+    reviewLeaseUntil: Date | null
+    latestReviewSummary: string | null
+    latestFlaggedContent: runtime.JsonValue | null
+    latestWritingFeedback: runtime.JsonValue | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["post"]>
@@ -1209,6 +1747,7 @@ export interface Prisma__PostClient<T, Null = never, ExtArgs extends runtime.Typ
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   likes<T extends Prisma.Post$likesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Post$likesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LikePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  inboxMessages<T extends Prisma.Post$inboxMessagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Post$inboxMessagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InboxMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1245,6 +1784,16 @@ export interface PostFieldRefs {
   readonly bannerImage: Prisma.FieldRef<"Post", 'String'>
   readonly content: Prisma.FieldRef<"Post", 'String'>
   readonly views: Prisma.FieldRef<"Post", 'Int'>
+  readonly reviewStatus: Prisma.FieldRef<"Post", 'ReviewStatus'>
+  readonly visibility: Prisma.FieldRef<"Post", 'PostVisibility'>
+  readonly reviewedAt: Prisma.FieldRef<"Post", 'DateTime'>
+  readonly flaggedAt: Prisma.FieldRef<"Post", 'DateTime'>
+  readonly deletionScheduledFor: Prisma.FieldRef<"Post", 'DateTime'>
+  readonly reviewAttemptCount: Prisma.FieldRef<"Post", 'Int'>
+  readonly reviewLeaseUntil: Prisma.FieldRef<"Post", 'DateTime'>
+  readonly latestReviewSummary: Prisma.FieldRef<"Post", 'String'>
+  readonly latestFlaggedContent: Prisma.FieldRef<"Post", 'Json'>
+  readonly latestWritingFeedback: Prisma.FieldRef<"Post", 'Json'>
   readonly createdAt: Prisma.FieldRef<"Post", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Post", 'DateTime'>
 }
@@ -1669,6 +2218,30 @@ export type Post$likesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
   take?: number
   skip?: number
   distinct?: Prisma.LikeScalarFieldEnum | Prisma.LikeScalarFieldEnum[]
+}
+
+/**
+ * Post.inboxMessages
+ */
+export type Post$inboxMessagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the InboxMessage
+   */
+  select?: Prisma.InboxMessageSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the InboxMessage
+   */
+  omit?: Prisma.InboxMessageOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.InboxMessageInclude<ExtArgs> | null
+  where?: Prisma.InboxMessageWhereInput
+  orderBy?: Prisma.InboxMessageOrderByWithRelationInput | Prisma.InboxMessageOrderByWithRelationInput[]
+  cursor?: Prisma.InboxMessageWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.InboxMessageScalarFieldEnum | Prisma.InboxMessageScalarFieldEnum[]
 }
 
 /**

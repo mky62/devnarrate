@@ -58,6 +58,15 @@ export interface Post {
   likeCount: number;
   likedByViewer: boolean;
   canLike: boolean;
+  reviewStatus: string;
+  visibility: string;
+  deletionScheduledFor: string | null;
+  latestFlaggedContent: string[];
+  latestReviewSummary: string | null;
+  latestWritingFeedback: {
+    summary: string;
+    suggestions: string[];
+  } | null;
 }
 
 export async function getPosts(): Promise<Post[]> {
@@ -75,6 +84,62 @@ export async function deletePost(id: string): Promise<void> {
     const data = await res.json().catch(() => ({}));
     throw new Error(data.error || "Failed to delete post");
   }
+}
+
+export interface UpdatePostPayload {
+  title: string;
+  link?: string;
+  content: unknown;
+}
+
+export async function updatePost(id: string, payload: UpdatePostPayload): Promise<{ postId: string }> {
+  const res = await fetch(`/api/posts/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+
+  const data = await res.json().catch(() => ({}));
+
+  if (!res.ok) {
+    throw new Error(data.error || "Failed to update post");
+  }
+
+  return data;
+}
+
+export interface InboxMessage {
+  id: string;
+  postId: string | null;
+  type: string;
+  title: string;
+  body: string;
+  status: string;
+  metadata: Record<string, unknown> | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export async function getInbox(): Promise<InboxMessage[]> {
+  const res = await fetch("/api/inbox");
+  if (!res.ok) throw new Error("Failed to fetch inbox");
+  const data = await res.json();
+  return data.messages ?? [];
+}
+
+export async function updateInboxMessage(
+  id: string,
+  payload: { status: string }
+): Promise<InboxMessage> {
+  const res = await fetch(`/api/inbox/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || "Failed to update inbox message");
+  return data.message;
 }
 
 // Repo API

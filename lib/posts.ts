@@ -1,4 +1,5 @@
 import { db } from "@/lib/prisma";
+import { POST_VISIBILITY } from "@/lib/post-moderation";
 
 export interface SerializedPostSummary {
   id: string;
@@ -9,6 +10,15 @@ export interface SerializedPostSummary {
   likeCount: number;
   likedByViewer: boolean;
   canLike: boolean;
+  reviewStatus: string;
+  visibility: string;
+  deletionScheduledFor: string | null;
+  latestFlaggedContent: string[];
+  latestReviewSummary: string | null;
+  latestWritingFeedback: {
+    summary: string;
+    suggestions: string[];
+  } | null;
 }
 
 export interface SerializedPostAuthor {
@@ -29,6 +39,12 @@ type PostWithLikeCount = {
   projectLink: string | null;
   content: string;
   createdAt: Date;
+  reviewStatus: string;
+  visibility: string;
+  deletionScheduledFor: Date | null;
+  latestFlaggedContent: unknown;
+  latestReviewSummary: string | null;
+  latestWritingFeedback: unknown;
   _count: {
     likes: number;
   };
@@ -68,6 +84,37 @@ function getCanLike(postUserId: string, viewerId?: string, readOnly?: boolean) {
   return postUserId !== viewerId;
 }
 
+function normalizeStringArray(value: unknown): string[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value.filter((item): item is string => typeof item === "string");
+}
+
+function normalizeWritingFeedback(value: unknown) {
+  if (!value || typeof value !== "object") {
+    return null;
+  }
+
+  const record = value as Record<string, unknown>;
+
+  return {
+    summary: typeof record.summary === "string" ? record.summary : "",
+    suggestions: Array.isArray(record.suggestions)
+      ? record.suggestions.filter((item): item is string => typeof item === "string")
+      : [],
+  };
+}
+
+export function canViewerAccessPost(post: Pick<PostWithLikeCount, "userId" | "visibility">, viewerId?: string) {
+  if (post.visibility === POST_VISIBILITY.PUBLIC) {
+    return true;
+  }
+
+  return Boolean(viewerId && viewerId === post.userId);
+}
+
 export async function serializePostSummaries(
   posts: PostWithLikeCount[],
   viewerId?: string,
@@ -80,7 +127,9 @@ export async function serializePostSummaries(
   );
 
   return posts.map((post) => {
-    const canLike = getCanLike(post.userId, viewerId, options?.readOnly);
+    const canLike =
+      post.visibility === POST_VISIBILITY.PUBLIC &&
+      getCanLike(post.userId, viewerId, options?.readOnly);
 
     return {
       id: post.id,
@@ -91,6 +140,12 @@ export async function serializePostSummaries(
       likeCount: post._count.likes,
       likedByViewer: canLike ? likedPostIds.has(post.id) : false,
       canLike,
+      reviewStatus: post.reviewStatus,
+      visibility: post.visibility,
+      deletionScheduledFor: post.deletionScheduledFor?.toISOString() ?? null,
+      latestFlaggedContent: normalizeStringArray(post.latestFlaggedContent),
+      latestReviewSummary: post.latestReviewSummary,
+      latestWritingFeedback: normalizeWritingFeedback(post.latestWritingFeedback),
     };
   });
 }
