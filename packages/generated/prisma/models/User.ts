@@ -32,6 +32,7 @@ export type UserMinAggregateOutputType = {
   emailVerified: boolean | null
   image: string | null
   description: string | null
+  contributionUrl: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -44,6 +45,7 @@ export type UserMaxAggregateOutputType = {
   emailVerified: boolean | null
   image: string | null
   description: string | null
+  contributionUrl: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -57,6 +59,7 @@ export type UserCountAggregateOutputType = {
   image: number
   description: number
   socialLinks: number
+  contributionUrl: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -71,6 +74,7 @@ export type UserMinAggregateInputType = {
   emailVerified?: true
   image?: true
   description?: true
+  contributionUrl?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -83,6 +87,7 @@ export type UserMaxAggregateInputType = {
   emailVerified?: true
   image?: true
   description?: true
+  contributionUrl?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -96,6 +101,7 @@ export type UserCountAggregateInputType = {
   image?: true
   description?: true
   socialLinks?: true
+  contributionUrl?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -182,6 +188,7 @@ export type UserGroupByOutputType = {
   image: string | null
   description: string | null
   socialLinks: runtime.JsonValue | null
+  contributionUrl: string | null
   createdAt: Date
   updatedAt: Date
   _count: UserCountAggregateOutputType | null
@@ -216,11 +223,14 @@ export type UserWhereInput = {
   image?: Prisma.StringNullableFilter<"User"> | string | null
   description?: Prisma.StringNullableFilter<"User"> | string | null
   socialLinks?: Prisma.JsonNullableFilter<"User">
+  contributionUrl?: Prisma.StringNullableFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   sessions?: Prisma.SessionListRelationFilter
   accounts?: Prisma.AccountListRelationFilter
   likes?: Prisma.LikeListRelationFilter
+  contributionClicksReceived?: Prisma.ContributionClickListRelationFilter
+  contributionClicksMade?: Prisma.ContributionClickListRelationFilter
   repo?: Prisma.RepoListRelationFilter
   post?: Prisma.PostListRelationFilter
 }
@@ -234,11 +244,14 @@ export type UserOrderByWithRelationInput = {
   image?: Prisma.SortOrderInput | Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   socialLinks?: Prisma.SortOrderInput | Prisma.SortOrder
+  contributionUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   sessions?: Prisma.SessionOrderByRelationAggregateInput
   accounts?: Prisma.AccountOrderByRelationAggregateInput
   likes?: Prisma.LikeOrderByRelationAggregateInput
+  contributionClicksReceived?: Prisma.ContributionClickOrderByRelationAggregateInput
+  contributionClicksMade?: Prisma.ContributionClickOrderByRelationAggregateInput
   repo?: Prisma.RepoOrderByRelationAggregateInput
   post?: Prisma.PostOrderByRelationAggregateInput
 }
@@ -255,11 +268,14 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   image?: Prisma.StringNullableFilter<"User"> | string | null
   description?: Prisma.StringNullableFilter<"User"> | string | null
   socialLinks?: Prisma.JsonNullableFilter<"User">
+  contributionUrl?: Prisma.StringNullableFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   sessions?: Prisma.SessionListRelationFilter
   accounts?: Prisma.AccountListRelationFilter
   likes?: Prisma.LikeListRelationFilter
+  contributionClicksReceived?: Prisma.ContributionClickListRelationFilter
+  contributionClicksMade?: Prisma.ContributionClickListRelationFilter
   repo?: Prisma.RepoListRelationFilter
   post?: Prisma.PostListRelationFilter
 }, "id" | "stageName" | "email">
@@ -273,6 +289,7 @@ export type UserOrderByWithAggregationInput = {
   image?: Prisma.SortOrderInput | Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   socialLinks?: Prisma.SortOrderInput | Prisma.SortOrder
+  contributionUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
@@ -292,6 +309,7 @@ export type UserScalarWhereWithAggregatesInput = {
   image?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   description?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   socialLinks?: Prisma.JsonNullableWithAggregatesFilter<"User">
+  contributionUrl?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
 }
@@ -305,11 +323,14 @@ export type UserCreateInput = {
   image?: string | null
   description?: string | null
   socialLinks?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  contributionUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   likes?: Prisma.LikeCreateNestedManyWithoutUserInput
+  contributionClicksReceived?: Prisma.ContributionClickCreateNestedManyWithoutAuthorInput
+  contributionClicksMade?: Prisma.ContributionClickCreateNestedManyWithoutViewerInput
   repo?: Prisma.RepoCreateNestedManyWithoutUserInput
   post?: Prisma.PostCreateNestedManyWithoutUserInput
 }
@@ -323,11 +344,14 @@ export type UserUncheckedCreateInput = {
   image?: string | null
   description?: string | null
   socialLinks?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  contributionUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   likes?: Prisma.LikeUncheckedCreateNestedManyWithoutUserInput
+  contributionClicksReceived?: Prisma.ContributionClickUncheckedCreateNestedManyWithoutAuthorInput
+  contributionClicksMade?: Prisma.ContributionClickUncheckedCreateNestedManyWithoutViewerInput
   repo?: Prisma.RepoUncheckedCreateNestedManyWithoutUserInput
   post?: Prisma.PostUncheckedCreateNestedManyWithoutUserInput
 }
@@ -341,11 +365,14 @@ export type UserUpdateInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   socialLinks?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  contributionUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   likes?: Prisma.LikeUpdateManyWithoutUserNestedInput
+  contributionClicksReceived?: Prisma.ContributionClickUpdateManyWithoutAuthorNestedInput
+  contributionClicksMade?: Prisma.ContributionClickUpdateManyWithoutViewerNestedInput
   repo?: Prisma.RepoUpdateManyWithoutUserNestedInput
   post?: Prisma.PostUpdateManyWithoutUserNestedInput
 }
@@ -359,11 +386,14 @@ export type UserUncheckedUpdateInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   socialLinks?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  contributionUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   likes?: Prisma.LikeUncheckedUpdateManyWithoutUserNestedInput
+  contributionClicksReceived?: Prisma.ContributionClickUncheckedUpdateManyWithoutAuthorNestedInput
+  contributionClicksMade?: Prisma.ContributionClickUncheckedUpdateManyWithoutViewerNestedInput
   repo?: Prisma.RepoUncheckedUpdateManyWithoutUserNestedInput
   post?: Prisma.PostUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -377,6 +407,7 @@ export type UserCreateManyInput = {
   image?: string | null
   description?: string | null
   socialLinks?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  contributionUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -390,6 +421,7 @@ export type UserUpdateManyMutationInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   socialLinks?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  contributionUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -403,6 +435,7 @@ export type UserUncheckedUpdateManyInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   socialLinks?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  contributionUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -416,6 +449,7 @@ export type UserCountOrderByAggregateInput = {
   image?: Prisma.SortOrder
   description?: Prisma.SortOrder
   socialLinks?: Prisma.SortOrder
+  contributionUrl?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -428,6 +462,7 @@ export type UserMaxOrderByAggregateInput = {
   emailVerified?: Prisma.SortOrder
   image?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  contributionUrl?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -440,6 +475,7 @@ export type UserMinOrderByAggregateInput = {
   emailVerified?: Prisma.SortOrder
   image?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  contributionUrl?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -447,6 +483,11 @@ export type UserMinOrderByAggregateInput = {
 export type UserScalarRelationFilter = {
   is?: Prisma.UserWhereInput
   isNot?: Prisma.UserWhereInput
+}
+
+export type UserNullableScalarRelationFilter = {
+  is?: Prisma.UserWhereInput | null
+  isNot?: Prisma.UserWhereInput | null
 }
 
 export type StringFieldUpdateOperationsInput = {
@@ -535,6 +576,36 @@ export type UserUpdateOneRequiredWithoutLikesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutLikesInput, Prisma.UserUpdateWithoutLikesInput>, Prisma.UserUncheckedUpdateWithoutLikesInput>
 }
 
+export type UserCreateNestedOneWithoutContributionClicksReceivedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutContributionClicksReceivedInput, Prisma.UserUncheckedCreateWithoutContributionClicksReceivedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutContributionClicksReceivedInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserCreateNestedOneWithoutContributionClicksMadeInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutContributionClicksMadeInput, Prisma.UserUncheckedCreateWithoutContributionClicksMadeInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutContributionClicksMadeInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutContributionClicksReceivedNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutContributionClicksReceivedInput, Prisma.UserUncheckedCreateWithoutContributionClicksReceivedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutContributionClicksReceivedInput
+  upsert?: Prisma.UserUpsertWithoutContributionClicksReceivedInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutContributionClicksReceivedInput, Prisma.UserUpdateWithoutContributionClicksReceivedInput>, Prisma.UserUncheckedUpdateWithoutContributionClicksReceivedInput>
+}
+
+export type UserUpdateOneWithoutContributionClicksMadeNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutContributionClicksMadeInput, Prisma.UserUncheckedCreateWithoutContributionClicksMadeInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutContributionClicksMadeInput
+  upsert?: Prisma.UserUpsertWithoutContributionClicksMadeInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutContributionClicksMadeInput, Prisma.UserUpdateWithoutContributionClicksMadeInput>, Prisma.UserUncheckedUpdateWithoutContributionClicksMadeInput>
+}
+
 export type UserCreateWithoutSessionsInput = {
   id?: string
   name: string
@@ -544,10 +615,13 @@ export type UserCreateWithoutSessionsInput = {
   image?: string | null
   description?: string | null
   socialLinks?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  contributionUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   likes?: Prisma.LikeCreateNestedManyWithoutUserInput
+  contributionClicksReceived?: Prisma.ContributionClickCreateNestedManyWithoutAuthorInput
+  contributionClicksMade?: Prisma.ContributionClickCreateNestedManyWithoutViewerInput
   repo?: Prisma.RepoCreateNestedManyWithoutUserInput
   post?: Prisma.PostCreateNestedManyWithoutUserInput
 }
@@ -561,10 +635,13 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   image?: string | null
   description?: string | null
   socialLinks?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  contributionUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   likes?: Prisma.LikeUncheckedCreateNestedManyWithoutUserInput
+  contributionClicksReceived?: Prisma.ContributionClickUncheckedCreateNestedManyWithoutAuthorInput
+  contributionClicksMade?: Prisma.ContributionClickUncheckedCreateNestedManyWithoutViewerInput
   repo?: Prisma.RepoUncheckedCreateNestedManyWithoutUserInput
   post?: Prisma.PostUncheckedCreateNestedManyWithoutUserInput
 }
@@ -594,10 +671,13 @@ export type UserUpdateWithoutSessionsInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   socialLinks?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  contributionUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   likes?: Prisma.LikeUpdateManyWithoutUserNestedInput
+  contributionClicksReceived?: Prisma.ContributionClickUpdateManyWithoutAuthorNestedInput
+  contributionClicksMade?: Prisma.ContributionClickUpdateManyWithoutViewerNestedInput
   repo?: Prisma.RepoUpdateManyWithoutUserNestedInput
   post?: Prisma.PostUpdateManyWithoutUserNestedInput
 }
@@ -611,10 +691,13 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   socialLinks?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  contributionUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   likes?: Prisma.LikeUncheckedUpdateManyWithoutUserNestedInput
+  contributionClicksReceived?: Prisma.ContributionClickUncheckedUpdateManyWithoutAuthorNestedInput
+  contributionClicksMade?: Prisma.ContributionClickUncheckedUpdateManyWithoutViewerNestedInput
   repo?: Prisma.RepoUncheckedUpdateManyWithoutUserNestedInput
   post?: Prisma.PostUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -628,10 +711,13 @@ export type UserCreateWithoutAccountsInput = {
   image?: string | null
   description?: string | null
   socialLinks?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  contributionUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   likes?: Prisma.LikeCreateNestedManyWithoutUserInput
+  contributionClicksReceived?: Prisma.ContributionClickCreateNestedManyWithoutAuthorInput
+  contributionClicksMade?: Prisma.ContributionClickCreateNestedManyWithoutViewerInput
   repo?: Prisma.RepoCreateNestedManyWithoutUserInput
   post?: Prisma.PostCreateNestedManyWithoutUserInput
 }
@@ -645,10 +731,13 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   image?: string | null
   description?: string | null
   socialLinks?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  contributionUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   likes?: Prisma.LikeUncheckedCreateNestedManyWithoutUserInput
+  contributionClicksReceived?: Prisma.ContributionClickUncheckedCreateNestedManyWithoutAuthorInput
+  contributionClicksMade?: Prisma.ContributionClickUncheckedCreateNestedManyWithoutViewerInput
   repo?: Prisma.RepoUncheckedCreateNestedManyWithoutUserInput
   post?: Prisma.PostUncheckedCreateNestedManyWithoutUserInput
 }
@@ -678,10 +767,13 @@ export type UserUpdateWithoutAccountsInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   socialLinks?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  contributionUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   likes?: Prisma.LikeUpdateManyWithoutUserNestedInput
+  contributionClicksReceived?: Prisma.ContributionClickUpdateManyWithoutAuthorNestedInput
+  contributionClicksMade?: Prisma.ContributionClickUpdateManyWithoutViewerNestedInput
   repo?: Prisma.RepoUpdateManyWithoutUserNestedInput
   post?: Prisma.PostUpdateManyWithoutUserNestedInput
 }
@@ -695,10 +787,13 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   socialLinks?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  contributionUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   likes?: Prisma.LikeUncheckedUpdateManyWithoutUserNestedInput
+  contributionClicksReceived?: Prisma.ContributionClickUncheckedUpdateManyWithoutAuthorNestedInput
+  contributionClicksMade?: Prisma.ContributionClickUncheckedUpdateManyWithoutViewerNestedInput
   repo?: Prisma.RepoUncheckedUpdateManyWithoutUserNestedInput
   post?: Prisma.PostUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -712,11 +807,14 @@ export type UserCreateWithoutRepoInput = {
   image?: string | null
   description?: string | null
   socialLinks?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  contributionUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   likes?: Prisma.LikeCreateNestedManyWithoutUserInput
+  contributionClicksReceived?: Prisma.ContributionClickCreateNestedManyWithoutAuthorInput
+  contributionClicksMade?: Prisma.ContributionClickCreateNestedManyWithoutViewerInput
   post?: Prisma.PostCreateNestedManyWithoutUserInput
 }
 
@@ -729,11 +827,14 @@ export type UserUncheckedCreateWithoutRepoInput = {
   image?: string | null
   description?: string | null
   socialLinks?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  contributionUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   likes?: Prisma.LikeUncheckedCreateNestedManyWithoutUserInput
+  contributionClicksReceived?: Prisma.ContributionClickUncheckedCreateNestedManyWithoutAuthorInput
+  contributionClicksMade?: Prisma.ContributionClickUncheckedCreateNestedManyWithoutViewerInput
   post?: Prisma.PostUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -762,11 +863,14 @@ export type UserUpdateWithoutRepoInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   socialLinks?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  contributionUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   likes?: Prisma.LikeUpdateManyWithoutUserNestedInput
+  contributionClicksReceived?: Prisma.ContributionClickUpdateManyWithoutAuthorNestedInput
+  contributionClicksMade?: Prisma.ContributionClickUpdateManyWithoutViewerNestedInput
   post?: Prisma.PostUpdateManyWithoutUserNestedInput
 }
 
@@ -779,11 +883,14 @@ export type UserUncheckedUpdateWithoutRepoInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   socialLinks?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  contributionUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   likes?: Prisma.LikeUncheckedUpdateManyWithoutUserNestedInput
+  contributionClicksReceived?: Prisma.ContributionClickUncheckedUpdateManyWithoutAuthorNestedInput
+  contributionClicksMade?: Prisma.ContributionClickUncheckedUpdateManyWithoutViewerNestedInput
   post?: Prisma.PostUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -796,11 +903,14 @@ export type UserCreateWithoutPostInput = {
   image?: string | null
   description?: string | null
   socialLinks?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  contributionUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   likes?: Prisma.LikeCreateNestedManyWithoutUserInput
+  contributionClicksReceived?: Prisma.ContributionClickCreateNestedManyWithoutAuthorInput
+  contributionClicksMade?: Prisma.ContributionClickCreateNestedManyWithoutViewerInput
   repo?: Prisma.RepoCreateNestedManyWithoutUserInput
 }
 
@@ -813,11 +923,14 @@ export type UserUncheckedCreateWithoutPostInput = {
   image?: string | null
   description?: string | null
   socialLinks?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  contributionUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   likes?: Prisma.LikeUncheckedCreateNestedManyWithoutUserInput
+  contributionClicksReceived?: Prisma.ContributionClickUncheckedCreateNestedManyWithoutAuthorInput
+  contributionClicksMade?: Prisma.ContributionClickUncheckedCreateNestedManyWithoutViewerInput
   repo?: Prisma.RepoUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -846,11 +959,14 @@ export type UserUpdateWithoutPostInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   socialLinks?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  contributionUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   likes?: Prisma.LikeUpdateManyWithoutUserNestedInput
+  contributionClicksReceived?: Prisma.ContributionClickUpdateManyWithoutAuthorNestedInput
+  contributionClicksMade?: Prisma.ContributionClickUpdateManyWithoutViewerNestedInput
   repo?: Prisma.RepoUpdateManyWithoutUserNestedInput
 }
 
@@ -863,11 +979,14 @@ export type UserUncheckedUpdateWithoutPostInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   socialLinks?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  contributionUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   likes?: Prisma.LikeUncheckedUpdateManyWithoutUserNestedInput
+  contributionClicksReceived?: Prisma.ContributionClickUncheckedUpdateManyWithoutAuthorNestedInput
+  contributionClicksMade?: Prisma.ContributionClickUncheckedUpdateManyWithoutViewerNestedInput
   repo?: Prisma.RepoUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -880,10 +999,13 @@ export type UserCreateWithoutLikesInput = {
   image?: string | null
   description?: string | null
   socialLinks?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  contributionUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  contributionClicksReceived?: Prisma.ContributionClickCreateNestedManyWithoutAuthorInput
+  contributionClicksMade?: Prisma.ContributionClickCreateNestedManyWithoutViewerInput
   repo?: Prisma.RepoCreateNestedManyWithoutUserInput
   post?: Prisma.PostCreateNestedManyWithoutUserInput
 }
@@ -897,10 +1019,13 @@ export type UserUncheckedCreateWithoutLikesInput = {
   image?: string | null
   description?: string | null
   socialLinks?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  contributionUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  contributionClicksReceived?: Prisma.ContributionClickUncheckedCreateNestedManyWithoutAuthorInput
+  contributionClicksMade?: Prisma.ContributionClickUncheckedCreateNestedManyWithoutViewerInput
   repo?: Prisma.RepoUncheckedCreateNestedManyWithoutUserInput
   post?: Prisma.PostUncheckedCreateNestedManyWithoutUserInput
 }
@@ -930,10 +1055,13 @@ export type UserUpdateWithoutLikesInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   socialLinks?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  contributionUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  contributionClicksReceived?: Prisma.ContributionClickUpdateManyWithoutAuthorNestedInput
+  contributionClicksMade?: Prisma.ContributionClickUpdateManyWithoutViewerNestedInput
   repo?: Prisma.RepoUpdateManyWithoutUserNestedInput
   post?: Prisma.PostUpdateManyWithoutUserNestedInput
 }
@@ -947,10 +1075,205 @@ export type UserUncheckedUpdateWithoutLikesInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   socialLinks?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  contributionUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  contributionClicksReceived?: Prisma.ContributionClickUncheckedUpdateManyWithoutAuthorNestedInput
+  contributionClicksMade?: Prisma.ContributionClickUncheckedUpdateManyWithoutViewerNestedInput
+  repo?: Prisma.RepoUncheckedUpdateManyWithoutUserNestedInput
+  post?: Prisma.PostUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutContributionClicksReceivedInput = {
+  id?: string
+  name: string
+  stageName?: string | null
+  email?: string | null
+  emailVerified: boolean
+  image?: string | null
+  description?: string | null
+  socialLinks?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  contributionUrl?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  likes?: Prisma.LikeCreateNestedManyWithoutUserInput
+  contributionClicksMade?: Prisma.ContributionClickCreateNestedManyWithoutViewerInput
+  repo?: Prisma.RepoCreateNestedManyWithoutUserInput
+  post?: Prisma.PostCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutContributionClicksReceivedInput = {
+  id?: string
+  name: string
+  stageName?: string | null
+  email?: string | null
+  emailVerified: boolean
+  image?: string | null
+  description?: string | null
+  socialLinks?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  contributionUrl?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  likes?: Prisma.LikeUncheckedCreateNestedManyWithoutUserInput
+  contributionClicksMade?: Prisma.ContributionClickUncheckedCreateNestedManyWithoutViewerInput
+  repo?: Prisma.RepoUncheckedCreateNestedManyWithoutUserInput
+  post?: Prisma.PostUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutContributionClicksReceivedInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutContributionClicksReceivedInput, Prisma.UserUncheckedCreateWithoutContributionClicksReceivedInput>
+}
+
+export type UserCreateWithoutContributionClicksMadeInput = {
+  id?: string
+  name: string
+  stageName?: string | null
+  email?: string | null
+  emailVerified: boolean
+  image?: string | null
+  description?: string | null
+  socialLinks?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  contributionUrl?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  likes?: Prisma.LikeCreateNestedManyWithoutUserInput
+  contributionClicksReceived?: Prisma.ContributionClickCreateNestedManyWithoutAuthorInput
+  repo?: Prisma.RepoCreateNestedManyWithoutUserInput
+  post?: Prisma.PostCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutContributionClicksMadeInput = {
+  id?: string
+  name: string
+  stageName?: string | null
+  email?: string | null
+  emailVerified: boolean
+  image?: string | null
+  description?: string | null
+  socialLinks?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  contributionUrl?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  likes?: Prisma.LikeUncheckedCreateNestedManyWithoutUserInput
+  contributionClicksReceived?: Prisma.ContributionClickUncheckedCreateNestedManyWithoutAuthorInput
+  repo?: Prisma.RepoUncheckedCreateNestedManyWithoutUserInput
+  post?: Prisma.PostUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutContributionClicksMadeInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutContributionClicksMadeInput, Prisma.UserUncheckedCreateWithoutContributionClicksMadeInput>
+}
+
+export type UserUpsertWithoutContributionClicksReceivedInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutContributionClicksReceivedInput, Prisma.UserUncheckedUpdateWithoutContributionClicksReceivedInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutContributionClicksReceivedInput, Prisma.UserUncheckedCreateWithoutContributionClicksReceivedInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutContributionClicksReceivedInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutContributionClicksReceivedInput, Prisma.UserUncheckedUpdateWithoutContributionClicksReceivedInput>
+}
+
+export type UserUpdateWithoutContributionClicksReceivedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  stageName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  socialLinks?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  contributionUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  likes?: Prisma.LikeUpdateManyWithoutUserNestedInput
+  contributionClicksMade?: Prisma.ContributionClickUpdateManyWithoutViewerNestedInput
+  repo?: Prisma.RepoUpdateManyWithoutUserNestedInput
+  post?: Prisma.PostUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutContributionClicksReceivedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  stageName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  socialLinks?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  contributionUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  likes?: Prisma.LikeUncheckedUpdateManyWithoutUserNestedInput
+  contributionClicksMade?: Prisma.ContributionClickUncheckedUpdateManyWithoutViewerNestedInput
+  repo?: Prisma.RepoUncheckedUpdateManyWithoutUserNestedInput
+  post?: Prisma.PostUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserUpsertWithoutContributionClicksMadeInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutContributionClicksMadeInput, Prisma.UserUncheckedUpdateWithoutContributionClicksMadeInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutContributionClicksMadeInput, Prisma.UserUncheckedCreateWithoutContributionClicksMadeInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutContributionClicksMadeInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutContributionClicksMadeInput, Prisma.UserUncheckedUpdateWithoutContributionClicksMadeInput>
+}
+
+export type UserUpdateWithoutContributionClicksMadeInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  stageName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  socialLinks?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  contributionUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  likes?: Prisma.LikeUpdateManyWithoutUserNestedInput
+  contributionClicksReceived?: Prisma.ContributionClickUpdateManyWithoutAuthorNestedInput
+  repo?: Prisma.RepoUpdateManyWithoutUserNestedInput
+  post?: Prisma.PostUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutContributionClicksMadeInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  stageName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  socialLinks?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  contributionUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  likes?: Prisma.LikeUncheckedUpdateManyWithoutUserNestedInput
+  contributionClicksReceived?: Prisma.ContributionClickUncheckedUpdateManyWithoutAuthorNestedInput
   repo?: Prisma.RepoUncheckedUpdateManyWithoutUserNestedInput
   post?: Prisma.PostUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -964,6 +1287,8 @@ export type UserCountOutputType = {
   sessions: number
   accounts: number
   likes: number
+  contributionClicksReceived: number
+  contributionClicksMade: number
   repo: number
   post: number
 }
@@ -972,6 +1297,8 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   sessions?: boolean | UserCountOutputTypeCountSessionsArgs
   accounts?: boolean | UserCountOutputTypeCountAccountsArgs
   likes?: boolean | UserCountOutputTypeCountLikesArgs
+  contributionClicksReceived?: boolean | UserCountOutputTypeCountContributionClicksReceivedArgs
+  contributionClicksMade?: boolean | UserCountOutputTypeCountContributionClicksMadeArgs
   repo?: boolean | UserCountOutputTypeCountRepoArgs
   post?: boolean | UserCountOutputTypeCountPostArgs
 }
@@ -1010,6 +1337,20 @@ export type UserCountOutputTypeCountLikesArgs<ExtArgs extends runtime.Types.Exte
 /**
  * UserCountOutputType without action
  */
+export type UserCountOutputTypeCountContributionClicksReceivedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ContributionClickWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountContributionClicksMadeArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ContributionClickWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
 export type UserCountOutputTypeCountRepoArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.RepoWhereInput
 }
@@ -1031,11 +1372,14 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   image?: boolean
   description?: boolean
   socialLinks?: boolean
+  contributionUrl?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
   accounts?: boolean | Prisma.User$accountsArgs<ExtArgs>
   likes?: boolean | Prisma.User$likesArgs<ExtArgs>
+  contributionClicksReceived?: boolean | Prisma.User$contributionClicksReceivedArgs<ExtArgs>
+  contributionClicksMade?: boolean | Prisma.User$contributionClicksMadeArgs<ExtArgs>
   repo?: boolean | Prisma.User$repoArgs<ExtArgs>
   post?: boolean | Prisma.User$postArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
@@ -1050,6 +1394,7 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   image?: boolean
   description?: boolean
   socialLinks?: boolean
+  contributionUrl?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["user"]>
@@ -1063,6 +1408,7 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   image?: boolean
   description?: boolean
   socialLinks?: boolean
+  contributionUrl?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["user"]>
@@ -1076,15 +1422,18 @@ export type UserSelectScalar = {
   image?: boolean
   description?: boolean
   socialLinks?: boolean
+  contributionUrl?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "stageName" | "email" | "emailVerified" | "image" | "description" | "socialLinks" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "stageName" | "email" | "emailVerified" | "image" | "description" | "socialLinks" | "contributionUrl" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
   accounts?: boolean | Prisma.User$accountsArgs<ExtArgs>
   likes?: boolean | Prisma.User$likesArgs<ExtArgs>
+  contributionClicksReceived?: boolean | Prisma.User$contributionClicksReceivedArgs<ExtArgs>
+  contributionClicksMade?: boolean | Prisma.User$contributionClicksMadeArgs<ExtArgs>
   repo?: boolean | Prisma.User$repoArgs<ExtArgs>
   post?: boolean | Prisma.User$postArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
@@ -1098,6 +1447,8 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     sessions: Prisma.$SessionPayload<ExtArgs>[]
     accounts: Prisma.$AccountPayload<ExtArgs>[]
     likes: Prisma.$LikePayload<ExtArgs>[]
+    contributionClicksReceived: Prisma.$ContributionClickPayload<ExtArgs>[]
+    contributionClicksMade: Prisma.$ContributionClickPayload<ExtArgs>[]
     repo: Prisma.$RepoPayload<ExtArgs>[]
     post: Prisma.$PostPayload<ExtArgs>[]
   }
@@ -1110,6 +1461,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     image: string | null
     description: string | null
     socialLinks: runtime.JsonValue | null
+    contributionUrl: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["user"]>
@@ -1509,6 +1861,8 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   sessions<T extends Prisma.User$sessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   accounts<T extends Prisma.User$accountsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$accountsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   likes<T extends Prisma.User$likesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$likesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LikePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  contributionClicksReceived<T extends Prisma.User$contributionClicksReceivedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$contributionClicksReceivedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContributionClickPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  contributionClicksMade<T extends Prisma.User$contributionClicksMadeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$contributionClicksMadeArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContributionClickPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   repo<T extends Prisma.User$repoArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$repoArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RepoPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   post<T extends Prisma.User$postArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$postArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PostPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -1548,6 +1902,7 @@ export interface UserFieldRefs {
   readonly image: Prisma.FieldRef<"User", 'String'>
   readonly description: Prisma.FieldRef<"User", 'String'>
   readonly socialLinks: Prisma.FieldRef<"User", 'Json'>
+  readonly contributionUrl: Prisma.FieldRef<"User", 'String'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>
 }
@@ -2012,6 +2367,54 @@ export type User$likesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
   take?: number
   skip?: number
   distinct?: Prisma.LikeScalarFieldEnum | Prisma.LikeScalarFieldEnum[]
+}
+
+/**
+ * User.contributionClicksReceived
+ */
+export type User$contributionClicksReceivedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ContributionClick
+   */
+  select?: Prisma.ContributionClickSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ContributionClick
+   */
+  omit?: Prisma.ContributionClickOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ContributionClickInclude<ExtArgs> | null
+  where?: Prisma.ContributionClickWhereInput
+  orderBy?: Prisma.ContributionClickOrderByWithRelationInput | Prisma.ContributionClickOrderByWithRelationInput[]
+  cursor?: Prisma.ContributionClickWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ContributionClickScalarFieldEnum | Prisma.ContributionClickScalarFieldEnum[]
+}
+
+/**
+ * User.contributionClicksMade
+ */
+export type User$contributionClicksMadeArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ContributionClick
+   */
+  select?: Prisma.ContributionClickSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ContributionClick
+   */
+  omit?: Prisma.ContributionClickOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ContributionClickInclude<ExtArgs> | null
+  where?: Prisma.ContributionClickWhereInput
+  orderBy?: Prisma.ContributionClickOrderByWithRelationInput | Prisma.ContributionClickOrderByWithRelationInput[]
+  cursor?: Prisma.ContributionClickWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ContributionClickScalarFieldEnum | Prisma.ContributionClickScalarFieldEnum[]
 }
 
 /**

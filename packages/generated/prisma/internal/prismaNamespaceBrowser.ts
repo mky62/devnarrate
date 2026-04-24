@@ -57,7 +57,8 @@ export const ModelName = {
   Verification: 'Verification',
   Repo: 'Repo',
   Post: 'Post',
-  Like: 'Like'
+  Like: 'Like',
+  ContributionClick: 'ContributionClick'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -85,6 +86,7 @@ export const UserScalarFieldEnum = {
   image: 'image',
   description: 'description',
   socialLinks: 'socialLinks',
+  contributionUrl: 'contributionUrl',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -177,6 +179,19 @@ export const LikeScalarFieldEnum = {
 } as const
 
 export type LikeScalarFieldEnum = (typeof LikeScalarFieldEnum)[keyof typeof LikeScalarFieldEnum]
+
+
+export const ContributionClickScalarFieldEnum = {
+  id: 'id',
+  postId: 'postId',
+  authorId: 'authorId',
+  viewerId: 'viewerId',
+  referrer: 'referrer',
+  userAgent: 'userAgent',
+  createdAt: 'createdAt'
+} as const
+
+export type ContributionClickScalarFieldEnum = (typeof ContributionClickScalarFieldEnum)[keyof typeof ContributionClickScalarFieldEnum]
 
 
 export const SortOrder = {

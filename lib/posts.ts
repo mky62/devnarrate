@@ -16,6 +16,7 @@ export interface SerializedPostAuthor {
   name: string;
   stageName: string | null;
   image: string | null;
+  contributionUrl: string | null;
 }
 
 export interface SerializedPostDetail extends SerializedPostSummary {

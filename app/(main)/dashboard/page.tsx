@@ -28,6 +28,7 @@ interface UserData {
   stageName?: string | null;
   description?: string | null;
   socialLinks?: SocialLinks | null;
+  contributionUrl?: string | null;
 }
 
 export default async function DashboardPage() {
@@ -54,6 +55,7 @@ export default async function DashboardPage() {
         stageName: true,
         description: true,
         socialLinks: true,
+        contributionUrl: true,
       },
     }),
     db.repo.findMany({

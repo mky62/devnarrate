@@ -35,6 +35,7 @@ export async function GET(
             name: true,
             stageName: true,
             image: true,
+            contributionUrl: true,
           },
         },
       },

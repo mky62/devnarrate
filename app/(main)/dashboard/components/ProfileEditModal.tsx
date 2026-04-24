@@ -18,6 +18,7 @@ interface User {
   stageName?: string | null;
   description?: string | null;
   socialLinks?: SocialLinks | null;
+  contributionUrl?: string | null;
 }
 
 interface ProfileEditModalProps {
@@ -32,6 +33,7 @@ interface FormData {
   github: string;
   twitter: string;
   linkedin: string;
+  contributionUrl: string;
 }
 
 function getInitialFormData(user: User): FormData {
@@ -41,6 +43,7 @@ function getInitialFormData(user: User): FormData {
     github: user.socialLinks?.github || "",
     twitter: user.socialLinks?.twitter || "",
     linkedin: user.socialLinks?.linkedin || "",
+    contributionUrl: user.contributionUrl || "",
   };
 }
 
@@ -71,6 +74,7 @@ export default function ProfileEditModal({ user, isOpen, onClose }: ProfileEditM
           twitter: formData.twitter || undefined,
           linkedin: formData.linkedin || undefined,
         },
+        contributionUrl: formData.contributionUrl || null,
       },
       {
         onSuccess: () => {
@@ -224,6 +228,28 @@ export default function ProfileEditModal({ user, isOpen, onClose }: ProfileEditM
               {fieldErrors.linkedin && (
                 <p className="mt-1 text-xs text-red-500">
                   {fieldErrors.linkedin}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">
+                Buy Me a Coffee / Support URL
+              </label>
+              <input
+                type="url"
+                value={formData.contributionUrl}
+                onChange={(e) =>
+                  setFormData({ ...formData, contributionUrl: e.target.value })
+                }
+                placeholder="https://www.buymeacoffee.com/username"
+                className={`w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  fieldErrors.contributionUrl ? "border-red-500" : "border-gray-300"
+                }`}
+              />
+              {fieldErrors.contributionUrl && (
+                <p className="mt-1 text-xs text-red-500">
+                  {fieldErrors.contributionUrl}
                 </p>
               )}
             </div>
