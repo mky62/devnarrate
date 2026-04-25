@@ -1,22 +1,18 @@
 "use client"
 
-import React, { useEffect, useState } from "react"
 import RotatingText from "@/app/(auth)/components/RotatingText"
 
 export default function Header() {
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
 
   return (
-    <header className="relative h-16 w-full border border-white rounded-b-full backdrop-blur-sm">
+    <header className="relative h-16 w-full border border-white rounded-b-full backdrop-blur-md bg-white/50 mb-8">
       <div className="flex items-center h-full px-4">
+
+       
         <div className="flex items-center z-10" />
 
         <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-          <p className="text-2xl  text-black flex  font-grape  justify-center items-center gap-2">
+          <p className="text-2xl  text-black flex font-montserrat font-bold justify-center items-center gap-2">
                       Explore  <span className="m-2">✨</span> 
                         <span className="inline-flex items-center">
                             <RotatingText

@@ -1,6 +1,6 @@
 import Header from './components/Header'
 import Image from 'next/image'
-import Exxplorebg from "@/public/dashbg.jpg"
+import ExploreBg from "@/public/explorebg.jpg"
 import {Particles} from '@/components/ui/particles'
 
 export default function page() {
@@ -10,7 +10,7 @@ export default function page() {
        <Header />
        <div className="absolute inset-0 -z-20">
         <Image
-          src={Exxplorebg}
+          src={ExploreBg}
           alt="Authentication background"
           fill
           priority
