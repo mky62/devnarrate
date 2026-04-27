@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation";
 import { Button } from "@/packages/tiptap/components/ui/button"
 import Link from "next/link";
-import { ArrowLeft, Loader, Sparkles } from 'lucide-react';
+import { ArrowLeft, Loader, Moon, Sparkles, Sun } from 'lucide-react';
 import { useSession } from "@/lib/auth-client";
 import { EditorContent, EditorContext, useEditor } from "@tiptap/react"
 
@@ -73,6 +73,18 @@ const removeSessionStorageItem = (key: string) => {
     window.sessionStorage.removeItem(key)
 }
 
+const getEditorThemePreference = () => {
+    if (typeof window === "undefined") {
+        return false
+    }
+
+    const savedTheme = window.localStorage.getItem("editor-theme")
+    if (savedTheme === "dark") return true
+    if (savedTheme === "light") return false
+
+    return window.matchMedia("(prefers-color-scheme: dark)").matches
+}
+
 export default function ClientPage() {
     const router = useRouter();
     const { data: session, isPending } = useSession()
@@ -82,6 +94,7 @@ export default function ClientPage() {
     const [draftLoaded, setDraftLoaded] = useState(false)
     const [savedContent, setSavedContent] = useState<string | null>(null)
     const [showAIPanel, setShowAIPanel] = useState(false)
+    const [isEditorDarkMode, setIsEditorDarkMode] = useState(getEditorThemePreference)
 
     const toolbarRef = useRef<HTMLDivElement>(null)
 
@@ -101,6 +114,23 @@ export default function ClientPage() {
         if (!draftLoaded) return
         setSessionStorageItem("link", link)
     }, [draftLoaded, link])
+
+    useEffect(() => {
+        if (typeof window === "undefined") return
+
+        window.localStorage.setItem("editor-theme", isEditorDarkMode ? "dark" : "light")
+    }, [isEditorDarkMode])
+
+    useEffect(() => {
+        if (typeof document === "undefined") return
+
+        const hadDarkClass = document.body.classList.contains("dark")
+        document.body.classList.toggle("dark", isEditorDarkMode)
+
+        return () => {
+            document.body.classList.toggle("dark", hadDarkClass)
+        }
+    }, [isEditorDarkMode])
 
     const editor = useEditor({
         immediatelyRender: false,
@@ -206,7 +236,10 @@ export default function ClientPage() {
     }
 
     return (
-        <div className="min-h-screen bg-background flex flex-col font-sans">
+        <div
+            data-editor-theme={isEditorDarkMode ? "dark" : "light"}
+            className={`min-h-screen bg-background text-foreground flex flex-col font-sans ${isEditorDarkMode ? "dark" : ""}`}
+        >
             {/* Top Header Bar */}
             <header className="sticky top-0 z-50 bg-background border-b border-border/40">
                 <div className="max-w-5xl mx-auto flex items-center justify-between px-4 h-14">
@@ -265,14 +298,31 @@ export default function ClientPage() {
                         </EditorContext.Provider>
                     </div>
 
-                    {/* Right: Publish */}
-                    <Button
+                    {/* Right: Theme + Publish */}
+                    <div className="flex items-center gap-2">
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setIsEditorDarkMode((isDark) => !isDark)}
+                            aria-label={`Switch editor to ${isEditorDarkMode ? "light" : "dark"} mode`}
+                            title={`Switch editor to ${isEditorDarkMode ? "light" : "dark"} mode`}
+                            className="rounded-full text-muted-foreground hover:text-foreground"
+                        >
+                            {isEditorDarkMode ? (
+                                <Sun className="w-4 h-4" />
+                            ) : (
+                                <Moon className="w-4 h-4" />
+                            )}
+                        </Button>
+                        <Button
                         onClick={handlePost}
                         disabled={loading || !title}
                         className="rounded-full px-5 bg-primary text-primary-foreground font-medium shadow-sm hover:shadow-md transition-all text-sm"
                     >
                         {loading ? <Loader className="w-4 h-4" /> : "Publish"}
                     </Button>
+                    </div>
                 </div>
             </header>
 
