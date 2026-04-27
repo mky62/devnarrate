@@ -1,11 +1,12 @@
 "use client";
 
 import Image from "next/image";
-import { Calendar, Globe } from "lucide-react";
+import { Calendar, Coffee, Globe } from "lucide-react";
 import Link from "next/link";
 import { FaGithub, FaLinkedin, FaTwitter } from "react-icons/fa6";
 import { useEffect, useState } from "react";
 import PublicGitStats from "./PublicGitStats";
+import { getSafeContributionUrl } from "@/lib/contributions";
 
 interface SocialLinks {
   github?: string;
@@ -22,6 +23,7 @@ interface PublicUser {
   stageName: string | null;
   description: string | null;
   socialLinks: SocialLinks | null;
+  contributionUrl: string | null;
 }
 
 interface PublicProfileSectionProps {
@@ -85,6 +87,7 @@ export default function PublicProfileSection({ stageName }: PublicProfileSection
 
   const displayName = user.stageName || user.name;
   const socialLinks = user.socialLinks || ({} as SocialLinks);
+  const safeContributionUrl = getSafeContributionUrl(user.contributionUrl);
   const joinedDate = user.createdAt
     ? new Date(user.createdAt).toLocaleDateString("en-US", { month: "short", year: "numeric" })
     : null;
@@ -153,6 +156,17 @@ export default function PublicProfileSection({ stageName }: PublicProfileSection
 
         {/* Social Links */}
         <div className="flex gap-2 pt-1 flex-wrap">
+          {safeContributionUrl && (
+            <a
+              href={safeContributionUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-amber-700 bg-amber-50 hover:bg-amber-100 rounded-lg transition-colors"
+            >
+              <Coffee size={14} />
+              Support
+            </a>
+          )}
           {socialLinks.github && (
             <Link
               href={socialLinks.github}
