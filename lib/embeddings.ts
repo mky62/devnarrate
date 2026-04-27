@@ -1,12 +1,22 @@
-import OpenAI from 'openai';
+import { InferenceClient } from "@huggingface/inference";
 
-function getOpenAIClient() {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) {
-    throw new Error("OPENAI_API_KEY is not set");
+const HF_EMBEDDING_MODEL = "Qwen/Qwen3-Embedding-0.6B";
+
+function getHFClient() {
+  const token = process.env.HF_TOKEN;
+  if (!token) {
+    throw new Error("HF_TOKEN is not set");
   }
 
-  return new OpenAI({ apiKey });
+  return new InferenceClient(token);
+}
+
+function normalizeEmbedding(result: number[] | number[][]): number[][] {
+  if (Array.isArray(result[0])) {
+    return result as number[][];
+  }
+
+  return [result as number[]];
 }
 
 export async function embedTexts(texts: string[]): Promise<number[][]> {
@@ -14,35 +24,30 @@ export async function embedTexts(texts: string[]): Promise<number[][]> {
     return [];
   }
 
-  // OpenAI has a limit of 2048 inputs per request
-  const batchSize = 100;
-  const batches: string[][] = [];
-
-  for (let i = 0; i < texts.length; i += batchSize) {
-    batches.push(texts.slice(i, i + batchSize));
-  }
-
+  const client = getHFClient();
   const allEmbeddings: number[][] = [];
-  const openai = getOpenAIClient();
 
-  for (const batch of batches) {
-    const response = await openai.embeddings.create({
-      model: 'text-embedding-3-small',
-      input: batch,
+  for (const text of texts) {
+    const output = await client.featureExtraction({
+      model: HF_EMBEDDING_MODEL,
+      inputs: text,
+      provider: "hf-inference",
     });
 
-    const embeddings = response.data.map(item => item.embedding);
+    const embeddings = normalizeEmbedding(output as number[] | number[][]);
     allEmbeddings.push(...embeddings);
   }
 
   return allEmbeddings;
 }
 
-// For single text embedding (convenience)
 export async function embedText(text: string): Promise<number[]> {
   const embeddings = await embedTexts([text]);
   if (!embeddings || embeddings.length === 0 || !Array.isArray(embeddings[0])) {
-    throw new Error(`Failed to generate embedding for text: "${text.slice(0, 100)}..." - empty or invalid response from embedTexts`);
+    throw new Error(
+      `Failed to generate embedding for text: "${text.slice(0, 100)}..." - empty or invalid response from embedTexts`
+    );
   }
+
   return embeddings[0];
 }
