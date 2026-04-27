@@ -11,7 +11,8 @@ export default function page() {
        <div className="absolute inset-0 -z-20">
         <Image
           src={ExploreBg}
-          alt="Authentication background"
+          alt=""
+          aria-hidden="true"
           fill
           priority
           sizes="100vw"

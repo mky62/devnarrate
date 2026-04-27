@@ -1,6 +1,4 @@
-import { db } from "./prisma";
-
-interface RepoFile {
+export interface RepoFile {
   path: string;
   content: string;
 }

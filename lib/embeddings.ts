@@ -34,6 +34,9 @@ export async function embedTexts(texts: string[]): Promise<number[][]> {
 
 // For single text embedding (convenience)
 export async function embedText(text: string): Promise<number[]> {
-  const [embedding] = await embedTexts([text]);
-  return embedding;
+  const embeddings = await embedTexts([text]);
+  if (!embeddings || embeddings.length === 0 || !Array.isArray(embeddings[0])) {
+    throw new Error(`Failed to generate embedding for text: "${text.slice(0, 100)}..." - empty or invalid response from embedTexts`);
+  }
+  return embeddings[0];
 }

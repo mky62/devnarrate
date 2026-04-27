@@ -1,10 +1,29 @@
 import { Pinecone } from '@pinecone-database/pinecone';
 
-const pinecone = new Pinecone({
-  apiKey: process.env.PINECONE_API_KEY!,
-});
+let pineconeClient: Pinecone | null = null;
+let pineconeIndex: ReturnType<Pinecone['Index']> | null = null;
 
-const index = pinecone.Index(process.env.PINECONE_INDEX!);
+function getPineconeClient(): Pinecone {
+  if (!pineconeClient) {
+    const apiKey = process.env.PINECONE_API_KEY;
+    if (!apiKey) {
+      throw new Error('Missing required environment variable: PINECONE_API_KEY');
+    }
+    pineconeClient = new Pinecone({ apiKey });
+  }
+  return pineconeClient;
+}
+
+function getIndex() {
+  if (!pineconeIndex) {
+    const indexName = process.env.PINECONE_INDEX;
+    if (!indexName) {
+      throw new Error('Missing required environment variable: PINECONE_INDEX');
+    }
+    pineconeIndex = getPineconeClient().Index(indexName);
+  }
+  return pineconeIndex;
+}
 
 interface ChunkWithEmbedding {
   id: string;
@@ -42,7 +61,7 @@ export async function upsertChunksToPinecone({ namespace, chunks }: UpsertOption
       },
     }));
 
-    await index.namespace(namespace).upsert({ records });
+    await getIndex().namespace(namespace).upsert({ records });
   }
 }
 
@@ -66,7 +85,7 @@ export async function queryPinecone({
   embedding,
   topK = 5,
 }: QueryOptions): Promise<QueryResult[]> {
-  const results = await index.namespace(namespace).query({
+  const results = await getIndex().namespace(namespace).query({
     vector: embedding,
     topK,
     includeMetadata: true,
@@ -85,7 +104,7 @@ export async function queryPinecone({
 // Check if namespace has any vectors (to verify indexing is done)
 export async function namespaceExists(namespace: string): Promise<boolean> {
   try {
-    const stats = await index.namespace(namespace).describeIndexStats();
+    const stats = await getIndex().namespace(namespace).describeIndexStats();
     return (stats.totalRecordCount || 0) > 0;
   } catch {
     return false;

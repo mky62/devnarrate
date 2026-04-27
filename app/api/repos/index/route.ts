@@ -15,13 +15,25 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: "Unauthorized"}, {status: 401})
     }
 
-    const { repoId , repoName, accountId} = await req.json();
-    
-    if (!repoId || !repoName || !accountId) {
-        return NextResponse.json({
-            error: "Missing repoId , repoName , accountId"
-        }, 
-        { status: 400 })
+    let body: { repoId?: string | number; repoName?: string; accountId?: string | number };
+    try {
+        body = await req.json();
+    } catch {
+        return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+    }
+
+    const { repoId, repoName, accountId } = body;
+
+    if (!repoId || typeof repoId !== 'string' && typeof repoId !== 'number') {
+        return NextResponse.json({ error: "Missing or invalid repoId" }, { status: 400 });
+    }
+
+    if (!repoName || typeof repoName !== 'string' || repoName.trim().length === 0) {
+        return NextResponse.json({ error: "Missing or invalid repoName" }, { status: 400 });
+    }
+
+    if (!accountId || (typeof accountId !== 'string' && typeof accountId !== 'number')) {
+        return NextResponse.json({ error: "Missing or invalid accountId" }, { status: 400 });
     }
 
 

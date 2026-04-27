@@ -9,8 +9,8 @@ export interface Chunk {
 interface ChunkOptions {
   path: string;
   content: string;
-  maxChunkSize?: number;  // Default: 1000 chars
-  overlap?: number;       // Default: 100 chars
+  maxChunkSize?: number;  // Default: 1500 chars
+  overlap?: number;       // Default: 200 chars
 }
 
 function generateChunkId(path: string, index: number): string {
@@ -95,13 +95,8 @@ export function chunkCodeFile({
         currentChunk = [line];
         currentSize = line.length;
         chunkStartLine = i;
-      } else {
-        currentChunk.push(line);
-        currentSize += line.length + 1;
-      }
-
-      // Also chunk if size exceeds max
-      if (currentSize > maxChunkSize && currentChunk.length > 0) {
+      } else if (currentSize > maxChunkSize && currentChunk.length > 0) {
+        // Also chunk if size exceeds max (else if prevents double-push with header split)
         chunks.push({
           id: generateChunkId(path, chunks.length),
           path,
@@ -114,7 +109,10 @@ export function chunkCodeFile({
         const overlapLines = currentChunk.slice(-3);
         currentChunk = [...overlapLines];
         currentSize = currentChunk.join('\n').length;
-        chunkStartLine = i - overlapLines.length + 1;
+        chunkStartLine = Math.max(0, i - overlapLines.length + 1);
+      } else {
+        currentChunk.push(line);
+        currentSize += line.length + 1;
       }
     }
 

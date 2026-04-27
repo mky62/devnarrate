@@ -54,13 +54,14 @@ export async function GET() {
         const job = latestJobs.get(repoId);
         const hasVectors = await namespaceExists(`repo-${repoId}`);
 
-        let status: 'not_indexed' | 'pending' | 'indexing' | 'completed' | 'failed';
+        let status: 'not_indexed' | 'pending' | 'indexing' | 'completed' | 'failed' | 'failed_with_stale_index';
         if (!job) {
           status = 'not_indexed';
+        } else if (hasVectors) {
+          // Vectors exist - repo is usable regardless of job status
+          status = job.status === 'FAILED' ? 'failed_with_stale_index' : 'completed';
         } else if (job.status === 'FAILED') {
           status = 'failed';
-        } else if (hasVectors) {
-          status = 'completed';
         } else if (job.status === 'INDEXING') {
           status = 'indexing';
         } else {

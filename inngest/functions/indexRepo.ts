@@ -1,6 +1,6 @@
 import { inngest } from "../client";
 import { db } from "@/lib/prisma";
-import { getRepoFilesFromGithub } from "@/lib/github";
+import { getRepoFilesFromGithub, RepoFile } from "@/lib/github";
 import { chunkCodeFile, Chunk } from "@/lib/chunking";
 import { embedTexts } from "@/lib/embeddings";
 import { upsertChunksToPinecone } from "@/lib/pinecone";
@@ -57,7 +57,7 @@ export const indexRepo = inngest.createFunction(
       });
 
       const chunks = await step.run("chunk-files", async () => {
-        return files.flatMap((file) =>
+        return files.flatMap((file: RepoFile) =>
           chunkCodeFile({
             path: file.path,
             content: file.content,
@@ -88,13 +88,13 @@ export const indexRepo = inngest.createFunction(
       }
 
       const embeddings = await step.run("generate-embeddings", async () => {
-        return embedTexts(chunks.map((chunk) => chunk.text));
+        return embedTexts(chunks.map((chunk: Chunk) => chunk.text));
       });
 
       await step.run("store-in-pinecone", async () => {
         await upsertChunksToPinecone({
           namespace: `repo-${repoId}`,
-          chunks: chunks.map((chunk: Chunk, index) => ({
+          chunks: chunks.map((chunk: Chunk, index: number) => ({
             id: chunk.id,
             text: chunk.text,
             path: chunk.path,

@@ -8,7 +8,7 @@ interface Repo {
   name: string | null;
   description: string | null;
   language: string | null;
-  status: "not_indexed" | "pending" | "indexing" | "completed" | "failed";
+  status: "not_indexed" | "pending" | "indexing" | "completed" | "failed" | "failed_with_stale_index";
   accountId: string;
 }
 
@@ -120,11 +120,21 @@ export default function AIPanel({ onInsert, onClose }: AIPanelProps) {
         const { done, value } = await reader.read();
         if (done) break;
 
-        const chunk = decoder.decode(value);
+        const chunk = decoder.decode(value, { stream: true });
         content += chunk;
         setGeneratedContent(content);
 
         // Auto-scroll to bottom
+        if (contentRef.current) {
+          contentRef.current.scrollTop = contentRef.current.scrollHeight;
+        }
+      }
+
+      // Flush remaining bytes
+      const finalChunk = decoder.decode();
+      if (finalChunk) {
+        content += finalChunk;
+        setGeneratedContent(content);
         if (contentRef.current) {
           contentRef.current.scrollTop = contentRef.current.scrollHeight;
         }
@@ -162,6 +172,12 @@ export default function AIPanel({ onInsert, onClose }: AIPanelProps) {
             Failed
           </span>
         );
+      case "failed_with_stale_index":
+        return (
+          <span className="text-[10px] px-2 py-0.5 rounded-full bg-orange-100 text-orange-700">
+            Stale Index
+          </span>
+        );
       default:
         return (
           <span className="text-[10px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">
@@ -175,6 +191,18 @@ export default function AIPanel({ onInsert, onClose }: AIPanelProps) {
     (r) => String(r.githubRepoId) === selectedRepo
   );
   const canGenerate = selectedRepoData?.status === "completed";
+
+  // Poll for status updates when repo is pending or indexing
+  useEffect(() => {
+    if (!selectedRepoData) return;
+    if (selectedRepoData.status !== "pending" && selectedRepoData.status !== "indexing") return;
+
+    const interval = setInterval(() => {
+      fetchRepos();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [selectedRepoData?.status]);
 
   return (
     <div className="w-80 flex-shrink-0 border-l border-gray-200 bg-gray-50/50 flex flex-col h-full">

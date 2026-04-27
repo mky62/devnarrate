@@ -16,13 +16,27 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { repoId, prompt } = await req.json();
+  let body: { repoId?: string | number; prompt?: string };
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
 
-  if (!repoId || !prompt) {
-    return NextResponse.json(
-      { error: "Missing repoId or prompt" },
-      { status: 400 }
-    );
+  const { repoId, prompt } = body;
+
+  if (!repoId) {
+    return NextResponse.json({ error: "Missing repoId" }, { status: 400 });
+  }
+
+  if (typeof prompt !== 'string' || prompt.trim().length === 0) {
+    return NextResponse.json({ error: "prompt must be a non-empty string" }, { status: 400 });
+  }
+
+  const trimmedPrompt = prompt.trim();
+  const MAX_PROMPT_LENGTH = 4000;
+  if (trimmedPrompt.length > MAX_PROMPT_LENGTH) {
+    return NextResponse.json({ error: "Prompt too long" }, { status: 413 });
   }
 
   const namespace = `repo-${repoId}`;
