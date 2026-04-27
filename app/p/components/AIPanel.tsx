@@ -28,6 +28,11 @@ export default function AIPanel({ onInsert, onClose }: AIPanelProps) {
   const [isIndexing, setIsIndexing] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
+  const readErrorMessage = async (res: Response, fallback: string) => {
+    const data = await res.json().catch(() => ({} as { error?: string }));
+    return data.error || fallback;
+  };
+
   // Fetch repos on mount
   useEffect(() => {
     fetchRepos();
@@ -65,8 +70,7 @@ export default function AIPanel({ onInsert, onClose }: AIPanelProps) {
       });
 
       if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Failed to start indexing");
+        throw new Error(await readErrorMessage(res, "Failed to start indexing"));
       }
 
       // Optimistically update status
@@ -105,8 +109,7 @@ export default function AIPanel({ onInsert, onClose }: AIPanelProps) {
         if (res.status === 425) {
           throw new Error("Repo is still being indexed. Please try again in a moment.");
         }
-        const data = await res.json();
-        throw new Error(data.error || "Failed to generate content");
+        throw new Error(await readErrorMessage(res, "Failed to generate content"));
       }
 
       // Read the streaming response

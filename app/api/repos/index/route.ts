@@ -7,58 +7,64 @@ import { inngest } from "@/inngest/client";
 
 
 export async function POST(req: Request) {
-    const session = await auth.api.getSession({
-        headers: await headers()
-    });
-
-    if (!session?.user?.id) {
-        return NextResponse.json({ error: "Unauthorized"}, {status: 401})
-    }
-
-    let body: { repoId?: string | number; repoName?: string; accountId?: string | number };
     try {
-        body = await req.json();
-    } catch {
-        return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
-    }
+        const session = await auth.api.getSession({
+            headers: await headers()
+        });
 
-    const { repoId, repoName, accountId } = body;
+        if (!session?.user?.id) {
+            return NextResponse.json({ error: "Unauthorized"}, {status: 401})
+        }
 
-    if (!repoId || typeof repoId !== 'string' && typeof repoId !== 'number') {
-        return NextResponse.json({ error: "Missing or invalid repoId" }, { status: 400 });
-    }
+        let body: { repoId?: string | number; repoName?: string; accountId?: string | number };
+        try {
+            body = await req.json();
+        } catch {
+            return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+        }
 
-    if (!repoName || typeof repoName !== 'string' || repoName.trim().length === 0) {
-        return NextResponse.json({ error: "Missing or invalid repoName" }, { status: 400 });
-    }
+        const { repoId, repoName, accountId } = body;
 
-    if (!accountId || (typeof accountId !== 'string' && typeof accountId !== 'number')) {
-        return NextResponse.json({ error: "Missing or invalid accountId" }, { status: 400 });
-    }
+        if (!repoId || typeof repoId !== 'string' && typeof repoId !== 'number') {
+            return NextResponse.json({ error: "Missing or invalid repoId" }, { status: 400 });
+        }
 
+        if (!repoName || typeof repoName !== 'string' || repoName.trim().length === 0) {
+            return NextResponse.json({ error: "Missing or invalid repoName" }, { status: 400 });
+        }
 
-   const job =  await db.repoIndexJob.create({
-        data: {
-            repoId: String(repoId),
-            userId: session.user.id,
-            status: 'PENDING',
-        },
-    });
+        if (!accountId || (typeof accountId !== 'string' && typeof accountId !== 'number')) {
+            return NextResponse.json({ error: "Missing or invalid accountId" }, { status: 400 });
+        }
 
+        const job = await db.repoIndexJob.create({
+            data: {
+                repoId: String(repoId),
+                userId: session.user.id,
+                status: 'PENDING',
+            },
+        });
 
     await inngest.send({
         name: "repos/index",
         data: {
             jobId: job.id,
             repoId: String(repoId),
+            userId: session.user.id,
             repoName: repoName,
             accountId: String(accountId),
         },
     });
 
-    return NextResponse.json({
-        success: true,
-        jobId: job.id,
-    })
-
+        return NextResponse.json({
+            success: true,
+            jobId: job.id,
+        })
+    } catch (error) {
+        console.error("Failed to start repo indexing:", error);
+        return NextResponse.json(
+            { error: "Failed to start indexing" },
+            { status: 500 }
+        );
+    }
 }
