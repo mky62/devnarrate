@@ -134,10 +134,6 @@ Write a well-structured, informative response. Use markdown formatting. Include 
             if (content) {
               controller.enqueue(encoder.encode(content));
             }
-
-            if (chunk.usage?.reasoningTokens !== undefined) {
-              console.log("Reasoning tokens:", chunk.usage.reasoningTokens);
-            }
           }
           controller.close();
         } catch (err) {
