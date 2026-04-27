@@ -34,7 +34,6 @@ export const indexRepo = inngest.createFunction(
       const { accessToken } = await step.run("fetch-github-token", async () => {
         const tokenResponse = await auth.api.getAccessToken({
           body: {
-            accountId,
             providerId: "github",
             userId,
           },
