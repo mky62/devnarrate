@@ -1,15 +1,4 @@
-import { InferenceClient } from "@huggingface/inference";
-
-const HF_EMBEDDING_MODEL = "Qwen/Qwen3-Embedding-0.6B";
-
-function getHFClient() {
-  const token = process.env.HF_TOKEN;
-  if (!token) {
-    throw new Error("HF_TOKEN is not set");
-  }
-
-  return new InferenceClient(token);
-}
+const HF_EMBEDDING_MODEL = "intfloat/multilingual-e5-large";
 
 function normalizeEmbedding(result: number[] | number[][]): number[][] {
   if (Array.isArray(result[0])) {
@@ -24,21 +13,32 @@ export async function embedTexts(texts: string[]): Promise<number[][]> {
     return [];
   }
 
-  const client = getHFClient();
-  const allEmbeddings: number[][] = [];
-
-  for (const text of texts) {
-    const output = await client.featureExtraction({
-      model: HF_EMBEDDING_MODEL,
-      inputs: text,
-      provider: "hf-inference",
-    });
-
-    const embeddings = normalizeEmbedding(output as number[] | number[][]);
-    allEmbeddings.push(...embeddings);
+  const token = process.env.HF_TOKEN;
+  if (!token) {
+    throw new Error("HF_TOKEN is not set");
   }
 
-  return allEmbeddings;
+  const response = await fetch(
+    `https://router.huggingface.co/hf-inference/models/${HF_EMBEDDING_MODEL}/pipeline/feature-extraction`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+      body: JSON.stringify({ inputs: texts.length === 1 ? texts[0] : texts }),
+    }
+  );
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(
+      `HF embedding request failed (${response.status}): ${errorText}`
+    );
+  }
+
+  const output = (await response.json()) as number[] | number[][];
+  return normalizeEmbedding(output);
 }
 
 export async function embedText(text: string): Promise<number[]> {
