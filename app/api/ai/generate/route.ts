@@ -102,20 +102,22 @@ Write a well-structured, informative response. Use markdown formatting. Include 
     }
 
     const stream = await openRouter.chat.send({
-      model: OPENROUTER_MODEL,
-      messages: [
-        {
-          role: "system",
-          content:
-            "You are a technical writer helping create blog posts about code repositories.",
-        },
-        {
-          role: "user",
-          content: fullPrompt,
-        },
-      ],
-      stream: true,
-      temperature: 0.7,
+      chatRequest: {
+        model: OPENROUTER_MODEL,
+        messages: [
+          {
+            role: "system",
+            content:
+              "You are a technical writer helping create blog posts about code repositories.",
+          },
+          {
+            role: "user",
+            content: fullPrompt,
+          },
+        ],
+        stream: true,
+        temperature: 0.7,
+      },
     });
 
     const encoder = new TextEncoder();
