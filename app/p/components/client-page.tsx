@@ -284,22 +284,27 @@ export default function ClientPage() {
                                 <ToolbarGroup>
                                     <ImageUploadButton />
                                 </ToolbarGroup>
-                                <ToolbarSeparator />
-                                <ToolbarGroup>
-                                    <button
-                                        onClick={() => setShowAIPanel(!showAIPanel)}
-                                        className={`p-2 rounded-md transition-colors ${showAIPanel ? 'bg-blue-100 text-blue-600' : 'hover:bg-gray-100 text-gray-600'}`}
-                                        title="AI Writer"
-                                    >
-                                        <Sparkles className="w-4 h-4" />
-                                    </button>
-                                </ToolbarGroup>
                             </Toolbar>
                         </EditorContext.Provider>
                     </div>
 
                     {/* Right: Theme + Publish */}
                     <div className="flex items-center gap-2">
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setShowAIPanel((show) => !show)}
+                            aria-label={showAIPanel ? "Close AI panel" : "Open AI panel"}
+                            title={showAIPanel ? "Close AI panel" : "Open AI panel"}
+                            className={`rounded-full transition-colors ${
+                                showAIPanel
+                                    ? "bg-blue-100 text-blue-600 hover:bg-blue-200 hover:text-blue-700"
+                                    : "text-muted-foreground hover:text-foreground"
+                            }`}
+                        >
+                            <Sparkles className="w-4 h-4" />
+                        </Button>
                         <Button
                             type="button"
                             variant="ghost"
