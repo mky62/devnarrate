@@ -1,0 +1,147 @@
+import { db } from "./prisma";
+
+interface RepoFile {
+  path: string;
+  content: string;
+}
+
+interface GetRepoFilesOptions {
+  repoName: string;
+  accessToken: string;
+  maxFiles?: number;
+}
+
+// File extensions we want to index
+const ALLOWED_EXTENSIONS = [
+  '.js', '.ts', '.tsx', '.jsx',
+  '.py', '.rb', '.go', '.rs',
+  '.java', '.kt', '.swift',
+  '.c', '.cpp', '.h', '.hpp',
+  '.md', '.mdx', '.txt',
+  '.json', '.yaml', '.yml',
+  '.html', '.css', '.scss',
+  '.sh', '.bash',
+];
+
+// Paths to skip
+const SKIP_PATTERNS = [
+  /node_modules/,
+  /\.git/,
+  /dist/,
+  /build/,
+  /coverage/,
+  /\.next/,
+  /vendor/,
+  /\.cache/,
+  /package\.json/, // Skip large generated files
+  /package-lock\.json/,
+  /yarn\.lock/,
+  /\.env/,
+];
+
+function shouldIncludeFile(path: string): boolean {
+  // Skip if matches any pattern
+  if (SKIP_PATTERNS.some(pattern => pattern.test(path))) {
+    return false;
+  }
+
+  // Check extension
+  const hasAllowedExt = ALLOWED_EXTENSIONS.some(ext =>
+    path.toLowerCase().endsWith(ext)
+  );
+
+  return hasAllowedExt;
+}
+
+export async function getRepoFilesFromGithub({
+  repoName,
+  accessToken,
+  maxFiles = 100,
+}: GetRepoFilesOptions): Promise<RepoFile[]> {
+  const [owner, repo] = repoName.split('/');
+  if (!owner || !repo) {
+    throw new Error(`Invalid repo name format: ${repoName}. Expected "owner/repo"`);
+  }
+
+  // Get default branch first
+  const repoRes = await fetch(`https://api.github.com/repos/${owner}/${repo}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      Accept: 'application/vnd.github.v3+json',
+    },
+  });
+
+  if (!repoRes.ok) {
+    throw new Error(`Failed to fetch repo info: ${repoRes.status}`);
+  }
+
+  const repoInfo = await repoRes.json();
+  const defaultBranch = repoInfo.default_branch;
+
+  // Get the tree recursively
+  const treeRes = await fetch(
+    `https://api.github.com/repos/${owner}/${repo}/git/trees/${defaultBranch}?recursive=1`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        Accept: 'application/vnd.github.v3+json',
+      },
+    }
+  );
+
+  if (!treeRes.ok) {
+    throw new Error(`Failed to fetch repo tree: ${treeRes.status}`);
+  }
+
+  const tree = await treeRes.json();
+  const files = tree.tree.filter((item: any) =>
+    item.type === 'blob' && shouldIncludeFile(item.path)
+  );
+
+  // Limit number of files
+  const limitedFiles = files.slice(0, maxFiles);
+
+  // Fetch content for each file
+  const filesWithContent: RepoFile[] = [];
+
+  for (const file of limitedFiles) {
+    try {
+      const contentRes = await fetch(
+        `https://api.github.com/repos/${owner}/${repo}/contents/${file.path}?ref=${defaultBranch}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            Accept: 'application/vnd.github.v3+json',
+          },
+        }
+      );
+
+      if (!contentRes.ok) {
+        console.warn(`Failed to fetch ${file.path}: ${contentRes.status}`);
+        continue;
+      }
+
+      const contentData = await contentRes.json();
+
+      // GitHub returns base64 encoded content
+      if (contentData.content) {
+        const decoded = Buffer.from(contentData.content, 'base64').toString('utf-8');
+
+        // Skip files that are too large (>100KB)
+        if (decoded.length > 100000) {
+          console.warn(`Skipping large file ${file.path} (${decoded.length} chars)`);
+          continue;
+        }
+
+        filesWithContent.push({
+          path: file.path,
+          content: decoded,
+        });
+      }
+    } catch (err) {
+      console.warn(`Error fetching ${file.path}:`, err);
+    }
+  }
+
+  return filesWithContent;
+}

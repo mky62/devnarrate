@@ -390,7 +390,8 @@ export const ModelName = {
   Verification: 'Verification',
   Repo: 'Repo',
   Post: 'Post',
-  Like: 'Like'
+  Like: 'Like',
+  RepoIndexJob: 'RepoIndexJob'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -406,7 +407,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session" | "account" | "verification" | "repo" | "post" | "like"
+    modelProps: "user" | "session" | "account" | "verification" | "repo" | "post" | "like" | "repoIndexJob"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -928,6 +929,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    RepoIndexJob: {
+      payload: Prisma.$RepoIndexJobPayload<ExtArgs>
+      fields: Prisma.RepoIndexJobFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.RepoIndexJobFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RepoIndexJobPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.RepoIndexJobFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RepoIndexJobPayload>
+        }
+        findFirst: {
+          args: Prisma.RepoIndexJobFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RepoIndexJobPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.RepoIndexJobFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RepoIndexJobPayload>
+        }
+        findMany: {
+          args: Prisma.RepoIndexJobFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RepoIndexJobPayload>[]
+        }
+        create: {
+          args: Prisma.RepoIndexJobCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RepoIndexJobPayload>
+        }
+        createMany: {
+          args: Prisma.RepoIndexJobCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.RepoIndexJobCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RepoIndexJobPayload>[]
+        }
+        delete: {
+          args: Prisma.RepoIndexJobDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RepoIndexJobPayload>
+        }
+        update: {
+          args: Prisma.RepoIndexJobUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RepoIndexJobPayload>
+        }
+        deleteMany: {
+          args: Prisma.RepoIndexJobDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.RepoIndexJobUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.RepoIndexJobUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RepoIndexJobPayload>[]
+        }
+        upsert: {
+          args: Prisma.RepoIndexJobUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RepoIndexJobPayload>
+        }
+        aggregate: {
+          args: Prisma.RepoIndexJobAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateRepoIndexJob>
+        }
+        groupBy: {
+          args: Prisma.RepoIndexJobGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RepoIndexJobGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.RepoIndexJobCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RepoIndexJobCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1068,6 +1143,20 @@ export const LikeScalarFieldEnum = {
 } as const
 
 export type LikeScalarFieldEnum = (typeof LikeScalarFieldEnum)[keyof typeof LikeScalarFieldEnum]
+
+
+export const RepoIndexJobScalarFieldEnum = {
+  id: 'id',
+  repoId: 'repoId',
+  userId: 'userId',
+  status: 'status',
+  error: 'error',
+  chunksCount: 'chunksCount',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RepoIndexJobScalarFieldEnum = (typeof RepoIndexJobScalarFieldEnum)[keyof typeof RepoIndexJobScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1295,6 +1384,7 @@ export type GlobalOmitConfig = {
   repo?: Prisma.RepoOmit
   post?: Prisma.PostOmit
   like?: Prisma.LikeOmit
+  repoIndexJob?: Prisma.RepoIndexJobOmit
 }
 
 /* Types for Logging */

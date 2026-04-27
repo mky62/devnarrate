@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation";
 import { Button } from "@/packages/tiptap/components/ui/button"
 import Link from "next/link";
-import { ArrowLeft, Loader } from 'lucide-react';
+import { ArrowLeft, Loader, Sparkles } from 'lucide-react';
 import { useSession } from "@/lib/auth-client";
 import { EditorContent, EditorContext, useEditor } from "@tiptap/react"
 
@@ -47,6 +47,7 @@ import { FontSizeDropdown } from "@/packages/tiptap/components/tiptap-ui/font-si
 
 // --- Lib ---
 import { handleImageUpload, MAX_FILE_SIZE } from "@/lib/tiptap-utils"
+import AIPanel from "./AIPanel"
 
 const getSessionStorageItem = (key: string) => {
     if (typeof window === "undefined") {
@@ -80,6 +81,7 @@ export default function ClientPage() {
     const [loading, setLoading] = useState(false)
     const [draftLoaded, setDraftLoaded] = useState(false)
     const [savedContent, setSavedContent] = useState<string | null>(null)
+    const [showAIPanel, setShowAIPanel] = useState(false)
 
     const toolbarRef = useRef<HTMLDivElement>(null)
 
@@ -197,6 +199,12 @@ export default function ClientPage() {
         }
     }
 
+    const handleAIInsert = (content: string) => {
+        if (!editor) return
+        editor.commands.insertContent(content)
+        setShowAIPanel(false)
+    }
+
     return (
         <div className="min-h-screen bg-background flex flex-col font-sans">
             {/* Top Header Bar */}
@@ -243,6 +251,16 @@ export default function ClientPage() {
                                 <ToolbarGroup>
                                     <ImageUploadButton />
                                 </ToolbarGroup>
+                                <ToolbarSeparator />
+                                <ToolbarGroup>
+                                    <button
+                                        onClick={() => setShowAIPanel(!showAIPanel)}
+                                        className={`p-2 rounded-md transition-colors ${showAIPanel ? 'bg-blue-100 text-blue-600' : 'hover:bg-gray-100 text-gray-600'}`}
+                                        title="AI Writer"
+                                    >
+                                        <Sparkles className="w-4 h-4" />
+                                    </button>
+                                </ToolbarGroup>
                             </Toolbar>
                         </EditorContext.Provider>
                     </div>
@@ -258,32 +276,45 @@ export default function ClientPage() {
                 </div>
             </header>
 
-            {/* Main Content */}
-            <main className="flex-1 max-w-3xl mx-auto w-full px-4 md:px-8 py-8">
-                {/* Title & Link */}
-                <div className="mb-8 space-y-3">
-                    <input
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        placeholder="Your Title..."
-                        className="w-full bg-transparent text-3xl md:text-4xl font-bold tracking-tight text-foreground placeholder:text-muted-foreground/30 border-none focus:outline-none focus:ring-0 leading-tight"
-                    />
-                    <input
-                        value={link}
-                        onChange={(e) => setLink(e.target.value)}
-                        placeholder="Paste Link..."
-                        className="w-full bg-transparent text-base font-medium text-muted-foreground placeholder:text-muted-foreground/40 border-none focus:outline-none focus:ring-0"
-                    />
-                </div>
+            {/* Main Content Area */}
+            <div className="flex flex-1 overflow-hidden">
+                {/* Editor Content */}
+                <main className={`flex-1 overflow-y-auto transition-all duration-300 ${showAIPanel ? 'mr-0' : ''}`}>
+                    <div className="max-w-3xl mx-auto w-full px-4 md:px-8 py-8">
+                        {/* Title & Link */}
+                        <div className="mb-8 space-y-3">
+                            <input
+                                value={title}
+                                onChange={(e) => setTitle(e.target.value)}
+                                placeholder="Your Title..."
+                                className="w-full bg-transparent text-3xl md:text-4xl font-bold tracking-tight text-foreground placeholder:text-muted-foreground/30 border-none focus:outline-none focus:ring-0 leading-tight"
+                            />
+                            <input
+                                value={link}
+                                onChange={(e) => setLink(e.target.value)}
+                                placeholder="Paste Link..."
+                                className="w-full bg-transparent text-base font-medium text-muted-foreground placeholder:text-muted-foreground/40 border-none focus:outline-none focus:ring-0"
+                            />
+                        </div>
 
-                {/* Editor */}
-                <EditorContext.Provider value={{ editor }}>
-                    <EditorContent
-                        editor={editor}
-                        className="prose prose-lg dark:prose-invert max-w-none focus:outline-none"
+                        {/* Editor */}
+                        <EditorContext.Provider value={{ editor }}>
+                            <EditorContent
+                                editor={editor}
+                                className="prose prose-lg dark:prose-invert max-w-none focus:outline-none"
+                            />
+                        </EditorContext.Provider>
+                    </div>
+                </main>
+
+                {/* AI Panel */}
+                {showAIPanel && (
+                    <AIPanel
+                        onInsert={handleAIInsert}
+                        onClose={() => setShowAIPanel(false)}
                     />
-                </EditorContext.Provider>
-            </main>
+                )}
+            </div>
         </div>
     )
 }

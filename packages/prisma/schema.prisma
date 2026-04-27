@@ -163,3 +163,18 @@ model Like {
   @@index([postId])
   @@map("like")
 }
+
+model RepoIndexJob {
+  id          String   @id @default(cuid())
+  repoId      String
+  userId      String
+  status      String   // PENDING | INDEXING | COMPLETED | FAILED
+  error       String?
+  chunksCount Int?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([repoId])
+  @@index([userId])
+  @@map("repo_index_job")
+}

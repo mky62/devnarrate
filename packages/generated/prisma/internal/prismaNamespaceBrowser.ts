@@ -57,7 +57,8 @@ export const ModelName = {
   Verification: 'Verification',
   Repo: 'Repo',
   Post: 'Post',
-  Like: 'Like'
+  Like: 'Like',
+  RepoIndexJob: 'RepoIndexJob'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -177,6 +178,20 @@ export const LikeScalarFieldEnum = {
 } as const
 
 export type LikeScalarFieldEnum = (typeof LikeScalarFieldEnum)[keyof typeof LikeScalarFieldEnum]
+
+
+export const RepoIndexJobScalarFieldEnum = {
+  id: 'id',
+  repoId: 'repoId',
+  userId: 'userId',
+  status: 'status',
+  error: 'error',
+  chunksCount: 'chunksCount',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RepoIndexJobScalarFieldEnum = (typeof RepoIndexJobScalarFieldEnum)[keyof typeof RepoIndexJobScalarFieldEnum]
 
 
 export const SortOrder = {

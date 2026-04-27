@@ -52,3 +52,8 @@ export type Post = Prisma.PostModel
  * 
  */
 export type Like = Prisma.LikeModel
+/**
+ * Model RepoIndexJob
+ * 
+ */
+export type RepoIndexJob = Prisma.RepoIndexJobModel
