@@ -20,7 +20,7 @@ function getIndex() {
     if (!indexName) {
       throw new Error('Missing required environment variable: PINECONE_INDEX');
     }
-    pineconeIndex = getPineconeClient().Index(indexName);
+    pineconeIndex = getPineconeClient().index({ name: indexName });
   }
   return pineconeIndex;
 }

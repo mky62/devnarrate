@@ -1,12 +1,16 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { OpenRouter } from "@openrouter/sdk";
 import { embedText } from "@/lib/embeddings";
 import { queryPinecone, namespaceExists } from "@/lib/pinecone";
 
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
-const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+const OPENROUTER_MODEL = "nvidia/nemotron-3-super-120b-a12b:free";
+const openRouter = new OpenRouter({
+  apiKey: process.env.OPENROUTER_API_KEY ?? "",
+  httpReferer: process.env.BETTER_AUTH_URL || "http://localhost:3000",
+  appTitle: "devnarrate",
+});
 
 export async function POST(req: Request) {
   const session = await auth.api.getSession({
@@ -75,7 +79,7 @@ export async function POST(req: Request) {
     )
     .join("\n\n");
 
-  // Create the full prompt for Gemini
+  // Create the full prompt for OpenRouter
   const fullPrompt = `You are a technical writer helping create blog posts about code repositories.
 
 Based on the following repository context, write a response to the user's request.
@@ -90,16 +94,47 @@ User Request: ${prompt}
 Write a well-structured, informative response. Use markdown formatting. Include code examples from the context where relevant. Be technical but accessible.`;
 
   try {
-    const result = await model.generateContentStream(fullPrompt);
+    if (!process.env.OPENROUTER_API_KEY) {
+      return NextResponse.json(
+        { error: "Missing OPENROUTER_API_KEY" },
+        { status: 500 }
+      );
+    }
 
-    // Create a streaming response
-    const stream = new ReadableStream({
+    const stream = await openRouter.chat.send({
+      model: OPENROUTER_MODEL,
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are a technical writer helping create blog posts about code repositories.",
+        },
+        {
+          role: "user",
+          content: fullPrompt,
+        },
+      ],
+      stream: true,
+      temperature: 0.7,
+    });
+
+    const encoder = new TextEncoder();
+
+    const responseStream = new ReadableStream({
       async start(controller) {
         try {
-          for await (const chunk of result.stream) {
-            const text = chunk.text();
-            if (text) {
-              controller.enqueue(new TextEncoder().encode(text));
+          for await (const chunk of stream) {
+            if ("error" in chunk) {
+              throw new Error(chunk.error?.message || "OpenRouter stream error");
+            }
+
+            const content = chunk.choices?.[0]?.delta?.content;
+            if (content) {
+              controller.enqueue(encoder.encode(content));
+            }
+
+            if (chunk.usage?.reasoningTokens !== undefined) {
+              console.log("Reasoning tokens:", chunk.usage.reasoningTokens);
             }
           }
           controller.close();
@@ -109,7 +144,7 @@ Write a well-structured, informative response. Use markdown formatting. Include 
       },
     });
 
-    return new Response(stream, {
+    return new Response(responseStream, {
       headers: {
         "Content-Type": "text/plain; charset=utf-8",
         "Transfer-Encoding": "chunked",
