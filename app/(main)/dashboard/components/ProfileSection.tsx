@@ -26,6 +26,7 @@ interface User {
   stageName?: string | null;
   description?: string | null;
   socialLinks?: SocialLinksData | null;
+  contributionUrl?: string | null;
 }
 
 interface ProfileSectionProps {

@@ -1,4 +1,5 @@
 import z from "zod";
+import { isValidContributionUrl } from "@/lib/contributions";
 
 const tipTapMark = z.object({
   type: z.string().min(1),
@@ -69,6 +70,15 @@ export const profileUpdateSchema = z.object({
     .nullable(),
   socialLinks: z
     .record(z.string(), z.string().url())
+    .optional()
+    .nullable(),
+  contributionUrl: z
+    .string()
+    .trim()
+    .refine(
+      (value) => value === "" || isValidContributionUrl(value),
+      "Use a valid HTTPS Buy Me a Coffee, Ko-fi, GitHub Sponsors, or Patreon URL"
+    )
     .optional()
     .nullable(),
 });

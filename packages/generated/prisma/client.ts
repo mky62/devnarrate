@@ -81,3 +81,8 @@ export type Like = Prisma.LikeModel
  * 
  */
 export type RepoIndexJob = Prisma.RepoIndexJobModel
+/**
+ * Model ContributionClick
+ * 
+ */
+export type ContributionClick = Prisma.ContributionClickModel

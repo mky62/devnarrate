@@ -1,4 +1,5 @@
 import z from "zod";
+import { isValidContributionUrl } from "@/lib/contributions";
 
 export const profileSchema = z.object({
   stageName: z
@@ -28,9 +29,16 @@ export const profileSchema = z.object({
     .regex(/linkedin\.com/, "Must be a LinkedIn URL")
     .or(z.literal(""))
     .optional(),
+  contributionUrl: z
+    .string()
+    .trim()
+    .refine(
+      (value) => value === "" || isValidContributionUrl(value),
+      "Use a valid HTTPS Buy Me a Coffee, Ko-fi, GitHub Sponsors, or Patreon URL"
+    )
+    .optional(),
   feedback: z
     .string()
     .max(200, "Feedback must be 200 characters or less")
     .optional(),
 });
-

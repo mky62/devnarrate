@@ -6,8 +6,9 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import NextImage from "next/image";
 import { headers } from "next/headers";
-import { ArrowLeft, ExternalLink, Calendar } from "lucide-react";
+import { ArrowLeft, ExternalLink, Calendar, Coffee } from "lucide-react";
 import PostLikeButton from "@/components/posts/PostLikeButton";
+import { getSafeContributionUrl } from "@/lib/contributions";
 
 interface PostPageProps {
   params: Promise<{ id: string }>;
@@ -40,6 +41,7 @@ export default async function PostPage({ params }: PostPageProps) {
           name: true,
           stageName: true,
           image: true,
+          contributionUrl: true,
         },
       },
     },
@@ -53,6 +55,11 @@ export default async function PostPage({ params }: PostPageProps) {
 
   const renderedContent = renderPostContent(post.content);
   const safeProjectLink = getSafeExternalUrl(post.projectLink);
+  const safeContributionUrl = getSafeContributionUrl(post.user.contributionUrl);
+  const contributionHref =
+    safeProjectLink && safeContributionUrl
+      ? `/api/contributions/redirect?postId=${encodeURIComponent(post.id)}`
+      : null;
 
   const formattedDate = new Date(post.createdAt).toLocaleDateString("en-US", {
     month: "long",
@@ -73,17 +80,31 @@ export default async function PostPage({ params }: PostPageProps) {
             <span className="text-sm font-medium">Back</span>
           </Link>
 
-          {safeProjectLink && (
-            <a
-              href={safeProjectLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1.5 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
-            >
-              <ExternalLink size={16} />
-              View Project
-            </a>
-          )}
+          <div className="flex items-center gap-4">
+            {contributionHref && (
+              <a
+                href={contributionHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 text-sm font-medium text-amber-700 hover:text-amber-800 transition-colors"
+              >
+                <Coffee size={16} />
+                Buy me a coffee
+              </a>
+            )}
+
+            {safeProjectLink && (
+              <a
+                href={safeProjectLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
+              >
+                <ExternalLink size={16} />
+                View Project
+              </a>
+            )}
+          </div>
         </div>
       </header>
 
@@ -142,6 +163,20 @@ export default async function PostPage({ params }: PostPageProps) {
         >
           {renderedContent}
         </article>
+
+        {contributionHref && (
+          <div className="mt-10 border-t border-gray-200 pt-6">
+            <a
+              href={contributionHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-amber-600"
+            >
+              <Coffee size={16} />
+              Buy me a coffee
+            </a>
+          </div>
+        )}
         <style dangerouslySetInnerHTML={{__html: `
           .prose p { margin-bottom: 1rem; }
           .prose p:empty { min-height: 0.5rem; margin-bottom: 0.5rem; }

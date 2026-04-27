@@ -17,6 +17,7 @@ export interface User {
   stageName?: string | null;
   description?: string | null;
   socialLinks?: SocialLinks | null;
+  contributionUrl?: string | null;
 }
 
 export async function getCurrentUser(): Promise<User> {
@@ -33,6 +34,7 @@ export interface UpdateProfilePayload {
     twitter?: string;
     linkedin?: string;
   };
+  contributionUrl?: string | null;
 }
 
 export async function updateUserProfile(payload: UpdateProfilePayload): Promise<User> {

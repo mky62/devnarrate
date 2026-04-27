@@ -3,6 +3,7 @@ import { db } from "@/lib/prisma"
 import { headers } from "next/headers"
 import { NextResponse } from "next/server"
 import { profileUpdateSchema } from "@/lib/validation"
+import { getSafeContributionUrl } from "@/lib/contributions"
 
 export async function PATCH(request: Request) {
     try {
@@ -27,7 +28,7 @@ export async function PATCH(request: Request) {
             )
         }
 
-        const { stageName, description, socialLinks } = validationResult.data
+        const { stageName, description, socialLinks, contributionUrl } = validationResult.data
 
         // Validate stageName uniqueness (if provided)
         if (stageName) {
@@ -55,6 +56,9 @@ export async function PATCH(request: Request) {
                 ...(stageName !== undefined && { stageName: stageName || null }),
                 ...(description !== undefined && { description: description || null }),
                 ...(socialLinks !== undefined && { socialLinks: socialLinks as object || null }),
+                ...(contributionUrl !== undefined && {
+                    contributionUrl: getSafeContributionUrl(contributionUrl) || null,
+                }),
             }
         })
 

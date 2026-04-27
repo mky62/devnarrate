@@ -391,7 +391,8 @@ export const ModelName = {
   Repo: 'Repo',
   Post: 'Post',
   Like: 'Like',
-  RepoIndexJob: 'RepoIndexJob'
+  RepoIndexJob: 'RepoIndexJob',
+  ContributionClick: 'ContributionClick'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -407,7 +408,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session" | "account" | "verification" | "repo" | "post" | "like" | "repoIndexJob"
+    modelProps: "user" | "session" | "account" | "verification" | "repo" | "post" | "like" | "repoIndexJob" | "contributionClick"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1003,6 +1004,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ContributionClick: {
+      payload: Prisma.$ContributionClickPayload<ExtArgs>
+      fields: Prisma.ContributionClickFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ContributionClickFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContributionClickPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ContributionClickFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContributionClickPayload>
+        }
+        findFirst: {
+          args: Prisma.ContributionClickFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContributionClickPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ContributionClickFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContributionClickPayload>
+        }
+        findMany: {
+          args: Prisma.ContributionClickFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContributionClickPayload>[]
+        }
+        create: {
+          args: Prisma.ContributionClickCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContributionClickPayload>
+        }
+        createMany: {
+          args: Prisma.ContributionClickCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ContributionClickCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContributionClickPayload>[]
+        }
+        delete: {
+          args: Prisma.ContributionClickDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContributionClickPayload>
+        }
+        update: {
+          args: Prisma.ContributionClickUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContributionClickPayload>
+        }
+        deleteMany: {
+          args: Prisma.ContributionClickDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ContributionClickUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ContributionClickUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContributionClickPayload>[]
+        }
+        upsert: {
+          args: Prisma.ContributionClickUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContributionClickPayload>
+        }
+        aggregate: {
+          args: Prisma.ContributionClickAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateContributionClick>
+        }
+        groupBy: {
+          args: Prisma.ContributionClickGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ContributionClickGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ContributionClickCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ContributionClickCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1051,6 +1126,7 @@ export const UserScalarFieldEnum = {
   image: 'image',
   description: 'description',
   socialLinks: 'socialLinks',
+  contributionUrl: 'contributionUrl',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1157,6 +1233,19 @@ export const RepoIndexJobScalarFieldEnum = {
 } as const
 
 export type RepoIndexJobScalarFieldEnum = (typeof RepoIndexJobScalarFieldEnum)[keyof typeof RepoIndexJobScalarFieldEnum]
+
+
+export const ContributionClickScalarFieldEnum = {
+  id: 'id',
+  postId: 'postId',
+  authorId: 'authorId',
+  viewerId: 'viewerId',
+  referrer: 'referrer',
+  userAgent: 'userAgent',
+  createdAt: 'createdAt'
+} as const
+
+export type ContributionClickScalarFieldEnum = (typeof ContributionClickScalarFieldEnum)[keyof typeof ContributionClickScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1385,6 +1474,7 @@ export type GlobalOmitConfig = {
   post?: Prisma.PostOmit
   like?: Prisma.LikeOmit
   repoIndexJob?: Prisma.RepoIndexJobOmit
+  contributionClick?: Prisma.ContributionClickOmit
 }
 
 /* Types for Logging */

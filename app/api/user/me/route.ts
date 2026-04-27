@@ -28,6 +28,7 @@ export async function GET() {
         stageName: true,
         description: true,
         socialLinks: true,
+        contributionUrl: true,
       },
     });
 
