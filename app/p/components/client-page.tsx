@@ -316,12 +316,12 @@ export default function ClientPage() {
                             )}
                         </Button>
                         <Button
-                        onClick={handlePost}
-                        disabled={loading || !title}
-                        className="rounded-full px-5 bg-primary text-primary-foreground font-medium shadow-sm hover:shadow-md transition-all text-sm"
-                    >
-                        {loading ? <Loader className="w-4 h-4" /> : "Publish"}
-                    </Button>
+                            onClick={handlePost}
+                            disabled={loading || !title}
+                            className="rounded-full px-5 bg-primary text-primary-foreground font-medium shadow-sm hover:shadow-md transition-all text-sm"
+                        >
+                            {loading ? <Loader className="w-4 h-4" /> : "Publish"}
+                        </Button>
                     </div>
                 </div>
             </header>
