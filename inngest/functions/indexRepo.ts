@@ -1,7 +1,7 @@
 import { inngest } from "../client";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/prisma";
-import { getRepoFilesFromGithub, RepoFile } from "@/lib/github";
+import { getRepoDetailsFromGithub, getRepoFilesFromGithub, RepoFile } from "@/lib/github";
 import { chunkCodeFile, Chunk } from "@/lib/chunking";
 import { embedTexts } from "@/lib/embeddings";
 import { upsertChunksToPinecone } from "@/lib/pinecone";
@@ -47,9 +47,18 @@ export const indexRepo = inngest.createFunction(
         return { accessToken: tokenResponse.accessToken };
       });
 
+      const { fullName } = await step.run("fetch-repo-details", async () => {
+        const repo = await getRepoDetailsFromGithub({
+          repoId,
+          accessToken,
+        });
+
+        return { fullName: repo.fullName };
+      });
+
       const files = await step.run("fetch-repo-files", async () => {
         return getRepoFilesFromGithub({
-          repoName,
+          repoName: fullName,
           accessToken,
           maxFiles: 100,
         });

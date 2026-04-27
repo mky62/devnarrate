@@ -3,6 +3,13 @@ export interface RepoFile {
   content: string;
 }
 
+export interface RepoDetails {
+  id: number;
+  name: string;
+  fullName: string;
+  ownerLogin: string;
+}
+
 interface GetRepoFilesOptions {
   repoName: string;
   accessToken: string;
@@ -142,4 +149,37 @@ export async function getRepoFilesFromGithub({
   }
 
   return filesWithContent;
+}
+
+export async function getRepoDetailsFromGithub({
+  repoId,
+  accessToken,
+}: {
+  repoId: string | number;
+  accessToken: string;
+}): Promise<RepoDetails> {
+  const res = await fetch(`https://api.github.com/repositories/${repoId}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      Accept: "application/vnd.github+json",
+      "User-Agent": "devnarrate-App",
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error(`Failed to fetch repo details: ${res.status}`);
+  }
+
+  const repoInfo = await res.json();
+
+  if (!repoInfo?.full_name || !repoInfo?.owner?.login) {
+    throw new Error("GitHub repo details response missing full_name or owner.login");
+  }
+
+  return {
+    id: repoInfo.id,
+    name: repoInfo.name,
+    fullName: repoInfo.full_name,
+    ownerLogin: repoInfo.owner.login,
+  };
 }
