@@ -1,4 +1,5 @@
 import { inngest } from "../client";
+import { auth } from "@/lib/auth";
 import { db } from "@/lib/prisma";
 import { getRepoFilesFromGithub, RepoFile } from "@/lib/github";
 import { chunkCodeFile, Chunk } from "@/lib/chunking";
@@ -31,21 +32,19 @@ export const indexRepo = inngest.createFunction(
       });
 
       const { accessToken } = await step.run("fetch-github-token", async () => {
-        const account = await db.account.findFirst({
-          where: {
-            id: accountId,
+        const tokenResponse = await auth.api.getAccessToken({
+          body: {
+            accountId,
+            providerId: "github",
             userId,
-          },
-          select: {
-            accessToken: true,
           },
         });
 
-        if (!account?.accessToken) {
+        if (!tokenResponse?.accessToken) {
           throw new Error("GitHub token not found");
         }
 
-        return { accessToken: account.accessToken };
+        return { accessToken: tokenResponse.accessToken };
       });
 
       const files = await step.run("fetch-repo-files", async () => {
