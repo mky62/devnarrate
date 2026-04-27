@@ -1,11 +1,12 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { embedText } from "@/lib/embeddings";
 import { queryPinecone, namespaceExists } from "@/lib/pinecone";
 
-const genAI = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY! });
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
+const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
 export async function POST(req: Request) {
   const session = await auth.api.getSession({
@@ -89,17 +90,14 @@ User Request: ${prompt}
 Write a well-structured, informative response. Use markdown formatting. Include code examples from the context where relevant. Be technical but accessible.`;
 
   try {
-    const result = await genAI.models.generateContentStream({
-      model: "gemini-2.5-flash",
-      contents: fullPrompt,
-    });
+    const result = await model.generateContentStream(fullPrompt);
 
     // Create a streaming response
     const stream = new ReadableStream({
       async start(controller) {
         try {
-          for await (const chunk of result) {
-            const text = chunk.text;
+          for await (const chunk of result.stream) {
+            const text = chunk.text();
             if (text) {
               controller.enqueue(new TextEncoder().encode(text));
             }

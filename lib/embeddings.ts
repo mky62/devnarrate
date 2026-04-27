@@ -1,8 +1,13 @@
 import OpenAI from 'openai';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+function getOpenAIClient() {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) {
+    throw new Error("OPENAI_API_KEY is not set");
+  }
+
+  return new OpenAI({ apiKey });
+}
 
 export async function embedTexts(texts: string[]): Promise<number[][]> {
   if (texts.length === 0) {
@@ -18,6 +23,7 @@ export async function embedTexts(texts: string[]): Promise<number[][]> {
   }
 
   const allEmbeddings: number[][] = [];
+  const openai = getOpenAIClient();
 
   for (const batch of batches) {
     const response = await openai.embeddings.create({
