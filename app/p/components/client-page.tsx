@@ -220,6 +220,7 @@ export default function ClientPage() {
                 removeSessionStorageItem("link")
                 removeSessionStorageItem("content")
                 router.push("/dashboard")
+                router.refresh()
             }
         } catch (err) {
             console.error(err)

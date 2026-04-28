@@ -155,7 +155,7 @@ export default async function PostPage({ params }: PostPageProps) {
 
         {/* Content */}
         <article
-          className="prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-strong:text-gray-900 prose-a:text-blue-600 hover:prose-a:text-blue-700 prose-blockquote:border-l-4 prose-blockquote:border-blue-300 prose-blockquote:bg-blue-50/50 prose-blockquote:pl-4 prose-blockquote:py-2 prose-blockquote:italic prose-pre:bg-gray-900 prose-pre:text-gray-100 prose-code:text-sm prose-code:px-1.5 prose-code:py-0.5 prose-code:bg-gray-100 prose-code:rounded"
+          className="post-content prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-strong:text-gray-900 prose-a:text-blue-600 hover:prose-a:text-blue-700 prose-blockquote:border-l-4 prose-blockquote:border-blue-300 prose-blockquote:bg-blue-50/50 prose-blockquote:pl-4 prose-blockquote:py-2 prose-blockquote:italic prose-pre:bg-gray-900 prose-pre:text-gray-100 prose-code:text-sm prose-code:px-1.5 prose-code:py-0.5 prose-code:bg-gray-100 prose-code:rounded"
           style={{ 
             '--tw-prose-body': '#374151',
             '--tw-prose-headings': '#111827',
@@ -164,37 +164,6 @@ export default async function PostPage({ params }: PostPageProps) {
           {renderedContent}
         </article>
 
-        {contributionHref && (
-          <div className="mt-10 border-t border-gray-200 pt-6">
-            <a
-              href={contributionHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-amber-600"
-            >
-              <Coffee size={16} />
-              Buy me a coffee
-            </a>
-          </div>
-        )}
-        <style dangerouslySetInnerHTML={{__html: `
-          .prose p { margin-bottom: 1rem; }
-          .prose p:empty { min-height: 0.5rem; margin-bottom: 0.5rem; }
-          .prose br { display: block; content: ""; margin-top: 0.5rem; }
-          
-          article ul { list-style-type: disc !important; padding-left: 1.5rem !important; margin-bottom: 1rem !important; }
-          article ol { list-style-type: decimal !important; padding-left: 1.5rem !important; margin-bottom: 1rem !important; }
-          article li { margin-bottom: 0.5rem !important; display: list-item !important; }
-          article ul ul { list-style-type: circle !important; }
-          article ul ul ul { list-style-type: square !important; }
-          
-          ul[data-type="bulletList"] { list-style-type: disc !important; }
-          ol[data-type="orderedList"] { list-style-type: decimal !important; }
-          li[data-type="listItem"] { display: list-item !important; }
-          
-          article span[style*="font-size"] { font-size: inherit !important; }
-          article [style*="20px"] { font-size: 20px !important; }
-        `}} />
       </main>
     </div>
   );

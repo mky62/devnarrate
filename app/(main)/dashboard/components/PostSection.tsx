@@ -1,8 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { FileText, Plus, ExternalLink, Clock, Heart, Loader2, Trash2, X, AlertTriangle } from "lucide-react"
+import { useQueryClient } from "@tanstack/react-query"
 import { usePosts } from "@/hooks/usePosts"
 import { useDeletePost } from "@/hooks/useDeletePost"
 import { Post } from "@/lib/userdata"
@@ -11,10 +12,16 @@ interface PostSectionProps {
     initialPosts?: Post[];
 }
 
-export default function PostSection({ initialPosts = [] }: PostSectionProps) {
+export default function PostSection({ initialPosts }: PostSectionProps) {
+    const queryClient = useQueryClient()
     const { data: posts = [], isLoading, error } = usePosts(initialPosts)
     const deletePost = useDeletePost()
     const [deletingId, setDeletingId] = useState<string | null>(null)
+
+    useEffect(() => {
+        if (!initialPosts?.length) return
+        queryClient.setQueryData<Post[]>(["posts"], initialPosts)
+    }, [initialPosts, queryClient])
 
     const handleDelete = async (id: string) => {
         setDeletingId(null)
