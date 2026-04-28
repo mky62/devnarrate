@@ -11,10 +11,13 @@ export const indexRepo = inngest.createFunction(
     id: "index-repo",
     name: "Index Repo",
     retries: 2,
+    timeouts: {
+      finish: "5m",
+    },
     triggers: [{ event: "repos/index" }],
   },
-  async ({ event, step }: { event: any; step: any }) => {
-    const { jobId, repoId, userId, repoName, accountId } = event.data;
+  async ({ event, step }) => {
+    const { jobId, repoId, userId } = event.data;
 
     try {
       await step.run("mark-job-indexing", async () => {
