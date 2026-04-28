@@ -164,19 +164,6 @@ export default async function PostPage({ params }: PostPageProps) {
           {renderedContent}
         </article>
 
-        {contributionHref && (
-          <div className="mt-10 border-t border-gray-200 pt-6">
-            <a
-              href={contributionHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-amber-600"
-            >
-              <Coffee size={16} />
-              Buy me a coffee
-            </a>
-          </div>
-        )}
         <style dangerouslySetInnerHTML={{__html: `
           .prose p { margin-bottom: 1rem; }
           .prose p:empty { min-height: 0.5rem; margin-bottom: 0.5rem; }
