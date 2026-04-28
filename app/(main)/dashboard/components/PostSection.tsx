@@ -12,13 +12,14 @@ interface PostSectionProps {
     initialPosts?: Post[];
 }
 
-export default function PostSection({ initialPosts = [] }: PostSectionProps) {
+export default function PostSection({ initialPosts }: PostSectionProps) {
     const queryClient = useQueryClient()
     const { data: posts = [], isLoading, error } = usePosts(initialPosts)
     const deletePost = useDeletePost()
     const [deletingId, setDeletingId] = useState<string | null>(null)
 
     useEffect(() => {
+        if (!initialPosts?.length) return
         queryClient.setQueryData<Post[]>(["posts"], initialPosts)
     }, [initialPosts, queryClient])
 
