@@ -2,10 +2,11 @@ import Header from './components/Header'
 import Image from 'next/image'
 import ExploreBg from "@/public/explorebg.jpg"
 import {Particles} from '@/components/ui/particles'
+import AsciiComingSoon from './components/AsciiComingSoon'
 
 export default function page() {
   return (
-    <div className='w-full h-full flex flex-col'>
+    <div className='relative w-full min-h-screen flex flex-col overflow-hidden'>
 
        <Header />
        <div className="absolute inset-0 -z-20">
@@ -27,6 +28,10 @@ export default function page() {
 
               <Particles
                className="absolute  inset-0" />
+
+      <main className="relative z-10 flex flex-1 items-center justify-center px-4 py-12">
+        <AsciiComingSoon />
+      </main>
     </div>
   )
 }
