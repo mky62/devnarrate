@@ -111,12 +111,12 @@ export default function PublicPostSection({ stageName }: PublicPostSectionProps)
                   <p className="text-xs text-gray-500 line-clamp-2 mb-2 flex-1">
                     {extractTextFromContent(post.content)}
                   </p>
-                  <div className="flex items-center justify-between gap-2 mt-auto pt-2 border-t border-gray-50">
-                    <span className="inline-flex items-center gap-1 text-[10px] font-medium text-gray-400">
+                  <div className="flex flex-col gap-2 mt-auto pt-2 border-t border-gray-50 sm:flex-row sm:items-center sm:justify-between">
+                    <span className="inline-flex items-center gap-1 text-[10px] font-medium text-gray-400 whitespace-nowrap">
                       <Clock size={10} className="text-gray-300" />
                       {formatDate(post.createdAt)}
                     </span>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap sm:justify-end">
                       <PostLikeButton
                         postId={post.id}
                         initialLiked={post.likedByViewer}
@@ -125,7 +125,7 @@ export default function PublicPostSection({ stageName }: PublicPostSectionProps)
                         stopPropagation
                       />
                       {post.projectLink && (
-                        <span className="inline-flex items-center px-1.5 py-0.5 text-[9px] font-bold tracking-wide uppercase text-blue-600 bg-blue-50 rounded">
+                        <span className="inline-flex items-center px-1.5 py-0.5 text-[9px] font-bold tracking-wide uppercase text-blue-600 bg-blue-50 rounded whitespace-nowrap">
                           Project
                         </span>
                       )}

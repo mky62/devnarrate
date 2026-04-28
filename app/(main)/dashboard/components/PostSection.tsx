@@ -134,9 +134,9 @@ export default function PostSection({ initialPosts }: PostSectionProps) {
                                 </p>
 
                                 {/* Footer - minimal, only necessary info */}
-                                <div className="flex items-center justify-between text-[10px] text-gray-400 border-t border-gray-100 pt-3">
+                                <div className="flex flex-col gap-2 text-[10px] text-gray-400 border-t border-gray-100 pt-3 sm:flex-row sm:items-center sm:justify-between">
                                     <div className="flex items-center gap-3">
-                                        <span className="flex items-center gap-1">
+                                        <span className="inline-flex items-center gap-1 whitespace-nowrap">
                                             <Clock size={12} />
                                             {formatDate(post.createdAt)}
                                         </span>
@@ -146,9 +146,9 @@ export default function PostSection({ initialPosts }: PostSectionProps) {
                                         </span>
                                     </div>
 
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex items-center gap-2 self-start sm:self-auto">
                                         {post.projectLink && (
-                                            <span className="text-blue-600 font-medium text-[10px] uppercase tracking-widest">
+                                            <span className="text-blue-600 font-medium text-[10px] uppercase tracking-widest whitespace-nowrap">
                                                 Project
                                             </span>
                                         )}
