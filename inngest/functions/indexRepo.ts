@@ -30,6 +30,16 @@ export const indexRepo = inngest.createFunction(
             error: null,
           },
         });
+
+        await db.repo.updateMany({
+          where: {
+            githubRepoId: Number(repoId),
+            userId,
+          },
+          data: {
+            indexStatus: "INDEXING",
+          },
+        });
       });
 
       const { accessToken } = await step.run("fetch-github-token", async () => {
@@ -87,6 +97,26 @@ export const indexRepo = inngest.createFunction(
               chunksCount: 0,
             },
           });
+
+          const repo = await db.repo.findUnique({
+            where: {
+              githubRepoId: Number(repoId),
+            },
+            select: {
+              latestCommitSha: true,
+            },
+          });
+
+          await db.repo.updateMany({
+            where: {
+              githubRepoId: Number(repoId),
+              userId,
+            },
+            data: {
+              indexStatus: "COMPLETED",
+              indexedCommitSha: repo?.latestCommitSha ?? null,
+            },
+          });
         });
 
         return {
@@ -133,6 +163,26 @@ export const indexRepo = inngest.createFunction(
             chunksCount: chunks.length,
           },
         });
+
+        const repo = await db.repo.findUnique({
+          where: {
+            githubRepoId: Number(repoId),
+          },
+          select: {
+            latestCommitSha: true,
+          },
+        });
+
+        await db.repo.updateMany({
+          where: {
+            githubRepoId: Number(repoId),
+            userId,
+          },
+          data: {
+            indexStatus: "COMPLETED",
+            indexedCommitSha: repo?.latestCommitSha ?? null,
+          },
+        });
       });
 
       return {
@@ -150,6 +200,16 @@ export const indexRepo = inngest.createFunction(
           data: {
             status: "FAILED",
             error: error instanceof Error ? error.message : "Unknown error",
+          },
+        });
+
+        await db.repo.updateMany({
+          where: {
+            githubRepoId: Number(repoId),
+            userId,
+          },
+          data: {
+            indexStatus: "FAILED",
           },
         });
       });

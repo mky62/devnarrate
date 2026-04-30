@@ -26,6 +26,9 @@ export async function GET() {
         stars: true,
         forks: true,
         accountId: true,
+        indexStatus: true,
+        latestCommitSha: true,
+        indexedCommitSha: true,
       },
     });
 
@@ -54,8 +57,10 @@ export async function GET() {
         const job = latestJobs.get(repoId);
         const hasVectors = await namespaceExists(`repo-${repoId}`);
 
-        let status: 'not_indexed' | 'pending' | 'indexing' | 'completed' | 'failed' | 'failed_with_stale_index';
-        if (!job) {
+        let status: 'not_indexed' | 'pending' | 'indexing' | 'completed' | 'failed' | 'failed_with_stale_index' | 'stale';
+        if (repo.indexStatus === 'STALE') {
+          status = 'stale';
+        } else if (!job) {
           status = 'not_indexed';
         } else if (hasVectors) {
           // Vectors exist - repo is usable regardless of job status

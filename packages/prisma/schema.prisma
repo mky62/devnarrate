@@ -117,12 +117,17 @@ model Repo {
   stars Int @default(0)
   forks Int @default(0)
 
+  latestCommitSha String?
+  indexedCommitSha String?
+  indexStatus String @default("NOT_INDEXED") // NOT_INDEXED | PENDING | INDEXING | COMPLETED | FAILED | STALE
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([userId])
   @@index([accountId])
   @@index([githubRepoId])
+  @@index([indexStatus])
   @@map("repo")
 }
 
