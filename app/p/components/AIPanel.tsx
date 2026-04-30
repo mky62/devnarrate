@@ -3,7 +3,6 @@
 import { useState, useRef } from "react";
 import { Sparkles, Loader2, AlertCircle, X, Send } from "lucide-react";
 import { useRepos } from "@/hooks/useRepos";
-import { useRepoIndexingPolling } from "@/hooks/use-repo-indexing-polling";
 import type { Repo } from "@/lib/userdata";
 
 const CONTENT_TYPES = ["tutorial", "overview", "changelog-style", "implementation deep dive"] as const;
@@ -21,7 +20,7 @@ interface AIPanelProps {
 }
 
 export default function AIPanel({ onInsert, onClose }: AIPanelProps) {
-  const { data: repos = [], refetch: refetchRepos } = useRepos();
+  const { data: repos = [] } = useRepos();
   const [selectedRepo, setSelectedRepo] = useState<string>("");
   const [prompt, setPrompt] = useState("");
   const [contentType, setContentType] = useState<ContentType>("tutorial");
@@ -145,10 +144,7 @@ export default function AIPanel({ onInsert, onClose }: AIPanelProps) {
   const selectedRepoData = repos.find(
     (r) => String(r.githubRepoId) === selectedRepo
   );
-  const selectedRepoStatus = selectedRepoData?.status;
   const canGenerate = selectedRepoData?.status === "completed";
-
-  useRepoIndexingPolling(repos, refetchRepos);
 
   return (
     <div className="w-80 flex-shrink-0 border-l border-gray-200 bg-gray-50/50 flex flex-col h-full">
