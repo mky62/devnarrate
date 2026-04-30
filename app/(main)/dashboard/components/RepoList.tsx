@@ -4,6 +4,9 @@ import { useCallback, useState } from "react";
 import { Search, X, Loader2, Trash2 } from "lucide-react";
 import { useDebounce } from "@/hooks/use-debounce";
 import { FaCodeFork } from "react-icons/fa6";
+import { useAddRepo, useDeleteRepo, useRepos } from "@/hooks/useRepos";
+import { useRepoIndexingPolling } from "@/hooks/use-repo-indexing-polling";
+import type { Repo as SavedRepo } from "@/lib/userdata";
 
 
 interface Repo {
@@ -16,7 +19,7 @@ interface Repo {
 }
 
 interface RepoListProps {
-    initialSavedRepos?: Repo[];   // ← made optional + default
+    initialSavedRepos?: SavedRepo[];
 }
 
 export default function RepoList({ initialSavedRepos = [] }: RepoListProps) {
@@ -25,9 +28,14 @@ export default function RepoList({ initialSavedRepos = [] }: RepoListProps) {
     const [isSearching, setIsSearching] = useState(false);
     const [searchError, setSearchError] = useState<string | null>(null);
     const [searchResults, setSearchResults] = useState<Repo[]>([]);
-    const [savedRepos, setSavedRepos] = useState<Repo[]>(initialSavedRepos);
     const [addingRepoId, setAddingRepoId] = useState<number | null>(null);
     const [deletingRepoId, setDeletingRepoId] = useState<number | null>(null);
+    const [indexingRepoId, setIndexingRepoId] = useState<number | null>(null);
+    const { data: savedRepos = initialSavedRepos, refetch: refetchRepos } = useRepos(initialSavedRepos);
+    const addRepoMutation = useAddRepo();
+    const deleteRepoMutation = useDeleteRepo();
+
+    useRepoIndexingPolling(savedRepos, refetchRepos);
 
     const debouncedSearch = useDebounce(async (query: string) => {
         if (query.trim().length === 0) {
@@ -68,25 +76,20 @@ export default function RepoList({ initialSavedRepos = [] }: RepoListProps) {
     );
 
     const addRepo = async (repo: Repo) => {
-        if (savedRepos.some(r => r.githubRepoId === repo.githubRepoId) || addingRepoId === repo.githubRepoId) {
+        if (!repo.name || savedRepos.some(r => r.githubRepoId === repo.githubRepoId) || addingRepoId === repo.githubRepoId) {
             return;
         }
 
         setAddingRepoId(repo.githubRepoId);
 
         try {
-            const response = await fetch(`/api/repos/add`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(repo),
+            await addRepoMutation.mutateAsync({
+                githubRepoId: repo.githubRepoId,
+                name: repo.name,
+                language: repo.language,
+                stargazers_count: repo.stargazers_count,
+                forks_count: repo.forks_count,
             });
-
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.error || "Failed to add repo");
-            }
-
-            setSavedRepos(prev => [...prev, repo]);
         } catch (error) {
             console.error("Add repo error:", error);
         } finally {
@@ -103,23 +106,68 @@ export default function RepoList({ initialSavedRepos = [] }: RepoListProps) {
         setDeletingRepoId(githubRepoId);
 
         try {
-            const response = await fetch(`/api/repos/delete`, {
-                method: "DELETE",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ githubRepoId }),
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.error || "Failed to delete repo");
-            }
-
-            // Remove from UI instantly
-            setSavedRepos(prev => prev.filter(r => r.githubRepoId !== githubRepoId));
+            await deleteRepoMutation.mutateAsync(githubRepoId);
         } catch (error) {
             console.error("Delete repo error:", error);
         } finally {
             setDeletingRepoId(null);
+        }
+    };
+
+    const getStatusBadge = (status?: SavedRepo["status"]) => {
+        switch (status) {
+            case "completed":
+                return <span className="text-[10px] px-2 py-0.5 rounded-full bg-green-100 text-green-700">Indexed</span>;
+            case "indexing":
+                return <span className="text-[10px] px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-700">Indexing</span>;
+            case "pending":
+                return <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-100 text-blue-700">Pending</span>;
+            case "failed":
+                return <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-100 text-red-700">Failed</span>;
+            case "failed_with_stale_index":
+                return <span className="text-[10px] px-2 py-0.5 rounded-full bg-orange-100 text-orange-700">Stale</span>;
+            case "not_indexed":
+                return <span className="text-[10px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">Not Indexed</span>;
+            default:
+                return <span className="text-[10px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">Checking</span>;
+        }
+    };
+
+    const canIndexRepo = (repo: SavedRepo) => {
+        const status = repo.status;
+        return Boolean(
+            repo.accountId &&
+            repo.name &&
+            (status === "not_indexed" || status === "failed" || status === "failed_with_stale_index")
+        );
+    };
+
+    const indexRepo = async (repo: SavedRepo) => {
+        if (!canIndexRepo(repo) || indexingRepoId === repo.githubRepoId) return;
+
+        setIndexingRepoId(repo.githubRepoId);
+
+        try {
+            const response = await fetch("/api/repos/index", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    repoId: repo.githubRepoId,
+                    repoName: repo.name,
+                    accountId: repo.accountId,
+                }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.error || "Failed to start indexing");
+            }
+
+            await refetchRepos();
+        } catch (error) {
+            console.error("Index repo error:", error);
+        } finally {
+            setIndexingRepoId(null);
         }
     };
 
@@ -157,14 +205,29 @@ export default function RepoList({ initialSavedRepos = [] }: RepoListProps) {
                         >
                             <div className="flex-1 min-w-0">
                                 <p className="text-sm font-medium text-gray-800 truncate">{repo.name}</p>
-                                {repo.language && (
-                                    <p className="text-xs text-gray-500">{repo.language}</p>
-                                )}
+                                <div className="mt-1 flex items-center gap-2">
+                                    {repo.language && (
+                                        <p className="text-xs text-gray-500">{repo.language}</p>
+                                    )}
+                                    {getStatusBadge(repo.status)}
+                                </div>
                             </div>
                             <div className="text-xs text-gray-400 flex items-center gap-3">
-                                {repo.stargazers_count !== undefined && <span>⭐ {repo.stargazers_count}</span>}
-                                {repo.forks_count !== undefined && <span className="flex items-center gap-1"><FaCodeFork /> {repo.forks_count}</span>}
+                                {repo.stars !== undefined && <span>⭐ {repo.stars}</span>}
+                                {repo.forks !== undefined && <span className="flex items-center gap-1"><FaCodeFork /> {repo.forks}</span>}
                             </div>
+
+                            {canIndexRepo(repo) && (
+                                <button
+                                    onClick={() => indexRepo(repo)}
+                                    disabled={indexingRepoId === repo.githubRepoId}
+                                    className="text-xs flex items-center gap-1 px-2.5 py-1 rounded-full border border-blue-500 text-blue-600 hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
+                                    title="Index repository for AI writer"
+                                >
+                                    {indexingRepoId === repo.githubRepoId && <Loader2 size={12} className="animate-spin" />}
+                                    {indexingRepoId === repo.githubRepoId ? "Indexing" : "Index"}
+                                </button>
+                            )}
 
                             <button
                                 onClick={() => deleteRepo(repo.githubRepoId)}

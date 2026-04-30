@@ -2,13 +2,14 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getRepos, addRepo, deleteRepo, AddRepoPayload, Repo } from "@/lib/userdata";
 
-export function useRepos() {
+export function useRepos(initialData?: Repo[]) {
   return useQuery<Repo[]>({
     queryKey: ["repos"],
     queryFn: getRepos,
+    initialData,
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 10,
-    refetchOnMount: "always",
+    refetchOnMount: initialData?.length ? false : "always",
     refetchOnWindowFocus: false,
   });
 }

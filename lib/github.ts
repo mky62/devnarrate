@@ -16,6 +16,11 @@ interface GetRepoFilesOptions {
   maxFiles?: number;
 }
 
+interface GitHubTreeItem {
+  path: string;
+  type: string;
+}
+
 // File extensions we want to index
 const ALLOWED_EXTENSIONS = [
   '.js', '.ts', '.tsx', '.jsx',
@@ -99,7 +104,7 @@ export async function getRepoFilesFromGithub({
   }
 
   const tree = await treeRes.json();
-  const files = tree.tree.filter((item: any) =>
+  const files = (tree.tree as GitHubTreeItem[]).filter((item) =>
     item.type === 'blob' && shouldIncludeFile(item.path)
   );
 

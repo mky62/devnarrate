@@ -6,6 +6,7 @@ import SearchBar from "./Searchbar";
 import { FaGithub } from "react-icons/fa";
 import { MdArrowOutward } from "react-icons/md";
 import { useSession } from "@/lib/auth-client";
+import { Button } from "@/packages/tiptap/components/ui/button";
 
 export default function Navbar() {
     const [dropOpen, setDropOpen] = useState(false);
@@ -53,7 +54,7 @@ export default function Navbar() {
                             href="/sign-in"
                             className="inline-flex h-8 items-center gap-2 bg-linear-to-t from-blue-500 to-blue-600 px-4 rounded-sm px-3.5 text-[13px] font-semibold sm:text-sm text-gray/50 transition-colors hover:text-blue-900/90"
                         >
-                            sign in with <FaGithub /> <MdArrowOutward />
+                            Get Started <MdArrowOutward />
                         </Link>) :
                         (<Link
                             href="/dashboard"
@@ -65,7 +66,7 @@ export default function Navbar() {
                     </div>
 
                     {/* Hamburger button - Mobile */}
-                    <button
+                    <Button
                         type="button"
                         onClick={() => setMobileOpen((v) => !v)}
                         className="md:hidden inline-flex h-8 w-8 items-center justify-center rounded-xl border border-white/[0.07] bg-white/[0.08] text-white/70 transition-colors"
@@ -77,7 +78,7 @@ export default function Navbar() {
                                 <path d="M4 12h16M4 6h16M4 18h16" />
                             )}
                         </svg>
-                    </button>
+                    </Button>
 
                 </div>
 
@@ -88,11 +89,11 @@ export default function Navbar() {
                         <div className="flex flex-col gap-2">
                             {!session ? (
                                 <Link
-                                    href="/sign-up"
+                                    href="/sign-in"
                                     onClick={() => setMobileOpen(false)}
                                     className="inline-flex h-9 items-center justify-center gap-2 bg-gradient-to-t from-blue-500 to-blue-600 rounded-lg text-sm font-semibold text-white/50 transition-colors hover:text-blue-900/90"
                                 >
-                                    sign in with <FaGithub /> <MdArrowOutward />
+                                    Get Started <MdArrowOutward />
                                 </Link>
                             ) : (
                                 <Link

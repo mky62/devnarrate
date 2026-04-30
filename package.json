@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && next build",
+    "build": "prisma generate && next build --webpack",
     "start": "next start",
     "lint": "eslint",
     "postinstall": "prisma generate"
@@ -12,6 +12,7 @@
   "dependencies": {
     "@floating-ui/react": "^0.27.19",
     "@huggingface/inference": "^4.8.0",
+    "@next/swc-darwin-arm64": "^16.2.4",
     "@openrouter/sdk": "^0.12.21",
     "@pinecone-database/pinecone": "^7.2.0",
     "@prisma/adapter-pg": "^7.5.0",

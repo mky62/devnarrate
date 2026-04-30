@@ -67,7 +67,7 @@ export default function SignInForm({ callbackURL }: SignInFormProps) {
                         dev.narrate
                     </h1>
 
-                    <p className="text-xl text-white/90 flex justify-center items-center gap-2">
+                    <p className="text-md md:text-xl text-white/90 flex justify-center items-center gap-2">
                         Welcome back ✨
                         <span className="inline-flex items-center">
                             <RotatingText
@@ -80,7 +80,7 @@ export default function SignInForm({ callbackURL }: SignInFormProps) {
                                     "innovator",
                                     "engineer",
                                 ]}
-                                mainClassName="inline-flex text-2xl text-white font-courgette font-bold overflow-hidden"
+                                mainClassName="inline-flex text-base md:text-2xl text-white font-courgette font-bold overflow-hidden"
                                 staggerFrom="last"
                                 initial={{ y: "100%" }}
                                 animate={{ y: 0 }}
@@ -99,17 +99,20 @@ export default function SignInForm({ callbackURL }: SignInFormProps) {
                     type="button"
                     onClick={handleClick}
                     disabled={isSigningIn}
-                    className="w-full py-7 cursor-pointer bg-[#234edc] hover:bg-black active:scale-[0.98] text-white flex items-center justify-center gap-3 text-xl font-semibold rounded-2xl transition-all duration-200 shadow-xl shadow-black/30"
+                    className="github-signin-button relative isolate w-full overflow-hidden py-7 cursor-pointer bg-[#234edc] hover:bg-[#1140d9] active:scale-[0.98] text-white flex items-center justify-center gap-3 text-xl font-semibold rounded-2xl transition-all duration-900 shadow-xl shadow-black/30"
                 >
-                    <FaGithub className="text-3xl" />
-                    {isSigningIn ? "Redirecting to GitHub..." : "Sign in with GitHub"}
+                    {!isSigningIn && <span aria-hidden="true" className="github-signin-glare" />}
+                    <FaGithub className="relative z-10 text-3xl" />
+                    <span className="relative z-10">
+                        {isSigningIn ? "Redirecting to GitHub..." : "Sign in with GitHub"}
+                    </span>
                 </Button>
 
                 {/* Footer */}
                 <p className="text-center text-sm font-light text-white/70">
                     Be part of the{" "}
                     <span className="font-semibold underline-offset-4 hover:text-white transition-colors cursor-pointer text-white/90">
-                        <Link href="/" className="underline">dev.narrate</Link>
+                        <Link href="/" className="underline hover:text-[#234edc]">dev.narrate</Link>
                     </span>{" "}
                     community
                 </p>
