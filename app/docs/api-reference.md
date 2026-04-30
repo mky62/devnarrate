@@ -327,13 +327,16 @@ Accepted body:
 
 - `repoId`: GitHub repo ID.
 - `prompt`: non-empty string up to 4000 characters.
+- `contentType`: optional `tutorial`, `overview`, `changelog-style`, or `implementation deep dive`. Defaults to `tutorial`.
+- `audience`: optional `beginner`, `intermediate`, or `advanced`. Defaults to `intermediate`.
+- `tone`: optional `concise`, `explanatory`, or `polished`. Defaults to `explanatory`.
 
 Behavior:
 
 1. Checks Pinecone namespace `repo-${repoId}` exists.
-2. Embeds the prompt with Hugging Face.
-3. Queries Pinecone for top 5 relevant chunks.
-4. Builds a source-context prompt.
+2. Embeds the prompt with Hugging Face using the E5 `query:` prefix, with a raw embedding fallback for older indexes.
+3. Queries Pinecone for top 10 relevant chunks and drops weak matches.
+4. Builds a grouped source-context prompt with file paths, line ranges, and relevance scores.
 5. Streams text from OpenRouter.
 
 Responses:

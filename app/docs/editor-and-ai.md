@@ -178,7 +178,7 @@ Indexing starts from the AI panel or any caller of `POST /api/repos/index`.
 3. Resolves GitHub repository details using `getRepoDetailsFromGithub`.
 4. Fetches files with `getRepoFilesFromGithub`.
 5. Chunks files with `chunkCodeFile`.
-6. Embeds chunks in batches of 16 using `embedTexts`.
+6. Embeds chunks in batches of 16 using `embedPassages`.
 7. Upserts vectors into Pinecone under namespace `repo-${repoId}`.
 8. Marks job `COMPLETED` with `chunksCount`.
 9. Marks job `FAILED` and stores an error message on failure.
@@ -238,6 +238,7 @@ Defaults:
 - Endpoint: feature extraction pipeline.
 
 `embedTexts` normalizes both single-vector and batch-vector responses into `number[][]`.
+`embedPassages` prefixes indexed chunks with `passage:` and `embedQuery` prefixes user prompts with `query:` for E5-compatible retrieval. Generation falls back to a raw prompt embedding when querying older namespaces that were indexed before passage prefixes were added.
 
 ### Pinecone
 
@@ -268,11 +269,12 @@ Generation model:
 
 - `nvidia/nemotron-3-super-120b-a12b:free`
 
-The server embeds the user's prompt, queries Pinecone for top 5 chunks, and builds a context block of source snippets:
+The server embeds the user's prompt, queries Pinecone for top 10 chunks, filters weak matches, deduplicates overlapping chunks, and builds a grouped context block with file-level metadata:
 
 ```text
-[Source 1] path/to/file.ts (lines 1-20):
+File: path/to/file.ts
+[Source 1] lines 1-20, relevance 0.832
 ...
 ```
 
-It then streams text/plain content to the client. The AI panel reads the stream with `ReadableStreamDefaultReader`, appends chunks to local state, and can insert the generated text into the editor.
+It then streams text/plain content to the client. The AI panel sends optional `contentType`, `audience`, and `tone` fields, reads the stream with `ReadableStreamDefaultReader`, appends chunks to local state, and can insert the generated text into the editor.

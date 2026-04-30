@@ -68,6 +68,7 @@ export default async function DashboardPage() {
         stars: true,
         forks: true,
         description: true,
+        accountId: true,
       },
       take: 20,
     }),
@@ -134,9 +135,10 @@ export default async function DashboardPage() {
                 githubRepoId: repo.githubRepoId,
                 name: repo.name,
                 language: repo.language,
-                stargazers_count: repo.stars,
-                forks_count: repo.forks,
+                stars: repo.stars,
+                forks: repo.forks,
                 description: repo.description,
+                accountId: repo.accountId,
               }))}
             />
           </div>

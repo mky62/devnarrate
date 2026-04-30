@@ -3,7 +3,7 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/prisma";
 import { getRepoDetailsFromGithub, getRepoFilesFromGithub, RepoFile } from "@/lib/github";
 import { chunkCodeFile, Chunk } from "@/lib/chunking";
-import { embedTexts } from "@/lib/embeddings";
+import { embedPassages } from "@/lib/embeddings";
 import { upsertChunksToPinecone } from "@/lib/pinecone";
 
 export const indexRepo = inngest.createFunction(
@@ -98,7 +98,7 @@ export const indexRepo = inngest.createFunction(
 
         for (let i = 0; i < chunks.length; i += batchSize) {
           const batch = chunks.slice(i, i + batchSize);
-          const embeddings = await embedTexts(batch.map((chunk: Chunk) => chunk.text));
+          const embeddings = await embedPassages(batch.map((chunk: Chunk) => chunk.text));
 
           await upsertChunksToPinecone({
             namespace: `repo-${repoId}`,

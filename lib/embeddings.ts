@@ -1,4 +1,6 @@
 const HF_EMBEDDING_MODEL = "intfloat/multilingual-e5-large";
+const E5_QUERY_PREFIX = "query: ";
+const E5_PASSAGE_PREFIX = "passage: ";
 
 function normalizeEmbedding(result: number[] | number[][]): number[][] {
   if (Array.isArray(result[0])) {
@@ -50,4 +52,12 @@ export async function embedText(text: string): Promise<number[]> {
   }
 
   return embeddings[0];
+}
+
+export async function embedQuery(text: string): Promise<number[]> {
+  return embedText(`${E5_QUERY_PREFIX}${text}`);
+}
+
+export async function embedPassages(texts: string[]): Promise<number[][]> {
+  return embedTexts(texts.map((text) => `${E5_PASSAGE_PREFIX}${text}`));
 }

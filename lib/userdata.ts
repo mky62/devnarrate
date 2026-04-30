@@ -83,14 +83,18 @@ export async function deletePost(id: string): Promise<void> {
 export interface Repo {
   githubRepoId: number;
   name: string | null;
+  accountId?: string;
   language: string | null;
   stars: number;
   forks: number;
   description: string | null;
+  status?: "not_indexed" | "pending" | "indexing" | "completed" | "failed" | "failed_with_stale_index";
+  jobId?: string;
+  lastIndexedAt?: string | Date;
 }
 
 export async function getRepos(): Promise<Repo[]> {
-  const res = await fetch("/api/repos");
+  const res = await fetch("/api/repos/list");
   if (!res.ok) throw new Error("Failed to fetch repos");
   const data = await res.json();
   return data.repos ?? [];
