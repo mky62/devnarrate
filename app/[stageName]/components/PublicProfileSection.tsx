@@ -4,7 +4,6 @@ import Image from "next/image";
 import { Calendar, Coffee, Globe } from "lucide-react";
 import Link from "next/link";
 import { FaGithub, FaLinkedin, FaTwitter } from "react-icons/fa6";
-import { useEffect, useState } from "react";
 import PublicGitStats from "./PublicGitStats";
 import { getSafeContributionUrl } from "@/lib/contributions";
 
@@ -15,7 +14,7 @@ interface SocialLinks {
   website?: string;
 }
 
-interface PublicUser {
+export interface PublicUser {
   id: string;
   name: string | null;
   image: string | null;
@@ -28,49 +27,11 @@ interface PublicUser {
 
 interface PublicProfileSectionProps {
   stageName: string;
+  user: PublicUser | null;
 }
 
-export default function PublicProfileSection({ stageName }: PublicProfileSectionProps) {
-  const [user, setUser] = useState<PublicUser | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await fetch(`/api/user/${stageName}`);
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error("Profile fetch error:", response.status, errorText);
-          throw new Error("Failed to fetch user");
-        }
-        const data = await response.json();
-        setUser(data);
-      } catch (err) {
-        console.error("Profile load error:", err);
-        setError("Failed to load profile");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUser();
-  }, [stageName]);
-
-  if (loading) {
-    return (
-      <div className="h-full rounded-xl flex flex-col overflow-hidden border-blue-500 border-2">
-        <div className="relative w-full h-28 animate-pulse bg-gray-200" />
-        <div className="flex-1 p-4 space-y-3">
-          <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4" />
-          <div className="h-3 bg-gray-200 rounded animate-pulse w-1/2" />
-          <div className="h-3 bg-gray-200 rounded animate-pulse w-2/3" />
-        </div>
-      </div>
-    );
-  }
-
-  if (error || !user) {
+export default function PublicProfileSection({ stageName, user }: PublicProfileSectionProps) {
+  if (!user) {
     return (
       <div className="h-full rounded-xl flex flex-col overflow-hidden border-blue-500 border-2 p-4">
         <div className="flex-1 flex flex-col items-center justify-center text-center">
@@ -97,7 +58,7 @@ export default function PublicProfileSection({ stageName }: PublicProfileSection
       {/* Banner */}
       <div className="relative w-full h-28 shrink-0">
         <Image
-          src={`https://picsum.photos/400/120?t=${Date.now()}`}
+          src={`https://picsum.photos/400/120?t=${user.id}`}
           alt="profile banner"
           fill
           className="object-cover opacity-80"

@@ -9,7 +9,7 @@ export function useRepos(initialData?: Repo[]) {
     initialData,
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 10,
-    refetchOnMount: "always",
+    refetchOnMount: initialData?.length ? false : "always",
     refetchOnWindowFocus: false,
   });
 }

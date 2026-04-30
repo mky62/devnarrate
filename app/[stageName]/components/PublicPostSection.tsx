@@ -1,27 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
-import { FileText, ExternalLink, Clock, Loader2 } from "lucide-react";
+import { FileText, ExternalLink, Clock } from "lucide-react";
 import PostLikeButton from "@/components/posts/PostLikeButton";
 import type { Post } from "@/lib/userdata";
 
 interface PublicPostSectionProps {
-  stageName: string;
+  posts: Post[];
 }
 
-export default function PublicPostSection({ stageName }: PublicPostSectionProps) {
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch(`/api/posts/public/${stageName}`)
-      .then((res) => res.json())
-      .then((data) => setPosts(data.posts ?? []))
-      .catch(() => setPosts([]))
-      .finally(() => setLoading(false));
-  }, [stageName]);
-
+export default function PublicPostSection({ posts }: PublicPostSectionProps) {
   const extractTextFromContent = (content: string): string => {
     try {
       const parsed = JSON.parse(content);
@@ -71,12 +59,7 @@ export default function PublicPostSection({ stageName }: PublicPostSectionProps)
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto">
-        {loading ? (
-          <div className="flex flex-col items-center justify-center h-full text-gray-400 gap-3 p-8">
-            <Loader2 size={24} className="animate-spin opacity-40" />
-            <p className="text-sm">Loading posts…</p>
-          </div>
-        ) : posts.length === 0 ? (
+        {posts.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-gray-400 gap-3 p-8">
             <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center">
               <FileText size={24} className="text-blue-300" />

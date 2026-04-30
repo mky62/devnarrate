@@ -48,30 +48,7 @@ import { FontSizeDropdown } from "@/packages/tiptap/components/tiptap-ui/font-si
 // --- Lib ---
 import { handleImageUpload, MAX_FILE_SIZE } from "@/lib/tiptap-utils"
 import AIPanel from "./AIPanel"
-
-const getSessionStorageItem = (key: string) => {
-    if (typeof window === "undefined") {
-        return null
-    }
-
-    return window.sessionStorage.getItem(key)
-}
-
-const setSessionStorageItem = (key: string, value: string) => {
-    if (typeof window === "undefined") {
-        return
-    }
-
-    window.sessionStorage.setItem(key, value)
-}
-
-const removeSessionStorageItem = (key: string) => {
-    if (typeof window === "undefined") {
-        return
-    }
-
-    window.sessionStorage.removeItem(key)
-}
+import { clearEditorDraft, useEditorDraft } from "@/hooks/use-editor-draft"
 
 const getEditorThemePreference = () => {
     if (typeof window === "undefined") {
@@ -88,32 +65,11 @@ const getEditorThemePreference = () => {
 export default function ClientPage() {
     const router = useRouter();
     const { data: session, isPending } = useSession()
-    const [title, setTitle] = useState("")
-    const [link, setLink] = useState("")
     const [loading, setLoading] = useState(false)
-    const [draftLoaded, setDraftLoaded] = useState(false)
-    const [savedContent, setSavedContent] = useState<string | null>(null)
     const [showAIPanel, setShowAIPanel] = useState(false)
     const [isEditorDarkMode, setIsEditorDarkMode] = useState(getEditorThemePreference)
 
     const toolbarRef = useRef<HTMLDivElement>(null)
-
-    useEffect(() => {
-        setTitle(getSessionStorageItem("title") ?? "")
-        setLink(getSessionStorageItem("link") ?? "")
-        setSavedContent(getSessionStorageItem("content"))
-        setDraftLoaded(true)
-    }, [])
-
-    useEffect(() => {
-        if (!draftLoaded) return
-        setSessionStorageItem("title", title)
-    }, [draftLoaded, title])
-
-    useEffect(() => {
-        if (!draftLoaded) return
-        setSessionStorageItem("link", link)
-    }, [draftLoaded, link])
 
     useEffect(() => {
         if (typeof window === "undefined") return
@@ -173,28 +129,7 @@ export default function ClientPage() {
             }),
         ],
     })
-
-    useEffect(() => {
-        if (!editor) return
-        if (!savedContent) return
-
-        try {
-            editor.commands.setContent(JSON.parse(savedContent))
-        } catch (error) {
-            console.error("Failed to restore draft content:", error)
-        }
-    }, [editor, savedContent])
-
-    useEffect(() => {
-        if (!editor) return
-        if (!draftLoaded) return
-
-        const updateHandler = () => {
-            setSessionStorageItem("content", JSON.stringify(editor.getJSON()))
-        }
-        editor.on("update", updateHandler)
-        return () => { editor.off("update", updateHandler) }
-    }, [draftLoaded, editor])
+    const { title, setTitle, link, setLink } = useEditorDraft(editor)
 
     if (isPending || !session) {
         return <div className="flex items-center bg-sky-200/40 justify-center h-screen"><Loader className="animate-spin text-blue-700 text-xl" /></div>
@@ -216,9 +151,7 @@ export default function ClientPage() {
             }
             const data = await res.json()
             if (data.success) {
-                removeSessionStorageItem("title")
-                removeSessionStorageItem("link")
-                removeSessionStorageItem("content")
+                clearEditorDraft()
                 router.push("/dashboard")
                 router.refresh()
             }

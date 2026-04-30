@@ -60,11 +60,11 @@ export default function ProfileSection({ user, initialGitStats }: ProfileSection
     : null;
 
   return (
-    <div className="h-full rounded-xl flex flex-col overflow-hidden border-blue-500 border-2">
+    <div className="h-full rounded-xl flex flex-col overflow-hidden opaacity-20 border-blue-500 border-2">
       <ProfileBanner userId={resolvedUser.id} onEdit={() => setIsEditing(true)} />
       <ProfileAvatar image={resolvedUser.image} displayName={displayName} />
 
-      <div className="flex-1 p-4 pt-3 space-y-3 min-h-0 overflow-y-auto">
+      <div className="flex-1 p-4 pt-3 space-y-3  min-h-0 overflow-y-auto">
         <div>
           <h2 className="font-bold text-gray-900 text-lg leading-tight truncate">
             {displayName || "Anonymous"}

@@ -98,9 +98,8 @@ export default function SearchBar() {
                 <div
                     className="
         absolute left-0 right-0 z-50
-        rounded-b-2xl border border-t-0
-        border-white/10
-        bg-white/80 dark:bg-blue-900/40
+        rounded-b-2xl
+        bg-gradient-to-br from-green-200 to-blue-200  dark:bg-blue-900/40
         backdrop-blur-xl
         shadow-[0_20px_60px_rgba(0,0,0,0.15)]
         overflow-hidden
@@ -108,10 +107,10 @@ export default function SearchBar() {
                 >
                     {results.length === 0 && !loading ? (
                         <div className="px-5 py-8 text-center text-sm text-muted-foreground">
-                            No developers found for “{query}”
+                            No builders found for “{query}”
                         </div>
                     ) : (
-                        <div className="max-h-80 overflow-y-auto py-2">
+                        <div className="max-h-80 bg-gradient-to-br from-green-200 to-blue-200  overflow-y-auto py-2">
                             {results.map((user) => (
                                 <button
                                     key={user.stageName}

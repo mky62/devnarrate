@@ -5,7 +5,7 @@ import RotatingText from "@/app/(auth)/components/RotatingText"
 export default function Header() {
 
   return (
-    <header className="relative h-16 w-full border border-white rounded-b-full backdrop-blur-md bg-white/50 mb-8">
+    <header className="relative h-16 w-full border border-white rounded-b-full backdrop-blur-md bg-linear-to-br from-green-200 to-blue-200 mb-8">
       <div className="flex items-center h-full px-4">
 
        

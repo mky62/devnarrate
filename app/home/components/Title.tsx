@@ -12,8 +12,7 @@ export default function Title({ title, description, align = "left" }: { title: R
         text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl
         font-arimo  tracking-tight
         leading-tight
-        bg-gradient-to-b from-gray-600 to-gray-800
-        bg-clip-text text-transparent
+        text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.45)]
       ">
         {title}
       </h1>
@@ -21,9 +20,7 @@ export default function Title({ title, description, align = "left" }: { title: R
       {description && (
         <p className="
           text-sm sm:text-base md:text-lg
-          leading-relaxed
-           bg-gradient-to-r from-green-600 to-blue-600
-           bg-clip-text text-transparent
+          leading-relaxed text-white/85 drop-shadow-[0_1px_8px_rgba(0,0,0,0.55)]
         ">
           {description}
         </p>

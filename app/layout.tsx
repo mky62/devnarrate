@@ -29,6 +29,15 @@ const grapeNuts = Grape_Nuts({
 export const metadata: Metadata = {
   title: "dev.narrate",
   description: "Share your coding journey with the world",
+  icons: {
+    icon: [
+      {
+        url: "/icon.svg",
+        type: "image/svg+xml",
+      },
+    ],
+    shortcut: "/icon.svg",
+  },
 };
 
 export default function RootLayout({

@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import { Sparkles, Loader2, AlertCircle, X, Send } from "lucide-react";
 import { useRepos } from "@/hooks/useRepos";
+import { useRepoIndexingPolling } from "@/hooks/use-repo-indexing-polling";
 import type { Repo } from "@/lib/userdata";
 
 const CONTENT_TYPES = ["tutorial", "overview", "changelog-style", "implementation deep dive"] as const;
@@ -147,17 +148,7 @@ export default function AIPanel({ onInsert, onClose }: AIPanelProps) {
   const selectedRepoStatus = selectedRepoData?.status;
   const canGenerate = selectedRepoData?.status === "completed";
 
-  // Poll for status updates when repo is pending or indexing
-  useEffect(() => {
-    if (!selectedRepoStatus) return;
-    if (selectedRepoStatus !== "pending" && selectedRepoStatus !== "indexing") return;
-
-    const interval = setInterval(() => {
-      refetchRepos();
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, [refetchRepos, selectedRepoStatus]);
+  useRepoIndexingPolling(repos, refetchRepos);
 
   return (
     <div className="w-80 flex-shrink-0 border-l border-gray-200 bg-gray-50/50 flex flex-col h-full">

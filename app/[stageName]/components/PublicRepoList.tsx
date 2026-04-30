@@ -1,10 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Loader2 } from "lucide-react";
 import { FaCodeFork } from "react-icons/fa6";
 
-interface Repo {
+export interface PublicRepo {
   githubRepoId: number;
   name: string | null;
   description?: string | null;
@@ -14,21 +12,10 @@ interface Repo {
 }
 
 interface PublicRepoListProps {
-  stageName: string;
+  repos: PublicRepo[];
 }
 
-export default function PublicRepoList({ stageName }: PublicRepoListProps) {
-  const [repos, setRepos] = useState<Repo[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch(`/api/repos/public/${stageName}`)
-      .then((res) => res.json())
-      .then((data) => setRepos(data.repos ?? []))
-      .catch(() => setRepos([]))
-      .finally(() => setLoading(false));
-  }, [stageName]);
-
+export default function PublicRepoList({ repos }: PublicRepoListProps) {
   return (
     <div className="border-blue-500 border-2 h-full rounded-xl flex flex-col overflow-hidden">
       {/* Header */}
@@ -43,12 +30,7 @@ export default function PublicRepoList({ stageName }: PublicRepoListProps) {
 
       {/* Repos List */}
       <div className="flex-1 overflow-y-auto divide-y divide-gray-100 p-2">
-        {loading ? (
-          <div className="flex flex-col items-center justify-center h-full text-gray-400 gap-3">
-            <Loader2 size={24} className="animate-spin opacity-40" />
-            <p className="text-sm">Loading repositories…</p>
-          </div>
-        ) : repos.length === 0 ? (
+        {repos.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center py-8">
             <p className="text-gray-400 text-sm">No repositories saved yet</p>
             <p className="text-gray-400 text-xs mt-1">

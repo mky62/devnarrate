@@ -5,6 +5,7 @@ import { Search, X, Loader2, Trash2 } from "lucide-react";
 import { useDebounce } from "@/hooks/use-debounce";
 import { FaCodeFork } from "react-icons/fa6";
 import { useAddRepo, useDeleteRepo, useRepos } from "@/hooks/useRepos";
+import { useRepoIndexingPolling } from "@/hooks/use-repo-indexing-polling";
 import type { Repo as SavedRepo } from "@/lib/userdata";
 
 
@@ -34,18 +35,7 @@ export default function RepoList({ initialSavedRepos = [] }: RepoListProps) {
     const addRepoMutation = useAddRepo();
     const deleteRepoMutation = useDeleteRepo();
 
-    useEffect(() => {
-        const hasActiveIndexJob = savedRepos.some(
-            (repo) => repo.status === "pending" || repo.status === "indexing"
-        );
-        if (!hasActiveIndexJob) return;
-
-        const interval = setInterval(() => {
-            refetchRepos();
-        }, 20000);
-
-        return () => clearInterval(interval);
-    }, [refetchRepos, savedRepos]);
+    useRepoIndexingPolling(savedRepos, refetchRepos);
 
     const debouncedSearch = useDebounce(async (query: string) => {
         if (query.trim().length === 0) {

@@ -135,6 +135,42 @@
   }
 }
 
+.github-signin-glare {
+  position: absolute;
+  inset-block: -55%;
+  left: -45%;
+  z-index: 1;
+  width: 32%;
+  pointer-events: none;
+  transform: translateX(-180%) rotate(12deg);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgb(255 255 255 / 0.16),
+    rgb(255 255 255 / 0.75),
+    rgb(255 255 255 / 0.16),
+    transparent
+  );
+  filter: blur(4px);
+  animation: github-button-glare 5.4s ease-in-out infinite;
+}
+
+.github-signin-button:hover .github-signin-glare {
+  animation-duration: 1.35s;
+}
+
+@keyframes github-button-glare {
+  0%,
+  45% {
+    transform: translateX(-180%) rotate(12deg);
+  }
+
+  75%,
+  100% {
+    transform: translateX(520%) rotate(12deg);
+  }
+}
+
 .ProseMirror ul,
 .ProseMirror ol {
   list-style-type: disc !important;
