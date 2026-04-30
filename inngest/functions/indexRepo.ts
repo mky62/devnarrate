@@ -6,13 +6,12 @@ import { chunkCodeFile, Chunk } from "@/lib/chunking";
 import { embedPassages } from "@/lib/embeddings";
 import { deletePineconeNamespace, upsertChunksToPinecone } from "@/lib/pinecone";
 import { parseGithubRepoId } from "@/lib/github-repo-id";
-import { getRepoNamespace } from "@/lib/repo-indexing";
+import { getRepoIndexJobNamespace, getRepoNamespace } from "@/lib/repo-indexing";
 
 interface IndexRepoEventData {
   jobId: string;
   repoId: string;
   userId: string;
-  namespace?: string;
 }
 
 export const indexRepo = inngest.createFunction(
@@ -24,15 +23,33 @@ export const indexRepo = inngest.createFunction(
     triggers: [{ event: "repos/index" }],
   },
   async ({ event, step }) => {
-    const { jobId, repoId, userId, namespace: eventNamespace } =
-      event.data as IndexRepoEventData;
+    const { jobId, repoId, userId } = event.data as IndexRepoEventData;
     const githubRepoId = parseGithubRepoId(String(repoId));
-    const namespace = eventNamespace ?? getRepoNamespace({ userId, repoId });
+    const namespace = getRepoIndexJobNamespace({ userId, repoId, jobId });
+    const baseNamespace = getRepoNamespace({ userId, repoId });
 
     try {
       if (!githubRepoId) {
         throw new Error("Invalid GitHub repository ID");
       }
+
+      const { previousNamespace } = await step.run("load-repo-index-state", async () => {
+        const repo = await db.repo.findFirst({
+          where: {
+            githubRepoId,
+            userId,
+          },
+          select: {
+            indexNamespace: true,
+          },
+        });
+
+        if (!repo) {
+          throw new Error("Repository is not tracked");
+        }
+
+        return { previousNamespace: repo.indexNamespace };
+      });
 
       await step.run("mark-job-indexing", async () => {
         await db.repoIndexJob.update({
@@ -100,10 +117,6 @@ export const indexRepo = inngest.createFunction(
       });
       const { chunks } = chunkResult as { chunks: Chunk[] };
 
-      await step.run("clear-existing-index", async () => {
-        await deletePineconeNamespace(namespace);
-      });
-
       if (chunks.length === 0) {
         await step.run("mark-job-completed-empty", async () => {
           await db.repoIndexJob.update({
@@ -137,7 +150,15 @@ export const indexRepo = inngest.createFunction(
             data: {
               indexStatus: "COMPLETED",
               indexedCommitSha: repo?.latestCommitSha ?? null,
+              indexNamespace: namespace,
             },
+          });
+        });
+
+        await step.run("cleanup-previous-index-empty", async () => {
+          await cleanupPreviousNamespaces({
+            currentNamespace: namespace,
+            previousNamespaces: [previousNamespace, baseNamespace],
           });
         });
 
@@ -204,7 +225,15 @@ export const indexRepo = inngest.createFunction(
           data: {
             indexStatus: "COMPLETED",
             indexedCommitSha: repo?.latestCommitSha ?? null,
+            indexNamespace: namespace,
           },
+        });
+      });
+
+      await step.run("cleanup-previous-index", async () => {
+        await cleanupPreviousNamespaces({
+          currentNamespace: namespace,
+          previousNamespaces: [previousNamespace, baseNamespace],
         });
       });
 
@@ -213,6 +242,17 @@ export const indexRepo = inngest.createFunction(
         indexedChunks: chunks.length,
       };
     } catch (error) {
+      await step.run("cleanup-failed-index", async () => {
+        try {
+          await deletePineconeNamespace(namespace);
+        } catch (cleanupError) {
+          console.warn(
+            `Failed to clean up failed Pinecone namespace ${namespace}:`,
+            cleanupError
+          );
+        }
+      });
+
       await step.run("mark-job-failed", async () => {
         await db.repoIndexJob.update({
           where: {
@@ -243,3 +283,26 @@ export const indexRepo = inngest.createFunction(
     }
   }
 );
+
+async function cleanupPreviousNamespaces({
+  currentNamespace,
+  previousNamespaces,
+}: {
+  currentNamespace: string;
+  previousNamespaces: Array<string | null | undefined>;
+}) {
+  const namespacesToDelete = new Set(
+    previousNamespaces.filter(
+      (namespace): namespace is string =>
+        Boolean(namespace) && namespace !== currentNamespace
+    )
+  );
+
+  for (const namespace of namespacesToDelete) {
+    try {
+      await deletePineconeNamespace(namespace);
+    } catch (error) {
+      console.warn(`Failed to clean up Pinecone namespace ${namespace}:`, error);
+    }
+  }
+}

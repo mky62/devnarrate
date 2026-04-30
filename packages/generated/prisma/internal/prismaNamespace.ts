@@ -1191,6 +1191,7 @@ export const RepoScalarFieldEnum = {
   forks: 'forks',
   latestCommitSha: 'latestCommitSha',
   indexedCommitSha: 'indexedCommitSha',
+  indexNamespace: 'indexNamespace',
   indexStatus: 'indexStatus',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

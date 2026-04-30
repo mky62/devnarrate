@@ -14,6 +14,14 @@ export function useRepos(initialData?: Repo[]) {
   });
 }
 
+export function useCachedRepos() {
+  return useQuery<Repo[]>({
+    queryKey: ["repos"],
+    queryFn: getRepos,
+    enabled: false,
+  });
+}
+
 export function useAddRepo() {
   const queryClient = useQueryClient();
 

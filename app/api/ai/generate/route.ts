@@ -5,7 +5,7 @@ import { OpenRouter } from "@openrouter/sdk";
 import { embedQuery, embedText } from "@/lib/embeddings";
 import { queryPinecone, namespaceExists } from "@/lib/pinecone";
 import { db } from "@/lib/prisma";
-import { getLegacyRepoNamespace, getRepoNamespace } from "@/lib/repo-indexing";
+import { getRepoNamespace } from "@/lib/repo-indexing";
 import { parseGithubRepoId } from "@/lib/github-repo-id";
 
 const OPENROUTER_MODEL = "nvidia/nemotron-3-super-120b-a12b:free";
@@ -227,6 +227,7 @@ export async function POST(req: Request) {
     },
     select: {
       githubRepoId: true,
+      indexNamespace: true,
     },
   });
 
@@ -234,18 +235,15 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Repository not found" }, { status: 404 });
   }
 
-  const namespace = getRepoNamespace({
+  const namespace = repo.indexNamespace ?? getRepoNamespace({
     userId: session.user.id,
     repoId: repo.githubRepoId,
   });
-  const legacyNamespace = getLegacyRepoNamespace(repo.githubRepoId);
 
   // Check if repo is indexed
   const isIndexed = await namespaceExists(namespace);
-  const hasLegacyIndex = isIndexed ? false : await namespaceExists(legacyNamespace);
-  const queryNamespace = isIndexed ? namespace : legacyNamespace;
 
-  if (!isIndexed && !hasLegacyIndex) {
+  if (!isIndexed) {
     return NextResponse.json(
       { error: "Repo is still being indexed. Please try again in a moment." },
       { status: 425 } // Too Early
@@ -257,7 +255,7 @@ export async function POST(req: Request) {
 
   // Query Pinecone for relevant chunks
   let chunks = filterRelevantChunks(await queryPinecone({
-    namespace: queryNamespace,
+    namespace,
     embedding: promptEmbedding,
     topK: RETRIEVAL_TOP_K,
   }));
@@ -265,7 +263,7 @@ export async function POST(req: Request) {
   if (chunks.length === 0) {
     const legacyPromptEmbedding = await embedText(trimmedPrompt);
     chunks = filterRelevantChunks(await queryPinecone({
-      namespace: queryNamespace,
+      namespace,
       embedding: legacyPromptEmbedding,
       topK: RETRIEVAL_TOP_K,
     }));

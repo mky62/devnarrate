@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Sparkles, Loader2, AlertCircle, X, Send } from "lucide-react";
-import { useRepos } from "@/hooks/useRepos";
+import { useCachedRepos } from "@/hooks/useRepos";
 import type { Repo } from "@/lib/userdata";
 
 const CONTENT_TYPES = ["tutorial", "overview", "changelog-style", "implementation deep dive"] as const;
@@ -20,7 +20,7 @@ interface AIPanelProps {
 }
 
 export default function AIPanel({ onInsert, onClose }: AIPanelProps) {
-  const { data: repos = [] } = useRepos();
+  const { data: repos = [] } = useCachedRepos();
   const [selectedRepo, setSelectedRepo] = useState<string>("");
   const [prompt, setPrompt] = useState("");
   const [contentType, setContentType] = useState<ContentType>("tutorial");
@@ -30,6 +30,26 @@ export default function AIPanel({ onInsert, onClose }: AIPanelProps) {
   const [generatedContent, setGeneratedContent] = useState("");
   const [error, setError] = useState<string | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+
+  const indexedRepos = useMemo(
+    () =>
+      repos.filter(
+        (repo) =>
+          repo.status === "completed" ||
+          repo.status === "failed_with_stale_index" ||
+          repo.status === "stale"
+      ),
+    [repos]
+  );
+
+  useEffect(() => {
+    if (
+      selectedRepo &&
+      !indexedRepos.some((repo) => String(repo.githubRepoId) === selectedRepo)
+    ) {
+      setSelectedRepo("");
+    }
+  }, [indexedRepos, selectedRepo]);
 
   const readErrorMessage = async (res: Response, fallback: string) => {
     const data = await res.json().catch(() => ({} as { error?: string }));
@@ -141,12 +161,10 @@ export default function AIPanel({ onInsert, onClose }: AIPanelProps) {
     }
   };
 
-  const selectedRepoData = repos.find(
+  const selectedRepoData = indexedRepos.find(
     (r) => String(r.githubRepoId) === selectedRepo
   );
-  const canGenerate =
-    selectedRepoData?.status === "completed" ||
-    selectedRepoData?.status === "failed_with_stale_index";
+  const canGenerate = Boolean(selectedRepoData);
 
   return (
     <div className="w-80 flex-shrink-0 border-l border-gray-200 bg-gray-50/50 flex flex-col h-full">
@@ -177,7 +195,7 @@ export default function AIPanel({ onInsert, onClose }: AIPanelProps) {
             className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
           >
             <option value="">Choose a repo...</option>
-            {repos.map((repo) => (
+            {indexedRepos.map((repo) => (
               <option key={repo.githubRepoId} value={repo.githubRepoId}>
                 {repo.name}
               </option>
@@ -290,6 +308,12 @@ export default function AIPanel({ onInsert, onClose }: AIPanelProps) {
             </>
           )}
         </button>
+
+        {indexedRepos.length === 0 && (
+          <p className="text-xs text-gray-500 text-center">
+            Indexed repositories will appear here after indexing from the dashboard.
+          </p>
+        )}
 
         {!canGenerate && selectedRepo && (
           <p className="text-xs text-gray-500 text-center">

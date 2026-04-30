@@ -4,7 +4,6 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
 import { inngest } from "@/inngest/client";
 import { parseGithubRepoId } from "@/lib/github-repo-id";
-import { getRepoNamespace } from "@/lib/repo-indexing";
 
 export async function POST(req: Request) {
     try {
@@ -85,10 +84,6 @@ export async function POST(req: Request) {
                 userId: session.user.id,
                 repoName: repo.name ?? repoName,
                 accountId: repo.accountId,
-                namespace: getRepoNamespace({
-                    userId: session.user.id,
-                    repoId: repo.githubRepoId,
-                }),
             },
         });
 

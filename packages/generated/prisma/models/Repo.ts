@@ -50,6 +50,7 @@ export type RepoMinAggregateOutputType = {
   forks: number | null
   latestCommitSha: string | null
   indexedCommitSha: string | null
+  indexNamespace: string | null
   indexStatus: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -67,6 +68,7 @@ export type RepoMaxAggregateOutputType = {
   forks: number | null
   latestCommitSha: string | null
   indexedCommitSha: string | null
+  indexNamespace: string | null
   indexStatus: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -84,6 +86,7 @@ export type RepoCountAggregateOutputType = {
   forks: number
   latestCommitSha: number
   indexedCommitSha: number
+  indexNamespace: number
   indexStatus: number
   createdAt: number
   updatedAt: number
@@ -115,6 +118,7 @@ export type RepoMinAggregateInputType = {
   forks?: true
   latestCommitSha?: true
   indexedCommitSha?: true
+  indexNamespace?: true
   indexStatus?: true
   createdAt?: true
   updatedAt?: true
@@ -132,6 +136,7 @@ export type RepoMaxAggregateInputType = {
   forks?: true
   latestCommitSha?: true
   indexedCommitSha?: true
+  indexNamespace?: true
   indexStatus?: true
   createdAt?: true
   updatedAt?: true
@@ -149,6 +154,7 @@ export type RepoCountAggregateInputType = {
   forks?: true
   latestCommitSha?: true
   indexedCommitSha?: true
+  indexNamespace?: true
   indexStatus?: true
   createdAt?: true
   updatedAt?: true
@@ -253,6 +259,7 @@ export type RepoGroupByOutputType = {
   forks: number
   latestCommitSha: string | null
   indexedCommitSha: string | null
+  indexNamespace: string | null
   indexStatus: string
   createdAt: Date
   updatedAt: Date
@@ -293,6 +300,7 @@ export type RepoWhereInput = {
   forks?: Prisma.IntFilter<"Repo"> | number
   latestCommitSha?: Prisma.StringNullableFilter<"Repo"> | string | null
   indexedCommitSha?: Prisma.StringNullableFilter<"Repo"> | string | null
+  indexNamespace?: Prisma.StringNullableFilter<"Repo"> | string | null
   indexStatus?: Prisma.StringFilter<"Repo"> | string
   createdAt?: Prisma.DateTimeFilter<"Repo"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Repo"> | Date | string
@@ -312,6 +320,7 @@ export type RepoOrderByWithRelationInput = {
   forks?: Prisma.SortOrder
   latestCommitSha?: Prisma.SortOrderInput | Prisma.SortOrder
   indexedCommitSha?: Prisma.SortOrderInput | Prisma.SortOrder
+  indexNamespace?: Prisma.SortOrderInput | Prisma.SortOrder
   indexStatus?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -335,6 +344,7 @@ export type RepoWhereUniqueInput = Prisma.AtLeast<{
   forks?: Prisma.IntFilter<"Repo"> | number
   latestCommitSha?: Prisma.StringNullableFilter<"Repo"> | string | null
   indexedCommitSha?: Prisma.StringNullableFilter<"Repo"> | string | null
+  indexNamespace?: Prisma.StringNullableFilter<"Repo"> | string | null
   indexStatus?: Prisma.StringFilter<"Repo"> | string
   createdAt?: Prisma.DateTimeFilter<"Repo"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Repo"> | Date | string
@@ -354,6 +364,7 @@ export type RepoOrderByWithAggregationInput = {
   forks?: Prisma.SortOrder
   latestCommitSha?: Prisma.SortOrderInput | Prisma.SortOrder
   indexedCommitSha?: Prisma.SortOrderInput | Prisma.SortOrder
+  indexNamespace?: Prisma.SortOrderInput | Prisma.SortOrder
   indexStatus?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -379,6 +390,7 @@ export type RepoScalarWhereWithAggregatesInput = {
   forks?: Prisma.IntWithAggregatesFilter<"Repo"> | number
   latestCommitSha?: Prisma.StringNullableWithAggregatesFilter<"Repo"> | string | null
   indexedCommitSha?: Prisma.StringNullableWithAggregatesFilter<"Repo"> | string | null
+  indexNamespace?: Prisma.StringNullableWithAggregatesFilter<"Repo"> | string | null
   indexStatus?: Prisma.StringWithAggregatesFilter<"Repo"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Repo"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Repo"> | Date | string
@@ -394,6 +406,7 @@ export type RepoCreateInput = {
   forks?: number
   latestCommitSha?: string | null
   indexedCommitSha?: string | null
+  indexNamespace?: string | null
   indexStatus?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -413,6 +426,7 @@ export type RepoUncheckedCreateInput = {
   forks?: number
   latestCommitSha?: string | null
   indexedCommitSha?: string | null
+  indexNamespace?: string | null
   indexStatus?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -428,6 +442,7 @@ export type RepoUpdateInput = {
   forks?: Prisma.IntFieldUpdateOperationsInput | number
   latestCommitSha?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   indexedCommitSha?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  indexNamespace?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   indexStatus?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -447,6 +462,7 @@ export type RepoUncheckedUpdateInput = {
   forks?: Prisma.IntFieldUpdateOperationsInput | number
   latestCommitSha?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   indexedCommitSha?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  indexNamespace?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   indexStatus?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -464,6 +480,7 @@ export type RepoCreateManyInput = {
   forks?: number
   latestCommitSha?: string | null
   indexedCommitSha?: string | null
+  indexNamespace?: string | null
   indexStatus?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -479,6 +496,7 @@ export type RepoUpdateManyMutationInput = {
   forks?: Prisma.IntFieldUpdateOperationsInput | number
   latestCommitSha?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   indexedCommitSha?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  indexNamespace?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   indexStatus?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -496,6 +514,7 @@ export type RepoUncheckedUpdateManyInput = {
   forks?: Prisma.IntFieldUpdateOperationsInput | number
   latestCommitSha?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   indexedCommitSha?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  indexNamespace?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   indexStatus?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -528,6 +547,7 @@ export type RepoCountOrderByAggregateInput = {
   forks?: Prisma.SortOrder
   latestCommitSha?: Prisma.SortOrder
   indexedCommitSha?: Prisma.SortOrder
+  indexNamespace?: Prisma.SortOrder
   indexStatus?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -551,6 +571,7 @@ export type RepoMaxOrderByAggregateInput = {
   forks?: Prisma.SortOrder
   latestCommitSha?: Prisma.SortOrder
   indexedCommitSha?: Prisma.SortOrder
+  indexNamespace?: Prisma.SortOrder
   indexStatus?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -568,6 +589,7 @@ export type RepoMinOrderByAggregateInput = {
   forks?: Prisma.SortOrder
   latestCommitSha?: Prisma.SortOrder
   indexedCommitSha?: Prisma.SortOrder
+  indexNamespace?: Prisma.SortOrder
   indexStatus?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -689,6 +711,7 @@ export type RepoCreateWithoutUserInput = {
   forks?: number
   latestCommitSha?: string | null
   indexedCommitSha?: string | null
+  indexNamespace?: string | null
   indexStatus?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -706,6 +729,7 @@ export type RepoUncheckedCreateWithoutUserInput = {
   forks?: number
   latestCommitSha?: string | null
   indexedCommitSha?: string | null
+  indexNamespace?: string | null
   indexStatus?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -752,6 +776,7 @@ export type RepoScalarWhereInput = {
   forks?: Prisma.IntFilter<"Repo"> | number
   latestCommitSha?: Prisma.StringNullableFilter<"Repo"> | string | null
   indexedCommitSha?: Prisma.StringNullableFilter<"Repo"> | string | null
+  indexNamespace?: Prisma.StringNullableFilter<"Repo"> | string | null
   indexStatus?: Prisma.StringFilter<"Repo"> | string
   createdAt?: Prisma.DateTimeFilter<"Repo"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Repo"> | Date | string
@@ -767,6 +792,7 @@ export type RepoCreateWithoutAccountInput = {
   forks?: number
   latestCommitSha?: string | null
   indexedCommitSha?: string | null
+  indexNamespace?: string | null
   indexStatus?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -784,6 +810,7 @@ export type RepoUncheckedCreateWithoutAccountInput = {
   forks?: number
   latestCommitSha?: string | null
   indexedCommitSha?: string | null
+  indexNamespace?: string | null
   indexStatus?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -826,6 +853,7 @@ export type RepoCreateManyUserInput = {
   forks?: number
   latestCommitSha?: string | null
   indexedCommitSha?: string | null
+  indexNamespace?: string | null
   indexStatus?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -841,6 +869,7 @@ export type RepoUpdateWithoutUserInput = {
   forks?: Prisma.IntFieldUpdateOperationsInput | number
   latestCommitSha?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   indexedCommitSha?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  indexNamespace?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   indexStatus?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -858,6 +887,7 @@ export type RepoUncheckedUpdateWithoutUserInput = {
   forks?: Prisma.IntFieldUpdateOperationsInput | number
   latestCommitSha?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   indexedCommitSha?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  indexNamespace?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   indexStatus?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -874,6 +904,7 @@ export type RepoUncheckedUpdateManyWithoutUserInput = {
   forks?: Prisma.IntFieldUpdateOperationsInput | number
   latestCommitSha?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   indexedCommitSha?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  indexNamespace?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   indexStatus?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -890,6 +921,7 @@ export type RepoCreateManyAccountInput = {
   forks?: number
   latestCommitSha?: string | null
   indexedCommitSha?: string | null
+  indexNamespace?: string | null
   indexStatus?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -905,6 +937,7 @@ export type RepoUpdateWithoutAccountInput = {
   forks?: Prisma.IntFieldUpdateOperationsInput | number
   latestCommitSha?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   indexedCommitSha?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  indexNamespace?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   indexStatus?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -922,6 +955,7 @@ export type RepoUncheckedUpdateWithoutAccountInput = {
   forks?: Prisma.IntFieldUpdateOperationsInput | number
   latestCommitSha?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   indexedCommitSha?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  indexNamespace?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   indexStatus?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -938,6 +972,7 @@ export type RepoUncheckedUpdateManyWithoutAccountInput = {
   forks?: Prisma.IntFieldUpdateOperationsInput | number
   latestCommitSha?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   indexedCommitSha?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  indexNamespace?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   indexStatus?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -957,6 +992,7 @@ export type RepoSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   forks?: boolean
   latestCommitSha?: boolean
   indexedCommitSha?: boolean
+  indexNamespace?: boolean
   indexStatus?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -976,6 +1012,7 @@ export type RepoSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   forks?: boolean
   latestCommitSha?: boolean
   indexedCommitSha?: boolean
+  indexNamespace?: boolean
   indexStatus?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -995,6 +1032,7 @@ export type RepoSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   forks?: boolean
   latestCommitSha?: boolean
   indexedCommitSha?: boolean
+  indexNamespace?: boolean
   indexStatus?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1014,12 +1052,13 @@ export type RepoSelectScalar = {
   forks?: boolean
   latestCommitSha?: boolean
   indexedCommitSha?: boolean
+  indexNamespace?: boolean
   indexStatus?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type RepoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "accountId" | "githubRepoId" | "name" | "description" | "language" | "stars" | "forks" | "latestCommitSha" | "indexedCommitSha" | "indexStatus" | "createdAt" | "updatedAt", ExtArgs["result"]["repo"]>
+export type RepoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "accountId" | "githubRepoId" | "name" | "description" | "language" | "stars" | "forks" | "latestCommitSha" | "indexedCommitSha" | "indexNamespace" | "indexStatus" | "createdAt" | "updatedAt", ExtArgs["result"]["repo"]>
 export type RepoInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   account?: boolean | Prisma.AccountDefaultArgs<ExtArgs>
@@ -1051,6 +1090,7 @@ export type $RepoPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     forks: number
     latestCommitSha: string | null
     indexedCommitSha: string | null
+    indexNamespace: string | null
     indexStatus: string
     createdAt: Date
     updatedAt: Date
@@ -1490,6 +1530,7 @@ export interface RepoFieldRefs {
   readonly forks: Prisma.FieldRef<"Repo", 'Int'>
   readonly latestCommitSha: Prisma.FieldRef<"Repo", 'String'>
   readonly indexedCommitSha: Prisma.FieldRef<"Repo", 'String'>
+  readonly indexNamespace: Prisma.FieldRef<"Repo", 'String'>
   readonly indexStatus: Prisma.FieldRef<"Repo", 'String'>
   readonly createdAt: Prisma.FieldRef<"Repo", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Repo", 'DateTime'>

@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { parseGithubRepoId } from "@/lib/github-repo-id";
 import { deletePineconeNamespace } from "@/lib/pinecone";
-import { getLegacyRepoNamespace, getRepoNamespace } from "@/lib/repo-indexing";
+import { getRepoNamespace } from "@/lib/repo-indexing";
 
 export async function DELETE(request: Request) {
     try {
@@ -35,11 +35,18 @@ export async function DELETE(request: Request) {
             return NextResponse.json({ error: "Repository not found" }, { status: 404 });
         }
 
-        await deletePineconeNamespace(getRepoNamespace({
+        const baseNamespace = getRepoNamespace({
             userId: session.user.id,
             repoId: repo.githubRepoId,
-        }));
-        await deletePineconeNamespace(getLegacyRepoNamespace(repo.githubRepoId));
+        });
+        const namespacesToDelete = new Set([
+            baseNamespace,
+            repo.indexNamespace,
+        ].filter((namespace): namespace is string => Boolean(namespace)));
+
+        for (const namespace of namespacesToDelete) {
+            await deletePineconeNamespace(namespace);
+        }
 
         await db.$transaction([
             db.repoIndexJob.deleteMany({

@@ -88,12 +88,11 @@ The AI writer is surfaced by `app/p/components/AIPanel.tsx` and served by `app/a
 
 Generation flow:
 
-1. User selects a saved repo.
-2. Client checks repo indexing status through `GET /api/repos/list`.
-3. If needed, client starts indexing through `POST /api/repos/index`.
-4. Once indexed, client sends prompt and repo ID to `POST /api/ai/generate`.
-5. Server embeds the prompt, queries Pinecone, builds source context, and streams generated text from OpenRouter.
-6. Client can insert the streamed markdown text into the Tiptap editor.
+1. The dashboard `RepoList` owns repository indexing and status polling.
+2. The AI panel reads the shared React Query repo cache and shows only repos already usable for generation.
+3. User selects an indexed repo and sends prompt and repo ID to `POST /api/ai/generate`.
+4. Server embeds the prompt, queries Pinecone, builds source context, and streams generated text from OpenRouter.
+5. Client can insert the streamed markdown text into the Tiptap editor.
 
 ## External Services
 

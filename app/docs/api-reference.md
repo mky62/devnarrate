@@ -288,7 +288,7 @@ Returns public repo shape using `stargazers_count` and `forks_count` aliases.
 
 Requires authentication.
 
-Used by the AI panel. Returns all saved repos plus indexing status.
+Used by the dashboard repo list and shared repo cache. Returns all saved repos plus indexing status.
 
 Status values exposed to the client:
 

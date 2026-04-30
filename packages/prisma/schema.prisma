@@ -119,6 +119,7 @@ model Repo {
 
   latestCommitSha String?
   indexedCommitSha String?
+  indexNamespace String?
   indexStatus String @default("NOT_INDEXED") // NOT_INDEXED | PENDING | INDEXING | COMPLETED | FAILED | STALE
 
   createdAt DateTime @default(now())

@@ -158,7 +158,7 @@ The active app editor imports many pieces from this package directly, while the 
 
 ## Repository Indexing
 
-Indexing starts from the AI panel or any caller of `POST /api/repos/index`.
+Indexing is started from the dashboard `RepoList`. The AI panel does not start index jobs; it reads the shared repo cache and only shows repos that are already indexed or otherwise usable for generation.
 
 ### Start Route
 

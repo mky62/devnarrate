@@ -12,6 +12,14 @@ export function getRepoNamespace({
   return `user-${namespacePart(userId)}-repo-${namespacePart(repoId)}`;
 }
 
-export function getLegacyRepoNamespace(repoId: string | number | bigint): string {
-  return `repo-${namespacePart(repoId)}`;
+export function getRepoIndexJobNamespace({
+  userId,
+  repoId,
+  jobId,
+}: {
+  userId: string;
+  repoId: string | number | bigint;
+  jobId: string;
+}): string {
+  return `${getRepoNamespace({ userId, repoId })}-job-${namespacePart(jobId)}`;
 }

@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
 import { namespaceExists } from "@/lib/pinecone";
 import { serializeGithubRepoId } from "@/lib/github-repo-id";
-import { getLegacyRepoNamespace, getRepoNamespace } from "@/lib/repo-indexing";
+import { getRepoNamespace } from "@/lib/repo-indexing";
 
 export async function GET() {
   const session = await auth.api.getSession({
@@ -29,6 +29,7 @@ export async function GET() {
         forks: true,
         accountId: true,
         indexStatus: true,
+        indexNamespace: true,
         latestCommitSha: true,
         indexedCommitSha: true,
       },
@@ -57,15 +58,11 @@ export async function GET() {
       repos.map(async (repo) => {
         const repoId = String(repo.githubRepoId);
         const job = latestJobs.get(repoId);
-        const namespace = getRepoNamespace({
+        const namespace = repo.indexNamespace ?? getRepoNamespace({
           userId: session.user.id,
           repoId,
         });
-        const hasCurrentVectors = await namespaceExists(namespace);
-        const hasLegacyVectors = job
-          ? await namespaceExists(getLegacyRepoNamespace(repoId))
-          : false;
-        const hasVectors = hasCurrentVectors || hasLegacyVectors;
+        const hasVectors = await namespaceExists(namespace);
 
         let status: 'not_indexed' | 'pending' | 'indexing' | 'completed' | 'failed' | 'failed_with_stale_index' | 'stale';
         if (repo.indexStatus === 'STALE') {
@@ -79,12 +76,15 @@ export async function GET() {
           status = 'failed';
         } else if (job.status === 'INDEXING') {
           status = 'indexing';
+        } else if (job.status === 'COMPLETED') {
+          status = 'not_indexed';
         } else {
           status = 'pending';
         }
 
         return {
           ...repo,
+          indexNamespace: undefined,
           githubRepoId: serializeGithubRepoId(repo.githubRepoId),
           stargazers_count: repo.stars,
           forks_count: repo.forks,
