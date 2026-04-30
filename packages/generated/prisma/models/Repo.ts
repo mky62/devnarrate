@@ -33,7 +33,7 @@ export type RepoAvgAggregateOutputType = {
 }
 
 export type RepoSumAggregateOutputType = {
-  githubRepoId: number | null
+  githubRepoId: bigint | null
   stars: number | null
   forks: number | null
 }
@@ -42,7 +42,7 @@ export type RepoMinAggregateOutputType = {
   id: string | null
   userId: string | null
   accountId: string | null
-  githubRepoId: number | null
+  githubRepoId: bigint | null
   name: string | null
   description: string | null
   language: string | null
@@ -59,7 +59,7 @@ export type RepoMaxAggregateOutputType = {
   id: string | null
   userId: string | null
   accountId: string | null
-  githubRepoId: number | null
+  githubRepoId: bigint | null
   name: string | null
   description: string | null
   language: string | null
@@ -245,7 +245,7 @@ export type RepoGroupByOutputType = {
   id: string
   userId: string
   accountId: string
-  githubRepoId: number
+  githubRepoId: bigint
   name: string | null
   description: string | null
   language: string | null
@@ -285,7 +285,7 @@ export type RepoWhereInput = {
   id?: Prisma.StringFilter<"Repo"> | string
   userId?: Prisma.StringFilter<"Repo"> | string
   accountId?: Prisma.StringFilter<"Repo"> | string
-  githubRepoId?: Prisma.IntFilter<"Repo"> | number
+  githubRepoId?: Prisma.BigIntFilter<"Repo"> | bigint | number
   name?: Prisma.StringNullableFilter<"Repo"> | string | null
   description?: Prisma.StringNullableFilter<"Repo"> | string | null
   language?: Prisma.StringNullableFilter<"Repo"> | string | null
@@ -321,7 +321,7 @@ export type RepoOrderByWithRelationInput = {
 
 export type RepoWhereUniqueInput = Prisma.AtLeast<{
   id?: string
-  githubRepoId?: number
+  githubRepoId?: bigint | number
   AND?: Prisma.RepoWhereInput | Prisma.RepoWhereInput[]
   OR?: Prisma.RepoWhereInput[]
   NOT?: Prisma.RepoWhereInput | Prisma.RepoWhereInput[]
@@ -370,7 +370,7 @@ export type RepoScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"Repo"> | string
   userId?: Prisma.StringWithAggregatesFilter<"Repo"> | string
   accountId?: Prisma.StringWithAggregatesFilter<"Repo"> | string
-  githubRepoId?: Prisma.IntWithAggregatesFilter<"Repo"> | number
+  githubRepoId?: Prisma.BigIntWithAggregatesFilter<"Repo"> | bigint | number
   name?: Prisma.StringNullableWithAggregatesFilter<"Repo"> | string | null
   description?: Prisma.StringNullableWithAggregatesFilter<"Repo"> | string | null
   language?: Prisma.StringNullableWithAggregatesFilter<"Repo"> | string | null
@@ -385,7 +385,7 @@ export type RepoScalarWhereWithAggregatesInput = {
 
 export type RepoCreateInput = {
   id?: string
-  githubRepoId: number
+  githubRepoId: bigint | number
   name?: string | null
   description?: string | null
   language?: string | null
@@ -404,7 +404,7 @@ export type RepoUncheckedCreateInput = {
   id?: string
   userId: string
   accountId: string
-  githubRepoId: number
+  githubRepoId: bigint | number
   name?: string | null
   description?: string | null
   language?: string | null
@@ -419,7 +419,7 @@ export type RepoUncheckedCreateInput = {
 
 export type RepoUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  githubRepoId?: Prisma.IntFieldUpdateOperationsInput | number
+  githubRepoId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   language?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -438,7 +438,7 @@ export type RepoUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   accountId?: Prisma.StringFieldUpdateOperationsInput | string
-  githubRepoId?: Prisma.IntFieldUpdateOperationsInput | number
+  githubRepoId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   language?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -455,7 +455,7 @@ export type RepoCreateManyInput = {
   id?: string
   userId: string
   accountId: string
-  githubRepoId: number
+  githubRepoId: bigint | number
   name?: string | null
   description?: string | null
   language?: string | null
@@ -470,7 +470,7 @@ export type RepoCreateManyInput = {
 
 export type RepoUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  githubRepoId?: Prisma.IntFieldUpdateOperationsInput | number
+  githubRepoId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   language?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -487,7 +487,7 @@ export type RepoUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   accountId?: Prisma.StringFieldUpdateOperationsInput | string
-  githubRepoId?: Prisma.IntFieldUpdateOperationsInput | number
+  githubRepoId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   language?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -657,6 +657,14 @@ export type RepoUncheckedUpdateManyWithoutAccountNestedInput = {
   deleteMany?: Prisma.RepoScalarWhereInput | Prisma.RepoScalarWhereInput[]
 }
 
+export type BigIntFieldUpdateOperationsInput = {
+  set?: bigint | number
+  increment?: bigint | number
+  decrement?: bigint | number
+  multiply?: bigint | number
+  divide?: bigint | number
+}
+
 export type IntFieldUpdateOperationsInput = {
   set?: number
   increment?: number
@@ -667,7 +675,7 @@ export type IntFieldUpdateOperationsInput = {
 
 export type RepoCreateWithoutUserInput = {
   id?: string
-  githubRepoId: number
+  githubRepoId: bigint | number
   name?: string | null
   description?: string | null
   language?: string | null
@@ -684,7 +692,7 @@ export type RepoCreateWithoutUserInput = {
 export type RepoUncheckedCreateWithoutUserInput = {
   id?: string
   accountId: string
-  githubRepoId: number
+  githubRepoId: bigint | number
   name?: string | null
   description?: string | null
   language?: string | null
@@ -730,7 +738,7 @@ export type RepoScalarWhereInput = {
   id?: Prisma.StringFilter<"Repo"> | string
   userId?: Prisma.StringFilter<"Repo"> | string
   accountId?: Prisma.StringFilter<"Repo"> | string
-  githubRepoId?: Prisma.IntFilter<"Repo"> | number
+  githubRepoId?: Prisma.BigIntFilter<"Repo"> | bigint | number
   name?: Prisma.StringNullableFilter<"Repo"> | string | null
   description?: Prisma.StringNullableFilter<"Repo"> | string | null
   language?: Prisma.StringNullableFilter<"Repo"> | string | null
@@ -745,7 +753,7 @@ export type RepoScalarWhereInput = {
 
 export type RepoCreateWithoutAccountInput = {
   id?: string
-  githubRepoId: number
+  githubRepoId: bigint | number
   name?: string | null
   description?: string | null
   language?: string | null
@@ -762,7 +770,7 @@ export type RepoCreateWithoutAccountInput = {
 export type RepoUncheckedCreateWithoutAccountInput = {
   id?: string
   userId: string
-  githubRepoId: number
+  githubRepoId: bigint | number
   name?: string | null
   description?: string | null
   language?: string | null
@@ -804,7 +812,7 @@ export type RepoUpdateManyWithWhereWithoutAccountInput = {
 export type RepoCreateManyUserInput = {
   id?: string
   accountId: string
-  githubRepoId: number
+  githubRepoId: bigint | number
   name?: string | null
   description?: string | null
   language?: string | null
@@ -819,7 +827,7 @@ export type RepoCreateManyUserInput = {
 
 export type RepoUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  githubRepoId?: Prisma.IntFieldUpdateOperationsInput | number
+  githubRepoId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   language?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -836,7 +844,7 @@ export type RepoUpdateWithoutUserInput = {
 export type RepoUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   accountId?: Prisma.StringFieldUpdateOperationsInput | string
-  githubRepoId?: Prisma.IntFieldUpdateOperationsInput | number
+  githubRepoId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   language?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -852,7 +860,7 @@ export type RepoUncheckedUpdateWithoutUserInput = {
 export type RepoUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   accountId?: Prisma.StringFieldUpdateOperationsInput | string
-  githubRepoId?: Prisma.IntFieldUpdateOperationsInput | number
+  githubRepoId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   language?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -868,7 +876,7 @@ export type RepoUncheckedUpdateManyWithoutUserInput = {
 export type RepoCreateManyAccountInput = {
   id?: string
   userId: string
-  githubRepoId: number
+  githubRepoId: bigint | number
   name?: string | null
   description?: string | null
   language?: string | null
@@ -883,7 +891,7 @@ export type RepoCreateManyAccountInput = {
 
 export type RepoUpdateWithoutAccountInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  githubRepoId?: Prisma.IntFieldUpdateOperationsInput | number
+  githubRepoId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   language?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -900,7 +908,7 @@ export type RepoUpdateWithoutAccountInput = {
 export type RepoUncheckedUpdateWithoutAccountInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
-  githubRepoId?: Prisma.IntFieldUpdateOperationsInput | number
+  githubRepoId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   language?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -916,7 +924,7 @@ export type RepoUncheckedUpdateWithoutAccountInput = {
 export type RepoUncheckedUpdateManyWithoutAccountInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
-  githubRepoId?: Prisma.IntFieldUpdateOperationsInput | number
+  githubRepoId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   language?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1029,7 +1037,7 @@ export type $RepoPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     id: string
     userId: string
     accountId: string
-    githubRepoId: number
+    githubRepoId: bigint
     name: string | null
     description: string | null
     language: string | null
@@ -1468,7 +1476,7 @@ export interface RepoFieldRefs {
   readonly id: Prisma.FieldRef<"Repo", 'String'>
   readonly userId: Prisma.FieldRef<"Repo", 'String'>
   readonly accountId: Prisma.FieldRef<"Repo", 'String'>
-  readonly githubRepoId: Prisma.FieldRef<"Repo", 'Int'>
+  readonly githubRepoId: Prisma.FieldRef<"Repo", 'BigInt'>
   readonly name: Prisma.FieldRef<"Repo", 'String'>
   readonly description: Prisma.FieldRef<"Repo", 'String'>
   readonly language: Prisma.FieldRef<"Repo", 'String'>

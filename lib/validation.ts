@@ -49,7 +49,7 @@ export const postSchema = z.object({
 });
 
 export const repoSchema = z.object({
-  githubRepoId: z.number(),
+  githubRepoId: z.number().int().positive().safe().transform((id) => BigInt(id)),
   name: z.string().min(1, "Repository name is required"),
   language: z.string().optional().nullable(),
   stargazers_count: z.number().int().min(0).default(0),

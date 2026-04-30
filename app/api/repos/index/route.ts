@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
 import { inngest } from "@/inngest/client";
+import { parseGithubRepoId } from "@/lib/github-repo-id";
 
 
 
@@ -37,8 +38,8 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Missing or invalid accountId" }, { status: 400 });
         }
 
-        const parsedRepoId = Number(repoId);
-        if (!Number.isInteger(parsedRepoId)) {
+        const parsedRepoId = parseGithubRepoId(repoId);
+        if (!parsedRepoId) {
             return NextResponse.json({ error: "Invalid repoId" }, { status: 400 });
         }
 

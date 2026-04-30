@@ -1,5 +1,6 @@
 import { db } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { serializeGithubRepoId } from "@/lib/github-repo-id";
 
 const DEFAULT_PAGE_SIZE = 20;
 const MAX_PAGE_SIZE = 100;
@@ -56,7 +57,7 @@ export async function GET(
     ]);
 
     const formattedRepos = repos.map((repo) => ({
-      githubRepoId: repo.githubRepoId,
+      githubRepoId: serializeGithubRepoId(repo.githubRepoId),
       name: repo.name,
       language: repo.language,
       stargazers_count: repo.stars,

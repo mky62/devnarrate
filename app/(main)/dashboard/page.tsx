@@ -6,6 +6,7 @@ import { auth } from "@/lib/auth";
 import { serializePostSummaries } from "@/lib/posts";
 import { db } from "@/lib/prisma";
 import { getGitStatsForUser } from "@/lib/github-stats";
+import { serializeGithubRepoId } from "@/lib/github-repo-id";
 import ProfileSection from "./components/ProfileSection";
 import RepoList from "./components/RepoList";
 import DeleteProfile from "./components/DeleteProfile";
@@ -132,7 +133,7 @@ export default async function DashboardPage() {
           <div className="flex-1 bg-white/80 backdrop-blur-sm border border-blue-500 rounded-2xl p-2 shadow-sm flex flex-col gap-3 overflow-hidden">
             <RepoList
               initialSavedRepos={repos.map((repo) => ({
-                githubRepoId: repo.githubRepoId,
+                githubRepoId: serializeGithubRepoId(repo.githubRepoId),
                 name: repo.name,
                 language: repo.language,
                 stars: repo.stars,
