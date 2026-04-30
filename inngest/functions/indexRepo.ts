@@ -56,18 +56,22 @@ export const indexRepo = inngest.createFunction(
         return { fullName: repo.fullName };
       });
 
-      const files = await getRepoFilesFromGithub({
-        repoName: fullName,
-        accessToken,
-        maxFiles: 300,
-      });
+      const { chunks } = await step.run("fetch-and-chunk-files", async () => {
+        const files = await getRepoFilesFromGithub({
+          repoName: fullName,
+          accessToken,
+          maxFiles: 300,
+        });
 
-      const chunks = files.flatMap((file: RepoFile) =>
-        chunkCodeFile({
-          path: file.path,
-          content: file.content,
-        })
-      );
+        const chunks = files.flatMap((file: RepoFile) =>
+          chunkCodeFile({
+            path: file.path,
+            content: file.content,
+          })
+        );
+
+        return { chunks };
+      });
 
       if (chunks.length === 0) {
         await step.run("mark-job-completed-empty", async () => {
