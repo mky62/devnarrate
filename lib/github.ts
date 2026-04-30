@@ -66,7 +66,7 @@ function shouldIncludeFile(path: string): boolean {
 export async function getRepoFilesFromGithub({
   repoName,
   accessToken,
-  maxFiles = 100,
+  maxFiles = 300,
 }: GetRepoFilesOptions): Promise<RepoFile[]> {
   const [owner, repo] = repoName.split('/');
   if (!owner || !repo) {

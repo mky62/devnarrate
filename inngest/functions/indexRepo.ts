@@ -11,9 +11,7 @@ export const indexRepo = inngest.createFunction(
     id: "index-repo",
     name: "Index Repo",
     retries: 2,
-    timeouts: {
-      finish: "5m",
-    },
+
     triggers: [{ event: "repos/index" }],
   },
   async ({ event, step }) => {
@@ -61,7 +59,7 @@ export const indexRepo = inngest.createFunction(
       const files = await getRepoFilesFromGithub({
         repoName: fullName,
         accessToken,
-        maxFiles: 100,
+        maxFiles: 300,
       });
 
       const chunks = files.flatMap((file: RepoFile) =>
