@@ -88,9 +88,11 @@ export interface Repo {
   stars: number;
   forks: number;
   description: string | null;
-  status?: "not_indexed" | "pending" | "indexing" | "completed" | "failed" | "failed_with_stale_index";
+  status?: "not_indexed" | "pending" | "indexing" | "completed" | "failed" | "failed_with_stale_index" | "stale";
   jobId?: string;
   lastIndexedAt?: string | Date;
+  latestCommitSha?: string | null;
+  indexedCommitSha?: string | null;
 }
 
 export async function getRepos(): Promise<Repo[]> {

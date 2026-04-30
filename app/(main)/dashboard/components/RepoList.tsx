@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { Search, X, Loader2, Trash2 } from "lucide-react";
 import { useDebounce } from "@/hooks/use-debounce";
 import { FaCodeFork } from "react-icons/fa6";
@@ -125,6 +125,7 @@ export default function RepoList({ initialSavedRepos = [] }: RepoListProps) {
             case "failed":
                 return <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-100 text-red-700">Failed</span>;
             case "failed_with_stale_index":
+            case "stale":
                 return <span className="text-[10px] px-2 py-0.5 rounded-full bg-orange-100 text-orange-700">Stale</span>;
             case "not_indexed":
                 return <span className="text-[10px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">Not Indexed</span>;
@@ -138,7 +139,7 @@ export default function RepoList({ initialSavedRepos = [] }: RepoListProps) {
         return Boolean(
             repo.accountId &&
             repo.name &&
-            (status === "not_indexed" || status === "failed" || status === "failed_with_stale_index")
+            (status === "not_indexed" || status === "failed" || status === "failed_with_stale_index" || status === "stale")
         );
     };
 
