@@ -197,7 +197,7 @@ export default function ClientPage() {
     }, [draftLoaded, editor])
 
     if (isPending || !session) {
-        return <div className="flex items-center justify-center h-screen"><Loader /></div>
+        return <div className="flex items-center bg-sky-200/40 justify-center h-screen"><Loader className="animate-spin text-blue-700 text-xl" /></div>
     }
 
     const handlePost = async () => {

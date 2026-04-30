@@ -70,6 +70,8 @@ export async function GET() {
 
         return {
           ...repo,
+          stargazers_count: repo.stars,
+          forks_count: repo.forks,
           status,
           jobId: job?.id,
           lastIndexedAt: job?.updatedAt,

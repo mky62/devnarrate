@@ -16,6 +16,11 @@ interface GetRepoFilesOptions {
   maxFiles?: number;
 }
 
+interface GitHubTreeItem {
+  path: string;
+  type: string;
+}
+
 // File extensions we want to index
 const ALLOWED_EXTENSIONS = [
   '.js', '.ts', '.tsx', '.jsx',
@@ -61,7 +66,7 @@ function shouldIncludeFile(path: string): boolean {
 export async function getRepoFilesFromGithub({
   repoName,
   accessToken,
-  maxFiles = 100,
+  maxFiles = 300,
 }: GetRepoFilesOptions): Promise<RepoFile[]> {
   const [owner, repo] = repoName.split('/');
   if (!owner || !repo) {
@@ -99,7 +104,7 @@ export async function getRepoFilesFromGithub({
   }
 
   const tree = await treeRes.json();
-  const files = tree.tree.filter((item: any) =>
+  const files = (tree.tree as GitHubTreeItem[]).filter((item) =>
     item.type === 'blob' && shouldIncludeFile(item.path)
   );
 

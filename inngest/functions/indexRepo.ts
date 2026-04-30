@@ -3,7 +3,7 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/prisma";
 import { getRepoDetailsFromGithub, getRepoFilesFromGithub, RepoFile } from "@/lib/github";
 import { chunkCodeFile, Chunk } from "@/lib/chunking";
-import { embedTexts } from "@/lib/embeddings";
+import { embedPassages } from "@/lib/embeddings";
 import { upsertChunksToPinecone } from "@/lib/pinecone";
 
 export const indexRepo = inngest.createFunction(
@@ -11,10 +11,11 @@ export const indexRepo = inngest.createFunction(
     id: "index-repo",
     name: "Index Repo",
     retries: 2,
+
     triggers: [{ event: "repos/index" }],
   },
-  async ({ event, step }: { event: any; step: any }) => {
-    const { jobId, repoId, userId, repoName, accountId } = event.data;
+  async ({ event, step }) => {
+    const { jobId, repoId, userId } = event.data;
 
     try {
       await step.run("mark-job-indexing", async () => {
@@ -58,7 +59,7 @@ export const indexRepo = inngest.createFunction(
       const files = await getRepoFilesFromGithub({
         repoName: fullName,
         accessToken,
-        maxFiles: 100,
+        maxFiles: 300,
       });
 
       const chunks = files.flatMap((file: RepoFile) =>
@@ -95,7 +96,7 @@ export const indexRepo = inngest.createFunction(
 
         for (let i = 0; i < chunks.length; i += batchSize) {
           const batch = chunks.slice(i, i + batchSize);
-          const embeddings = await embedTexts(batch.map((chunk: Chunk) => chunk.text));
+          const embeddings = await embedPassages(batch.map((chunk: Chunk) => chunk.text));
 
           await upsertChunksToPinecone({
             namespace: `repo-${repoId}`,
