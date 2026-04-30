@@ -2,6 +2,7 @@ import { db } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
+import { parseGithubRepoId } from "@/lib/github-repo-id";
 
 export async function DELETE(request: Request) {
     try {
@@ -15,12 +16,14 @@ export async function DELETE(request: Request) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        if (!githubRepoId) {
+        const parsedGithubRepoId = parseGithubRepoId(githubRepoId);
+
+        if (!parsedGithubRepoId) {
             return NextResponse.json({ error: "githubRepoId is required" }, { status: 400 });
         }
         const repo = await db.repo.findFirst({
             where: {
-                githubRepoId,
+                githubRepoId: parsedGithubRepoId,
                 userId: session.user.id,
             },
         });

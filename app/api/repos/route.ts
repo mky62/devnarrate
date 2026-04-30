@@ -2,6 +2,7 @@ import { db } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
+import { serializeGithubRepoId } from "@/lib/github-repo-id";
 
 const DEFAULT_PAGE_SIZE = 20;
 const MAX_PAGE_SIZE = 100;
@@ -43,7 +44,10 @@ export async function GET(request: Request) {
         ]);
 
         return NextResponse.json({
-            repos,
+            repos: repos.map((repo) => ({
+                ...repo,
+                githubRepoId: serializeGithubRepoId(repo.githubRepoId),
+            })),
             pagination: {
                 page,
                 limit,

@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { repoSchema } from "@/lib/validation";
+import { serializeGithubRepoId } from "@/lib/github-repo-id";
 
 export async function POST(request: Request) {
     try {
@@ -58,7 +59,12 @@ export async function POST(request: Request) {
             },
         });
 
-        return NextResponse.json({ repo }, { status: 201 });
+        return NextResponse.json({
+            repo: {
+                ...repo,
+                githubRepoId: serializeGithubRepoId(repo.githubRepoId),
+            },
+        }, { status: 201 });
     } catch (error) {
         console.error("Add repo error:", error);
         return NextResponse.json(

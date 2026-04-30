@@ -7,6 +7,7 @@ import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/prisma";
 import { serializePostSummaries } from "@/lib/posts";
+import { serializeGithubRepoId } from "@/lib/github-repo-id";
 import type { PublicUser } from "./components/PublicProfileSection";
 import type { PublicRepo } from "./components/PublicRepoList";
 
@@ -80,7 +81,7 @@ export default async function PublicDashboardPage({
     : null;
   const initialPosts = await serializePostSummaries(rawPosts, viewerId);
   const initialRepos: PublicRepo[] = repos.map((repo) => ({
-    githubRepoId: repo.githubRepoId,
+    githubRepoId: serializeGithubRepoId(repo.githubRepoId),
     name: repo.name,
     language: repo.language,
     stargazers_count: repo.stars,

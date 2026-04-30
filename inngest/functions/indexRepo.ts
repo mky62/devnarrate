@@ -5,6 +5,7 @@ import { getRepoDetailsFromGithub, getRepoFilesFromGithub, RepoFile } from "@/li
 import { chunkCodeFile, Chunk } from "@/lib/chunking";
 import { embedPassages } from "@/lib/embeddings";
 import { upsertChunksToPinecone } from "@/lib/pinecone";
+import { parseGithubRepoId } from "@/lib/github-repo-id";
 
 export const indexRepo = inngest.createFunction(
   {
@@ -16,8 +17,13 @@ export const indexRepo = inngest.createFunction(
   },
   async ({ event, step }) => {
     const { jobId, repoId, userId } = event.data;
+    const githubRepoId = parseGithubRepoId(String(repoId));
 
     try {
+      if (!githubRepoId) {
+        throw new Error("Invalid GitHub repository ID");
+      }
+
       await step.run("mark-job-indexing", async () => {
         await db.repoIndexJob.update({
           where: {
@@ -33,7 +39,7 @@ export const indexRepo = inngest.createFunction(
 
         await db.repo.updateMany({
           where: {
-            githubRepoId: Number(repoId),
+            githubRepoId,
             userId,
           },
           data: {
@@ -100,7 +106,7 @@ export const indexRepo = inngest.createFunction(
 
           const repo = await db.repo.findUnique({
             where: {
-              githubRepoId: Number(repoId),
+              githubRepoId,
             },
             select: {
               latestCommitSha: true,
@@ -109,7 +115,7 @@ export const indexRepo = inngest.createFunction(
 
           await db.repo.updateMany({
             where: {
-              githubRepoId: Number(repoId),
+              githubRepoId,
               userId,
             },
             data: {
@@ -166,7 +172,7 @@ export const indexRepo = inngest.createFunction(
 
         const repo = await db.repo.findUnique({
           where: {
-            githubRepoId: Number(repoId),
+            githubRepoId,
           },
           select: {
             latestCommitSha: true,
@@ -175,7 +181,7 @@ export const indexRepo = inngest.createFunction(
 
         await db.repo.updateMany({
           where: {
-            githubRepoId: Number(repoId),
+            githubRepoId,
             userId,
           },
           data: {
@@ -203,15 +209,17 @@ export const indexRepo = inngest.createFunction(
           },
         });
 
-        await db.repo.updateMany({
-          where: {
-            githubRepoId: Number(repoId),
-            userId,
-          },
-          data: {
-            indexStatus: "FAILED",
-          },
-        });
+        if (githubRepoId) {
+          await db.repo.updateMany({
+            where: {
+              githubRepoId,
+              userId,
+            },
+            data: {
+              indexStatus: "FAILED",
+            },
+          });
+        }
       });
 
       throw error;

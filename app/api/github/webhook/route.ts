@@ -1,6 +1,7 @@
 import { createHmac, timingSafeEqual } from "crypto";
 import { NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
+import { parseGithubRepoId } from "@/lib/github-repo-id";
 
 export const runtime = "nodejs";
 
@@ -54,7 +55,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ ignored: true, reason: "Not main branch" }, { status: 202 });
   }
 
-  const githubRepoId = payload.repository?.id;
+  const githubRepoId = payload.repository?.id ? parseGithubRepoId(payload.repository.id) : null;
   const latestCommitSha = payload.after;
 
   if (!githubRepoId || !latestCommitSha) {

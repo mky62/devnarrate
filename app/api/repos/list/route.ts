@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
 import { namespaceExists } from "@/lib/pinecone";
+import { serializeGithubRepoId } from "@/lib/github-repo-id";
 
 export async function GET() {
   const session = await auth.api.getSession({
@@ -75,6 +76,7 @@ export async function GET() {
 
         return {
           ...repo,
+          githubRepoId: serializeGithubRepoId(repo.githubRepoId),
           stargazers_count: repo.stars,
           forks_count: repo.forks,
           status,
