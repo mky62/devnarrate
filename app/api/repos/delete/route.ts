@@ -3,6 +3,8 @@ import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { parseGithubRepoId } from "@/lib/github-repo-id";
+import { deletePineconeNamespace } from "@/lib/pinecone";
+import { getLegacyRepoNamespace, getRepoNamespace } from "@/lib/repo-indexing";
 
 export async function DELETE(request: Request) {
     try {
@@ -21,6 +23,7 @@ export async function DELETE(request: Request) {
         if (!parsedGithubRepoId) {
             return NextResponse.json({ error: "githubRepoId is required" }, { status: 400 });
         }
+
         const repo = await db.repo.findFirst({
             where: {
                 githubRepoId: parsedGithubRepoId,
@@ -32,9 +35,23 @@ export async function DELETE(request: Request) {
             return NextResponse.json({ error: "Repository not found" }, { status: 404 });
         }
 
-        await db.repo.delete({
-            where: { id: repo.id },
-        });
+        await deletePineconeNamespace(getRepoNamespace({
+            userId: session.user.id,
+            repoId: repo.githubRepoId,
+        }));
+        await deletePineconeNamespace(getLegacyRepoNamespace(repo.githubRepoId));
+
+        await db.$transaction([
+            db.repoIndexJob.deleteMany({
+                where: {
+                    repoId: String(repo.githubRepoId),
+                    userId: session.user.id,
+                },
+            }),
+            db.repo.delete({
+                where: { id: repo.id },
+            }),
+        ]);
 
         return NextResponse.json({ success: true });
     } catch (error) {

@@ -62,22 +62,17 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Missing repository id or commit SHA" }, { status: 400 });
   }
 
-  const repo = await db.repo.findUnique({
-    where: { githubRepoId },
-    select: { id: true },
-  });
-
-  if (!repo) {
-    return NextResponse.json({ ignored: true, reason: "Repository not tracked" }, { status: 202 });
-  }
-
-  await db.repo.update({
+  const updateResult = await db.repo.updateMany({
     where: { githubRepoId },
     data: {
       latestCommitSha,
       indexStatus: "STALE",
     },
   });
+
+  if (updateResult.count === 0) {
+    return NextResponse.json({ ignored: true, reason: "Repository not tracked" }, { status: 202 });
+  }
 
   return NextResponse.json({ success: true });
 }

@@ -3,24 +3,18 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import SearchBar from "./Searchbar";
-import { FaGithub } from "react-icons/fa";
 import { MdArrowOutward } from "react-icons/md";
 import { useSession } from "@/lib/auth-client";
 import { Button } from "@/packages/tiptap/components/ui/button";
 
 export default function Navbar() {
-    const [dropOpen, setDropOpen] = useState(false);
     const [mobileOpen, setMobileOpen] = useState(false);
-    const dropRef = useRef<HTMLDivElement>(null);
     const mobileRef = useRef<HTMLDivElement>(null);
 
     const { data: session, isPending } = useSession();
 
     useEffect(() => {
         function handleClickOutside(e: MouseEvent) {
-            if (dropRef.current && !dropRef.current.contains(e.target as Node)) {
-                setDropOpen(false);
-            }
             if (mobileRef.current && !mobileRef.current.contains(e.target as Node)) {
                 setMobileOpen(false);
             }

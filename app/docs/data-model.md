@@ -78,7 +78,7 @@ Saved GitHub repository metadata.
 
 Important fields:
 
-- `githubRepoId`: unique GitHub repository ID.
+- `githubRepoId`: GitHub repository ID, unique per user.
 - `name`: repository name as returned by search/save flow.
 - `description`
 - `language`
@@ -94,9 +94,9 @@ Indexes:
 
 Current behavior:
 
-- `POST /api/repos/add` prevents duplicate `githubRepoId` globally because the schema has a unique constraint on `githubRepoId`.
+- `POST /api/repos/add` prevents saving the same `githubRepoId` more than once for the same user.
 - Repos are shown on dashboard and public profile pages.
-- AI indexing uses `githubRepoId` as the vector namespace suffix.
+- AI indexing uses `userId` and `githubRepoId` together for the vector namespace.
 
 ### Post
 

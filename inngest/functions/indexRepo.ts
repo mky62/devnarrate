@@ -4,8 +4,16 @@ import { db } from "@/lib/prisma";
 import { getRepoDetailsFromGithub, getRepoFilesFromGithub, RepoFile } from "@/lib/github";
 import { chunkCodeFile, Chunk } from "@/lib/chunking";
 import { embedPassages } from "@/lib/embeddings";
-import { upsertChunksToPinecone } from "@/lib/pinecone";
+import { deletePineconeNamespace, upsertChunksToPinecone } from "@/lib/pinecone";
 import { parseGithubRepoId } from "@/lib/github-repo-id";
+import { getRepoNamespace } from "@/lib/repo-indexing";
+
+interface IndexRepoEventData {
+  jobId: string;
+  repoId: string;
+  userId: string;
+  namespace?: string;
+}
 
 export const indexRepo = inngest.createFunction(
   {
@@ -16,8 +24,10 @@ export const indexRepo = inngest.createFunction(
     triggers: [{ event: "repos/index" }],
   },
   async ({ event, step }) => {
-    const { jobId, repoId, userId } = event.data;
+    const { jobId, repoId, userId, namespace: eventNamespace } =
+      event.data as IndexRepoEventData;
     const githubRepoId = parseGithubRepoId(String(repoId));
+    const namespace = eventNamespace ?? getRepoNamespace({ userId, repoId });
 
     try {
       if (!githubRepoId) {
@@ -72,7 +82,7 @@ export const indexRepo = inngest.createFunction(
         return { fullName: repo.fullName };
       });
 
-      const { chunks } = await step.run("fetch-and-chunk-files", async () => {
+      const chunkResult = await step.run("fetch-and-chunk-files", async () => {
         const files = await getRepoFilesFromGithub({
           repoName: fullName,
           accessToken,
@@ -87,6 +97,11 @@ export const indexRepo = inngest.createFunction(
         );
 
         return { chunks };
+      });
+      const { chunks } = chunkResult as { chunks: Chunk[] };
+
+      await step.run("clear-existing-index", async () => {
+        await deletePineconeNamespace(namespace);
       });
 
       if (chunks.length === 0) {
@@ -104,9 +119,10 @@ export const indexRepo = inngest.createFunction(
             },
           });
 
-          const repo = await db.repo.findUnique({
+          const repo = await db.repo.findFirst({
             where: {
               githubRepoId,
+              userId,
             },
             select: {
               latestCommitSha: true,
@@ -139,7 +155,7 @@ export const indexRepo = inngest.createFunction(
           const embeddings = await embedPassages(batch.map((chunk: Chunk) => chunk.text));
 
           await upsertChunksToPinecone({
-            namespace: `repo-${repoId}`,
+            namespace,
             chunks: batch.map((chunk: Chunk, index: number) => ({
               id: chunk.id,
               text: chunk.text,
@@ -170,9 +186,10 @@ export const indexRepo = inngest.createFunction(
           },
         });
 
-        const repo = await db.repo.findUnique({
+        const repo = await db.repo.findFirst({
           where: {
             githubRepoId,
+            userId,
           },
           select: {
             latestCommitSha: true,

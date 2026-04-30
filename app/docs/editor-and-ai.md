@@ -179,7 +179,7 @@ Indexing starts from the AI panel or any caller of `POST /api/repos/index`.
 4. Fetches files with `getRepoFilesFromGithub`.
 5. Chunks files with `chunkCodeFile`.
 6. Embeds chunks in batches of 16 using `embedPassages`.
-7. Upserts vectors into Pinecone under namespace `repo-${repoId}`.
+7. Clears the user's existing repo namespace, then upserts vectors into Pinecone under namespace `user-${userId}-repo-${repoId}`.
 8. Marks job `COMPLETED` with `chunksCount`.
 9. Marks job `FAILED` and stores an error message on failure.
 
@@ -251,6 +251,7 @@ Defaults:
 - Stores metadata: `text`, `path`, `startLine`, `endLine`.
 - Queries with `topK`, default 5.
 - Checks namespace existence with `describeIndexStats`.
+- Deletes user-scoped namespaces when repos are removed or re-indexed.
 
 ## AI Generation
 

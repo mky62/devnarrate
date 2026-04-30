@@ -76,10 +76,10 @@ The repository indexing function in `inngest/functions/indexRepo.ts` handles:
 1. Marking a `RepoIndexJob` as `INDEXING`.
 2. Retrieving the user's GitHub access token.
 3. Resolving repository details by GitHub repo ID.
-4. Fetching up to 100 supported repository files.
+4. Fetching up to 300 supported repository files.
 5. Chunking files.
 6. Embedding chunks with Hugging Face.
-7. Upserting vectors to Pinecone under namespace `repo-${repoId}`.
+7. Upserting vectors to Pinecone under namespace `user-${userId}-repo-${repoId}`.
 8. Marking the job `COMPLETED` or `FAILED`.
 
 ### AI Writer

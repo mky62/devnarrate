@@ -144,7 +144,9 @@ export default function AIPanel({ onInsert, onClose }: AIPanelProps) {
   const selectedRepoData = repos.find(
     (r) => String(r.githubRepoId) === selectedRepo
   );
-  const canGenerate = selectedRepoData?.status === "completed";
+  const canGenerate =
+    selectedRepoData?.status === "completed" ||
+    selectedRepoData?.status === "failed_with_stale_index";
 
   return (
     <div className="w-80 flex-shrink-0 border-l border-gray-200 bg-gray-50/50 flex flex-col h-full">

@@ -8,6 +8,10 @@ export interface RepoDetails {
   name: string;
   fullName: string;
   ownerLogin: string;
+  description: string | null;
+  language: string | null;
+  stars: number;
+  forks: number;
 }
 
 interface GetRepoFilesOptions {
@@ -186,5 +190,9 @@ export async function getRepoDetailsFromGithub({
     name: repoInfo.name,
     fullName: repoInfo.full_name,
     ownerLogin: repoInfo.owner.login,
+    description: repoInfo.description ?? null,
+    language: repoInfo.language ?? null,
+    stars: repoInfo.stargazers_count ?? 0,
+    forks: repoInfo.forks_count ?? 0,
   };
 }

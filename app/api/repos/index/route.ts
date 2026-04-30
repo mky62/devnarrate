@@ -4,8 +4,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
 import { inngest } from "@/inngest/client";
 import { parseGithubRepoId } from "@/lib/github-repo-id";
-
-
+import { getRepoNamespace } from "@/lib/repo-indexing";
 
 export async function POST(req: Request) {
     try {
@@ -50,7 +49,9 @@ export async function POST(req: Request) {
                 accountId: String(accountId),
             },
             select: {
-                id: true,
+                githubRepoId: true,
+                name: true,
+                accountId: true,
             },
         });
 
@@ -60,7 +61,7 @@ export async function POST(req: Request) {
 
         const job = await db.repoIndexJob.create({
             data: {
-                repoId: String(repoId),
+                repoId: String(repo.githubRepoId),
                 userId: session.user.id,
                 status: 'PENDING',
             },
@@ -80,10 +81,14 @@ export async function POST(req: Request) {
             name: "repos/index",
             data: {
                 jobId: job.id,
-                repoId: String(repoId),
+                repoId: String(repo.githubRepoId),
                 userId: session.user.id,
-                repoName: repoName,
-                accountId: String(accountId),
+                repoName: repo.name ?? repoName,
+                accountId: repo.accountId,
+                namespace: getRepoNamespace({
+                    userId: session.user.id,
+                    repoId: repo.githubRepoId,
+                }),
             },
         });
 

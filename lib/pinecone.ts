@@ -110,3 +110,7 @@ export async function namespaceExists(namespace: string): Promise<boolean> {
     return false;
   }
 }
+
+export async function deletePineconeNamespace(namespace: string): Promise<void> {
+  await getIndex().deleteAll({ namespace });
+}

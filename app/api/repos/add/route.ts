@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { repoSchema } from "@/lib/validation";
 import { serializeGithubRepoId } from "@/lib/github-repo-id";
+import { getRepoDetailsFromGithub, type RepoDetails } from "@/lib/github";
 
 export async function POST(request: Request) {
     try {
@@ -17,8 +18,9 @@ export async function POST(request: Request) {
             );
         }
 
+        const requestHeaders = await headers();
         const session = await auth.api.getSession({
-            headers: await headers(),
+            headers: requestHeaders,
         });
 
         if (!session?.user?.id) {
@@ -26,7 +28,7 @@ export async function POST(request: Request) {
         }
 
         const userId = session.user.id;
-        const { githubRepoId, name, language, stargazers_count, forks_count } = validationResult.data;
+        const { githubRepoId } = validationResult.data;
         // Get user's GitHub account
         const account = await db.account.findFirst({
             where: { userId, providerId: "github" },
@@ -37,9 +39,37 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: "GitHub account not found" }, { status: 400 });
         }
 
+        const tokenResponse = await auth.api.getAccessToken({
+            headers: requestHeaders,
+            body: {
+                providerId: "github",
+                userId,
+            },
+        });
+
+        if (!tokenResponse?.accessToken) {
+            return NextResponse.json(
+                { error: "GitHub account not connected. Please reconnect GitHub and try again." },
+                { status: 400 }
+            );
+        }
+
+        let githubRepo: RepoDetails;
+        try {
+            githubRepo = await getRepoDetailsFromGithub({
+                repoId: String(githubRepoId),
+                accessToken: tokenResponse.accessToken,
+            });
+        } catch {
+            return NextResponse.json(
+                { error: "Repository is not accessible with the connected GitHub account" },
+                { status: 403 }
+            );
+        }
+
         // Prevent duplicates
-        const existingRepo = await db.repo.findUnique({
-            where: { githubRepoId },
+        const existingRepo = await db.repo.findFirst({
+            where: { githubRepoId, userId },
         });
 
         if (existingRepo) {
@@ -49,11 +79,12 @@ export async function POST(request: Request) {
         // Create the repo
         const repo = await db.repo.create({
             data: {
-                githubRepoId,
-                name,
-                language: language || null,
-                stars: stargazers_count ?? 0,
-                forks: forks_count ?? 0,
+                githubRepoId: BigInt(githubRepo.id),
+                name: githubRepo.name,
+                description: githubRepo.description,
+                language: githubRepo.language,
+                stars: githubRepo.stars,
+                forks: githubRepo.forks,
                 userId,
                 accountId: account.id,
             },

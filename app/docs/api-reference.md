@@ -257,8 +257,9 @@ Accepted body:
 Behavior:
 
 - Finds the current user's GitHub `Account`.
-- Rejects duplicate global `githubRepoId`.
-- Creates a `Repo` tied to the user and account.
+- Verifies the repo ID is accessible with the current user's GitHub token.
+- Rejects duplicate `githubRepoId` for the same user.
+- Creates a `Repo` tied to the user and account using canonical GitHub metadata.
 
 Responses:
 
@@ -313,6 +314,7 @@ Accepted body:
 Behavior:
 
 - Creates a `RepoIndexJob` with `PENDING` status.
+- Verifies the repo belongs to the current user and account.
 - Sends Inngest event `repos/index`.
 
 Returns `{ success: true, jobId }`.
@@ -333,11 +335,12 @@ Accepted body:
 
 Behavior:
 
-1. Checks Pinecone namespace `repo-${repoId}` exists.
-2. Embeds the prompt with Hugging Face using the E5 `query:` prefix, with a raw embedding fallback for older indexes.
-3. Queries Pinecone for top 10 relevant chunks and drops weak matches.
-4. Builds a grouped source-context prompt with file paths, line ranges, and relevance scores.
-5. Streams text from OpenRouter.
+1. Verifies the repo belongs to the current user.
+2. Checks Pinecone namespace `user-${userId}-repo-${repoId}` exists, with a legacy `repo-${repoId}` fallback for old indexes.
+3. Embeds the prompt with Hugging Face using the E5 `query:` prefix, with a raw embedding fallback for older indexes.
+4. Queries Pinecone for top 10 relevant chunks and drops weak matches.
+5. Builds a grouped source-context prompt with file paths, line ranges, and relevance scores.
+6. Streams text from OpenRouter.
 
 Responses:
 

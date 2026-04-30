@@ -78,6 +78,8 @@ Redis-backed caches:
 
 The GitHub repo search route fetches all repos once and then filters locally. This makes search responsive but means newly created GitHub repos may not appear until the cache expires.
 
+Saving a repo verifies the GitHub repo ID against the connected user's GitHub token instead of trusting client-submitted metadata.
+
 ## Security And Validation Notes
 
 Implemented protections:
@@ -94,9 +96,9 @@ Implemented protections:
 
 Important current behaviors:
 
-- `Repo.githubRepoId` is globally unique, so one GitHub repository can only be saved once across the whole app, not once per user.
+- `Repo.githubRepoId` is unique per user, so multiple users may save the same GitHub repository.
 - Public GitHub stats use the stored user's GitHub access token internally. If token access is unavailable or expired, stats may return null or an error depending on the failure mode.
-- Repository deletion removes the saved repo row but does not delete Pinecone vectors or previous `RepoIndexJob` rows.
+- Repository deletion removes the saved repo row, previous `RepoIndexJob` rows for that user/repo, and the user's Pinecone namespace.
 - Account deletion deletes repos, posts, accounts, sessions, and the user, but does not explicitly delete likes/contribution clicks. Schema cascades handle post/user relations where configured.
 - `Post.views` and `Post.bannerImage` exist in the schema but are not central to the current visible flows.
 

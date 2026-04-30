@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
 import { namespaceExists } from "@/lib/pinecone";
 import { serializeGithubRepoId } from "@/lib/github-repo-id";
+import { getLegacyRepoNamespace, getRepoNamespace } from "@/lib/repo-indexing";
 
 export async function GET() {
   const session = await auth.api.getSession({
@@ -56,7 +57,15 @@ export async function GET() {
       repos.map(async (repo) => {
         const repoId = String(repo.githubRepoId);
         const job = latestJobs.get(repoId);
-        const hasVectors = await namespaceExists(`repo-${repoId}`);
+        const namespace = getRepoNamespace({
+          userId: session.user.id,
+          repoId,
+        });
+        const hasCurrentVectors = await namespaceExists(namespace);
+        const hasLegacyVectors = job
+          ? await namespaceExists(getLegacyRepoNamespace(repoId))
+          : false;
+        const hasVectors = hasCurrentVectors || hasLegacyVectors;
 
         let status: 'not_indexed' | 'pending' | 'indexing' | 'completed' | 'failed' | 'failed_with_stale_index' | 'stale';
         if (repo.indexStatus === 'STALE') {

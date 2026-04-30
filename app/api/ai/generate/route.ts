@@ -4,6 +4,9 @@ import { NextResponse } from "next/server";
 import { OpenRouter } from "@openrouter/sdk";
 import { embedQuery, embedText } from "@/lib/embeddings";
 import { queryPinecone, namespaceExists } from "@/lib/pinecone";
+import { db } from "@/lib/prisma";
+import { getLegacyRepoNamespace, getRepoNamespace } from "@/lib/repo-indexing";
+import { parseGithubRepoId } from "@/lib/github-repo-id";
 
 const OPENROUTER_MODEL = "nvidia/nemotron-3-super-120b-a12b:free";
 const RETRIEVAL_TOP_K = 10;
@@ -201,6 +204,11 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Missing repoId" }, { status: 400 });
   }
 
+  const githubRepoId = parseGithubRepoId(repoId);
+  if (!githubRepoId) {
+    return NextResponse.json({ error: "Missing repoId" }, { status: 400 });
+  }
+
   if (typeof prompt !== 'string' || prompt.trim().length === 0) {
     return NextResponse.json({ error: "prompt must be a non-empty string" }, { status: 400 });
   }
@@ -212,11 +220,32 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Prompt too long" }, { status: 413 });
   }
 
-  const namespace = `repo-${repoId}`;
+  const repo = await db.repo.findFirst({
+    where: {
+      githubRepoId,
+      userId: session.user.id,
+    },
+    select: {
+      githubRepoId: true,
+    },
+  });
+
+  if (!repo) {
+    return NextResponse.json({ error: "Repository not found" }, { status: 404 });
+  }
+
+  const namespace = getRepoNamespace({
+    userId: session.user.id,
+    repoId: repo.githubRepoId,
+  });
+  const legacyNamespace = getLegacyRepoNamespace(repo.githubRepoId);
 
   // Check if repo is indexed
   const isIndexed = await namespaceExists(namespace);
-  if (!isIndexed) {
+  const hasLegacyIndex = isIndexed ? false : await namespaceExists(legacyNamespace);
+  const queryNamespace = isIndexed ? namespace : legacyNamespace;
+
+  if (!isIndexed && !hasLegacyIndex) {
     return NextResponse.json(
       { error: "Repo is still being indexed. Please try again in a moment." },
       { status: 425 } // Too Early
@@ -228,7 +257,7 @@ export async function POST(req: Request) {
 
   // Query Pinecone for relevant chunks
   let chunks = filterRelevantChunks(await queryPinecone({
-    namespace,
+    namespace: queryNamespace,
     embedding: promptEmbedding,
     topK: RETRIEVAL_TOP_K,
   }));
@@ -236,7 +265,7 @@ export async function POST(req: Request) {
   if (chunks.length === 0) {
     const legacyPromptEmbedding = await embedText(trimmedPrompt);
     chunks = filterRelevantChunks(await queryPinecone({
-      namespace,
+      namespace: queryNamespace,
       embedding: legacyPromptEmbedding,
       topK: RETRIEVAL_TOP_K,
     }));
