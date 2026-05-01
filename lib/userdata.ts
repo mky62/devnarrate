@@ -43,10 +43,10 @@ export async function updateUserProfile(payload: UpdateProfilePayload): Promise<
     body: JSON.stringify(payload),
   });
 
-  const {user} = await res.json();
-  if (!res.ok) throw new Error("Failed to update profile");
-
-  return user;
+ const data = await res.json().catch(() => ({} as { user?: User; error?: string }));
+  if (!res.ok) throw new Error(typeof data.error === "string" ? data.error : "Failed to update profile");  
+  if (!data.user) throw new Error("Malformed profile response");
+  return data.user;
 }
 
 // Post API
