@@ -1,5 +1,7 @@
 // API layer for user operations
 
+import type { RepoStatus } from "@/lib/repo-status";
+
 export interface SocialLinks {
   github?: string;
   twitter?: string;
@@ -87,7 +89,7 @@ export interface Repo {
   stars: number;
   forks: number;
   description: string | null;
-  status?: "not_indexed" | "pending" | "indexing" | "completed" | "failed" | "failed_with_stale_index" | "stale";
+  status?: RepoStatus;
   jobId?: string;
   lastIndexedAt?: string | Date;
   latestCommitSha?: string | null;

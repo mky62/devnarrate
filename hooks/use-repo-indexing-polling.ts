@@ -3,7 +3,7 @@ import type { Repo } from "@/lib/userdata";
 
 export function useRepoIndexingPolling(
   repos: Repo[],
-  refetchRepos: () => void,
+  refetchRepos: () => Promise<unknown> | unknown,
   intervalMs = 5000
 ) {
   useEffect(() => {
@@ -13,7 +13,24 @@ export function useRepoIndexingPolling(
 
     if (!hasActiveIndexJob) return;
 
-    const interval = setInterval(refetchRepos, intervalMs);
-    return () => clearInterval(interval);
+    let cancelled = false;
+    let timeout: ReturnType<typeof setTimeout>;
+
+    const poll = async () => {
+      try {
+        await refetchRepos();
+      } finally {
+        if (!cancelled) {
+          timeout = setTimeout(poll, intervalMs);
+        }
+      }
+    };
+
+    timeout = setTimeout(poll, intervalMs);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timeout);
+    };
   }, [intervalMs, refetchRepos, repos]);
 }

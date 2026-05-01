@@ -2,9 +2,8 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
-import { namespaceExists } from "@/lib/pinecone";
 import { serializeGithubRepoId } from "@/lib/github-repo-id";
-import { getRepoNamespace } from "@/lib/repo-indexing";
+import { getRepoStatus } from "@/lib/repo-status";
 
 export async function GET() {
   const session = await auth.api.getSession({
@@ -35,65 +34,14 @@ export async function GET() {
       },
     });
 
-    // Fetch index jobs for these repos
-    const repoIds = repos.map(r => String(r.githubRepoId));
-    const jobs = await db.repoIndexJob.findMany({
-      where: {
-        repoId: { in: repoIds },
-        userId: session.user.id,
-      },
-      orderBy: { createdAt: "desc" },
-    });
-
-    // Group jobs by repoId (get latest for each)
-    const latestJobs = new Map<string, typeof jobs[0]>();
-    for (const job of jobs) {
-      if (!latestJobs.has(job.repoId)) {
-        latestJobs.set(job.repoId, job);
-      }
-    }
-
-    // Check Pinecone for indexed repos
-    const reposWithStatus = await Promise.all(
-      repos.map(async (repo) => {
-        const repoId = String(repo.githubRepoId);
-        const job = latestJobs.get(repoId);
-        const namespace = repo.indexNamespace ?? getRepoNamespace({
-          userId: session.user.id,
-          repoId,
-        });
-        const hasVectors = await namespaceExists(namespace);
-
-        let status: 'not_indexed' | 'pending' | 'indexing' | 'completed' | 'failed' | 'failed_with_stale_index' | 'stale';
-        if (repo.indexStatus === 'STALE') {
-          status = 'stale';
-        } else if (!job) {
-          status = 'not_indexed';
-        } else if (hasVectors) {
-          // Vectors exist - repo is usable regardless of job status
-          status = job.status === 'FAILED' ? 'failed_with_stale_index' : 'completed';
-        } else if (job.status === 'FAILED') {
-          status = 'failed';
-        } else if (job.status === 'INDEXING') {
-          status = 'indexing';
-        } else if (job.status === 'COMPLETED') {
-          status = 'not_indexed';
-        } else {
-          status = 'pending';
-        }
-
-        return {
-          ...repo,
-          indexNamespace: undefined,
-          githubRepoId: serializeGithubRepoId(repo.githubRepoId),
-          stargazers_count: repo.stars,
-          forks_count: repo.forks,
-          status,
-          jobId: job?.id,
-          lastIndexedAt: job?.updatedAt,
-        };
-      })
-    );
+    const reposWithStatus = repos.map((repo) => ({
+      ...repo,
+      indexNamespace: undefined,
+      githubRepoId: serializeGithubRepoId(repo.githubRepoId),
+      stargazers_count: repo.stars,
+      forks_count: repo.forks,
+      status: getRepoStatus(repo),
+    }));
 
     return NextResponse.json({ repos: reposWithStatus });
   } catch (error) {

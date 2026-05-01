@@ -7,6 +7,7 @@ import { serializePostSummaries } from "@/lib/posts";
 import { db } from "@/lib/prisma";
 import { getGitStatsForUser } from "@/lib/github-stats";
 import { serializeGithubRepoId } from "@/lib/github-repo-id";
+import { getRepoStatus } from "@/lib/repo-status";
 import ProfileSection from "./components/ProfileSection";
 import RepoList from "./components/RepoList";
 import DeleteProfile from "./components/DeleteProfile";
@@ -69,6 +70,10 @@ export default async function DashboardPage() {
         forks: true,
         description: true,
         accountId: true,
+        indexStatus: true,
+        indexNamespace: true,
+        latestCommitSha: true,
+        indexedCommitSha: true,
       },
       take: 20,
     }),
@@ -139,6 +144,9 @@ export default async function DashboardPage() {
                 forks: repo.forks,
                 description: repo.description,
                 accountId: repo.accountId,
+                status: getRepoStatus(repo),
+                latestCommitSha: repo.latestCommitSha,
+                indexedCommitSha: repo.indexedCommitSha,
               }))}
             />
           </div>
