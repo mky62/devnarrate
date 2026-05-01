@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/packages/tiptap/components/ui/button"
 import Link from "next/link";
 import { ArrowLeft, Loader, Moon, Sparkles, Sun } from 'lucide-react';
-import { useSession } from "@/lib/auth-client";
 import { EditorContent, EditorContext, useEditor } from "@tiptap/react"
 
 // --- Tiptap Core Extensions ---
@@ -64,7 +63,6 @@ const getEditorThemePreference = () => {
 
 export default function ClientPage() {
     const router = useRouter();
-    const { data: session, isPending } = useSession()
     const [loading, setLoading] = useState(false)
     const [showAIPanel, setShowAIPanel] = useState(false)
     const [isEditorDarkMode, setIsEditorDarkMode] = useState(getEditorThemePreference)
@@ -130,10 +128,6 @@ export default function ClientPage() {
         ],
     })
     const { title, setTitle, link, setLink } = useEditorDraft(editor)
-
-    if (isPending || !session) {
-        return <div className="flex items-center bg-sky-200/40 justify-center h-screen"><Loader className="animate-spin text-blue-700 text-xl" /></div>
-    }
 
     const handlePost = async () => {
         if (!editor) return
