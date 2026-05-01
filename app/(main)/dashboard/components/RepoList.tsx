@@ -118,20 +118,20 @@ export default function RepoList({ initialSavedRepos = [] }: RepoListProps) {
     const getStatusBadge = (status?: SavedRepo["status"]) => {
         switch (status) {
             case "completed":
-                return <span className="text-[10px] px-2 py-0.5 rounded-full bg-green-100 text-green-700">Indexed</span>;
+                return <span className="w-2 h-2 rounded-full bg-[#0556f7] "></span>;
             case "indexing":
-                return <span className="text-[10px] px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-700">Indexing</span>;
+                return <span className="w-2 h-2 rounded-full bg-[#12df03] animate-pulse"></span>;
             case "pending":
-                return <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-100 text-blue-700">Pending</span>;
+                return <span className="w-2 h-2 rounded-full bg-[#f7ef05] animate-pulse"></span>;
             case "failed":
-                return <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-100 text-red-700">Failed</span>;
+                return <span className="w-2 h-2 rounded-full bg-[#dd0404] "></span>;
             case "failed_with_stale_index":
             case "stale":
-                return <span className="text-[10px] px-2 py-0.5 rounded-full bg-orange-100 text-orange-700">Stale</span>;
+                return <span className="w-2 h-2 rounded-full bg-[#e85704]"></span>;
             case "not_indexed":
-                return <span className="text-[10px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">Not Indexed</span>;
+                return <span className="w-2 h-2 rounded-full bg-[#010107] animate-pulse" />;
             default:
-                return <span className="text-[10px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">Checking</span>;
+                return <span className="w-2 h-2 rounded-full bg-[#0582f7] animate-pulse"></span>;
         }
     };
 
