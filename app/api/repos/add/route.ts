@@ -72,6 +72,7 @@ export async function POST(request: Request) {
         }
 
         const redis = await getRedisClient();
+        
         const cachedRepos = await redis.get(`github:repos:${userId}`);
 
         if (!cachedRepos) {
@@ -81,7 +82,16 @@ export async function POST(request: Request) {
             );
         }
 
-        const githubRepos = JSON.parse(cachedRepos) as CachedGitHubRepo[];
+        let githubRepos: CachedGitHubRepo[];
+        try {
+            githubRepos = JSON.parse(cachedRepos) as CachedGitHubRepo[];
+        } catch {
+            return NextResponse.json(
+                { error: "Repository search expired. Search again before adding." },
+                { status: 400 }
+            );
+        }
+
         const githubRepo = githubRepos.find((repo) => BigInt(repo.id) === githubRepoId);
 
         if (!githubRepo) {
