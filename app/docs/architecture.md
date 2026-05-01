@@ -67,20 +67,26 @@ Current cache keys:
 - `github:stats:${userId}`: authenticated GitHub contribution stats, 30 minute TTL.
 - `github:stats:public:${stageName}`: public GitHub contribution stats, 30 minute TTL.
 
+Client-side repository state is also shared through TanStack Query under the `["repos"]` query key. `RepoList` owns fetching, indexing actions, and polling for active index jobs. The AI panel reads this query cache without starting its own fetch or polling loop.
+
 ### Background Jobs
 
 Inngest is configured in `inngest/client.ts` and exposed through `app/api/inngest/route.ts`.
 
 The repository indexing function in `inngest/functions/indexRepo.ts` handles:
 
-1. Marking a `RepoIndexJob` as `INDEXING`.
-2. Retrieving the user's GitHub access token.
-3. Resolving repository details by GitHub repo ID.
-4. Fetching up to 300 supported repository files.
-5. Chunking files.
-6. Embedding chunks with Hugging Face.
-7. Upserting vectors to Pinecone under namespace `user-${userId}-repo-${repoId}`.
-8. Marking the job `COMPLETED` or `FAILED`.
+1. Loading the tracked repo and its previous `indexNamespace`.
+2. Marking the `RepoIndexJob` and `Repo.indexStatus` as `INDEXING`.
+3. Retrieving the user's GitHub access token.
+4. Resolving repository details by GitHub repo ID.
+5. Fetching up to 300 supported repository files.
+6. Chunking files.
+7. Embedding chunks with Hugging Face.
+8. Upserting vectors to a job-scoped Pinecone namespace: `user-${userId}-repo-${repoId}-job-${jobId}`.
+9. Marking the job `COMPLETED`, storing `chunksCount`, updating `Repo.indexNamespace`, and copying `latestCommitSha` into `indexedCommitSha`.
+10. Cleaning up older namespaces after a successful index, or cleaning up the failed job namespace when indexing fails.
+
+GitHub push webhooks are handled by `app/api/github/webhook/route.ts`. A signed push event for `refs/heads/main` records the latest commit SHA and marks all matching saved repos as `STALE`.
 
 ### AI Writer
 
@@ -89,9 +95,9 @@ The AI writer is surfaced by `app/p/components/AIPanel.tsx` and served by `app/a
 Generation flow:
 
 1. The dashboard `RepoList` owns repository indexing and status polling.
-2. The AI panel reads the shared React Query repo cache and shows only repos already usable for generation.
+2. The AI panel reads the shared React Query repo cache without fetching or polling, and shows only repos already usable for generation.
 3. User selects an indexed repo and sends prompt and repo ID to `POST /api/ai/generate`.
-4. Server embeds the prompt, queries Pinecone, builds source context, and streams generated text from OpenRouter.
+4. Server verifies the selected repo belongs to the current user, reads its stored `indexNamespace`, embeds the prompt, queries Pinecone, builds source context, and streams generated text from OpenRouter.
 5. Client can insert the streamed markdown text into the Tiptap editor.
 
 ## External Services

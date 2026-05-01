@@ -17,7 +17,6 @@ interface SocialLinks {
   github?: string;
   twitter?: string;
   linkedin?: string;
-  website?: string;
 }
 
 interface UserData {

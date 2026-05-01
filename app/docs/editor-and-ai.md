@@ -160,28 +160,36 @@ The active app editor imports many pieces from this package directly, while the 
 
 Indexing is started from the dashboard `RepoList`. The AI panel does not start index jobs; it reads the shared repo cache and only shows repos that are already indexed or otherwise usable for generation.
 
+`RepoList` calls `useRepos(initialSavedRepos)` and owns status refresh. While any saved repo is `pending` or `indexing`, `useRepoIndexingPolling` refetches the repo list every 5 seconds. `AIPanel` calls `useCachedRepos`, which has `enabled: false`; it only consumes whatever `RepoList` has already placed in the shared React Query cache.
+
 ### Start Route
 
 `app/api/repos/index/route.ts`:
 
 1. Requires authentication.
 2. Validates `repoId`, `repoName`, and `accountId`.
-3. Creates a `RepoIndexJob` with status `PENDING`.
-4. Sends Inngest event `repos/index` with job and repo data.
+3. Parses the GitHub repo ID as a safe positive `BigInt`.
+4. Verifies the repo belongs to the current user and account.
+5. Creates a `RepoIndexJob` with status `PENDING`.
+6. Sets `Repo.indexStatus` to `PENDING`.
+7. Sends Inngest event `repos/index` with job and repo data.
 
 ### Inngest Function
 
 `inngest/functions/indexRepo.ts`:
 
-1. Marks job `INDEXING`.
-2. Fetches GitHub access token through Better Auth.
-3. Resolves GitHub repository details using `getRepoDetailsFromGithub`.
-4. Fetches files with `getRepoFilesFromGithub`.
-5. Chunks files with `chunkCodeFile`.
-6. Embeds chunks in batches of 16 using `embedPassages`.
-7. Clears the user's existing repo namespace, then upserts vectors into Pinecone under namespace `user-${userId}-repo-${repoId}`.
-8. Marks job `COMPLETED` with `chunksCount`.
-9. Marks job `FAILED` and stores an error message on failure.
+1. Loads the tracked repo and remembers the previous `indexNamespace`.
+2. Marks the job and repo `INDEXING`.
+3. Fetches GitHub access token through Better Auth.
+4. Resolves GitHub repository details using `getRepoDetailsFromGithub`.
+5. Fetches files with `getRepoFilesFromGithub`.
+6. Chunks files with `chunkCodeFile`.
+7. Embeds chunks in batches of 16 using `embedPassages`.
+8. Upserts vectors into a job-scoped Pinecone namespace from `getRepoIndexJobNamespace`.
+9. Marks job `COMPLETED` with `chunksCount`.
+10. Updates `Repo.indexStatus`, `Repo.indexedCommitSha`, and `Repo.indexNamespace`.
+11. Deletes older namespaces after a successful index.
+12. Marks job `FAILED`, stores the error message, marks the repo `FAILED`, and deletes the failed job namespace on failure.
 
 ### GitHub File Fetching
 
@@ -210,7 +218,7 @@ Skipped paths include:
 - lockfiles and package manifests
 - `.env`
 
-The fetcher limits to 100 files by default and skips decoded files larger than 100 KB.
+The fetcher limits to 300 files by default and skips decoded files larger than 100 KB.
 
 ### Chunking
 
@@ -251,7 +259,7 @@ Defaults:
 - Stores metadata: `text`, `path`, `startLine`, `endLine`.
 - Queries with `topK`, default 5.
 - Checks namespace existence with `describeIndexStats`.
-- Deletes user-scoped namespaces when repos are removed or re-indexed.
+- Deletes all vectors in a namespace with `deleteAll({ namespace })` when repos are removed, when old successful indexes are superseded, and when a failed job leaves partial vectors behind.
 
 ## AI Generation
 
@@ -261,16 +269,17 @@ Validation:
 
 - Requires session.
 - Requires `repoId`.
+- Verifies the repo belongs to the current user.
 - Requires non-empty `prompt`.
 - Rejects prompts above 4000 characters.
-- Requires indexed Pinecone namespace.
+- Requires an indexed Pinecone namespace stored on the repo, or the deterministic base namespace fallback.
 - Requires `OPENROUTER_API_KEY`.
 
 Generation model:
 
 - `nvidia/nemotron-3-super-120b-a12b:free`
 
-The server embeds the user's prompt, queries Pinecone for top 10 chunks, filters weak matches, deduplicates overlapping chunks, and builds a grouped context block with file-level metadata:
+The server embeds the user's prompt with the E5 `query:` prefix, queries Pinecone for top 10 chunks, filters weak matches, deduplicates overlapping chunks, and builds a grouped context block with file-level metadata:
 
 ```text
 File: path/to/file.ts
@@ -278,4 +287,4 @@ File: path/to/file.ts
 ...
 ```
 
-It then streams text/plain content to the client. The AI panel sends optional `contentType`, `audience`, and `tone` fields, reads the stream with `ReadableStreamDefaultReader`, appends chunks to local state, and can insert the generated text into the editor.
+It then streams text/plain content to the client. The AI panel sends optional `contentType`, `audience`, and `tone` fields, reads the stream with `ReadableStreamDefaultReader`, appends chunks to local state, and can insert the generated text into the editor. The AI panel's repo selector only includes cached repos with `completed`, `failed_with_stale_index`, or `stale` status.

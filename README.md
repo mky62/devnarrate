@@ -24,6 +24,7 @@ DevNarrate bridges the gap between code and context. While GitHub shows *what* y
 - **GitHub OAuth Authentication** — Sign in with GitHub, your profile is automatically imported
 - **Rich Article Editor** — Full WYSIWYG editor powered by TipTap with headings, lists, code blocks, images, and more
 - **Repository Integration** — Search and link GitHub repositories with live star/fork counts
+- **Repository-Aware AI Writing** — Index saved repos with Inngest, Hugging Face embeddings, and Pinecone, then generate repo-grounded article drafts with OpenRouter
 - **Public Profiles** — Share your unique profile page (`devnarrate.com/yourname`) with posts and repos
 - **Dashboard** — Manage your profile, posts, and linked repositories in one place
 - **Image Upload** — Upload images via Cloudinary to enrich your articles
@@ -43,6 +44,9 @@ DevNarrate bridges the gap between code and context. While GitHub shows *what* y
 | **Images** | Cloudinary |
 | **State** | TanStack React Query |
 | **Validation** | Zod |
+| **Background Jobs** | Inngest |
+| **Embeddings / Vector Search** | Hugging Face Inference Router + Pinecone |
+| **AI Generation** | OpenRouter |
 | **Animations** | Framer Motion, Lenis |
 
 ---
@@ -66,6 +70,10 @@ DevNarrate bridges the gap between code and context. While GitHub shows *what* y
 - Redis instance
 - GitHub OAuth App
 - Cloudinary account
+- Hugging Face token
+- Pinecone index
+- OpenRouter API key
+- Inngest account or local Inngest dev server
 
 ### Environment Variables
 
@@ -78,9 +86,14 @@ BETTER_AUTH_SECRET=your-secret
 BETTER_AUTH_URL=http://localhost:3000
 GITHUB_CLIENT_ID=your-github-client-id
 GITHUB_CLIENT_SECRET=your-github-client-secret
-CLOUDINARY_CLOUD_NAME=your-cloud-name
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your-cloud-name
 CLOUDINARY_API_KEY=your-api-key
 CLOUDINARY_API_SECRET=your-api-secret
+HF_TOKEN=your-hugging-face-token
+PINECONE_API_KEY=your-pinecone-api-key
+PINECONE_INDEX=your-pinecone-index
+OPENROUTER_API_KEY=your-openrouter-api-key
+GITHUB_WEBHOOK_SECRET=your-github-webhook-secret
 ```
 
 ### Installation
@@ -112,10 +125,11 @@ app/                      # Next.js App Router
   home/                   # Landing page
   api/                    # API routes
 lib/                      # Utilities (auth, prisma, redis, validation)
+inngest/                  # Background functions for repository indexing
 hooks/                    # Custom React hooks
 packages/
   prisma/                 # Prisma schema & migrations
-  tip tap/                # Custom TipTap editor package
+  tiptap/                 # Custom TipTap editor package
 services/                 # Service-layer utilities
 public/                   # Static assets
 ```

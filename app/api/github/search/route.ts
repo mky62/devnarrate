@@ -78,17 +78,17 @@ export async function GET(request: Request) {
         }
 
         const { searchParams } = new URL(request.url);
-        const query = searchParams.get("q");
+        const query = searchParams.get("q")?.trim().toLowerCase();
 
-        if (!query || query.trim().length === 0) {
+        if ( !query ) {
             return NextResponse.json({ error: "Query is required" }, { status: 400 });
         }
 
         const tokenResponse = await auth.api.getAccessToken({
             headers: await headers(),
             body: {
-                providerId: "github",
-                userId,
+              providerId: "github",
+              userId,
             },
         });
         const token = tokenResponse?.accessToken;
@@ -130,7 +130,7 @@ export async function GET(request: Request) {
 
         return NextResponse.json({ repos: filtered });
 
-    }
+      }
 
     catch (error) {
     if (error instanceof Error && error.message.includes("GitHub auth error")) {

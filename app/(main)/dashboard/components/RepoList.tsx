@@ -86,6 +86,7 @@ export default function RepoList({ initialSavedRepos = [] }: RepoListProps) {
             await addRepoMutation.mutateAsync({
                 githubRepoId: repo.githubRepoId,
                 name: repo.name,
+                description: repo.description,
                 language: repo.language,
                 stargazers_count: repo.stargazers_count,
                 forks_count: repo.forks_count,
@@ -196,7 +197,7 @@ export default function RepoList({ initialSavedRepos = [] }: RepoListProps) {
                 {savedRepos.length === 0 ? (
                     <div className="flex flex-col items-center justify-center h-full text-center py-8">
                         <p className="text-gray-400 text-sm">No repositories saved yet</p>
-                        <p className="text-gray-400 text-xs mt-1">Click the search icon above to add some</p>
+                        <p className="text-gray-400 text-xs mt-1">Click the search icon above to add</p>
                     </div>
                 ) : (
                     savedRepos.map((repo) => (

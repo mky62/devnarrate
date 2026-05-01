@@ -11,7 +11,6 @@ interface SocialLinks {
   github?: string;
   twitter?: string;
   linkedin?: string;
-  website?: string;
 }
 
 export interface PublicUser {
@@ -156,16 +155,6 @@ export default function PublicProfileSection({ stageName, user }: PublicProfileS
               className="p-2 text-gray-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors"
             >
               <FaLinkedin size={18} />
-            </Link>
-          )}
-          {socialLinks.website && (
-            <Link
-              href={socialLinks.website}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-            >
-              <Globe size={18} />
             </Link>
           )}
         </div>

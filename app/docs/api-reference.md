@@ -248,7 +248,7 @@ Validates with `repoSchema`.
 
 Accepted body:
 
-- `githubRepoId`
+- `githubRepoId`: JSON-safe positive GitHub repository ID. The API stores it as a Prisma `BigInt` and serializes it back to a number in responses.
 - `name`
 - `language`
 - `stargazers_count`
@@ -258,8 +258,10 @@ Behavior:
 
 - Finds the current user's GitHub `Account`.
 - Verifies the repo ID is accessible with the current user's GitHub token.
+- Rejects GitHub detail mismatches instead of trusting client-submitted metadata.
 - Rejects duplicate `githubRepoId` for the same user.
 - Creates a `Repo` tied to the user and account using canonical GitHub metadata.
+- Returns an explicitly JSON-safe repo payload.
 
 Responses:
 
@@ -277,6 +279,13 @@ Accepted body:
 - `githubRepoId`
 
 Deletes the matching repo only if it belongs to the current user.
+
+Behavior:
+
+- Parses `githubRepoId` as a safe positive repository ID.
+- Deletes both the deterministic base namespace and the stored `Repo.indexNamespace` when present.
+- Deletes previous `RepoIndexJob` rows for that user/repo.
+- Deletes the saved repo row.
 
 ### `GET /api/repos/public/[stageName]`
 
@@ -298,8 +307,9 @@ Status values exposed to the client:
 - `completed`
 - `failed`
 - `failed_with_stale_index`
+- `stale`
 
-The route checks both the latest `RepoIndexJob` and Pinecone namespace existence. If vectors exist, the repo is considered usable even when the latest job failed.
+The route checks the latest `RepoIndexJob`, `Repo.indexStatus`, and Pinecone namespace existence. It uses the stored `Repo.indexNamespace` when present, with the deterministic `user-${userId}-repo-${repoId}` base namespace as a fallback. If vectors exist, the repo is considered usable even when the latest job failed. If the webhook marks `Repo.indexStatus` as `STALE`, the client receives `stale` and can still generate from the stored index while showing that the repo should be refreshed.
 
 ### `POST /api/repos/index`
 
@@ -313,8 +323,10 @@ Accepted body:
 
 Behavior:
 
-- Creates a `RepoIndexJob` with `PENDING` status.
+- Parses the GitHub repo ID as a safe positive ID.
 - Verifies the repo belongs to the current user and account.
+- Creates a `RepoIndexJob` with `PENDING` status.
+- Sets `Repo.indexStatus` to `PENDING`.
 - Sends Inngest event `repos/index`.
 
 Returns `{ success: true, jobId }`.
@@ -336,7 +348,7 @@ Accepted body:
 Behavior:
 
 1. Verifies the repo belongs to the current user.
-2. Checks Pinecone namespace `user-${userId}-repo-${repoId}` exists, with a legacy `repo-${repoId}` fallback for old indexes.
+2. Checks the stored `Repo.indexNamespace` exists in Pinecone, falling back to the deterministic base namespace when no stored namespace exists.
 3. Embeds the prompt with Hugging Face using the E5 `query:` prefix, with a raw embedding fallback for older indexes.
 4. Queries Pinecone for top 10 relevant chunks and drops weak matches.
 5. Builds a grouped source-context prompt with file paths, line ranges, and relevance scores.
@@ -352,6 +364,32 @@ Responses:
 - `500` missing OpenRouter key or generation failure.
 
 Successful response is `text/plain; charset=utf-8` streamed content.
+
+## GitHub Webhooks
+
+### `POST /api/github/webhook`
+
+Public endpoint intended for GitHub webhook delivery.
+
+Security:
+
+- Requires `GITHUB_WEBHOOK_SECRET`.
+- Verifies `x-hub-signature-256` with HMAC SHA-256.
+
+Behavior:
+
+- Responds to `ping` with `{ success: true }`.
+- Ignores unsupported event types with `202`.
+- Handles `push` events for `refs/heads/main`.
+- Parses the repository ID and commit SHA from the payload.
+- Updates all tracked matching repos with `latestCommitSha` and `indexStatus: "STALE"`.
+
+Responses:
+
+- `401` invalid or missing signature.
+- `400` invalid JSON or missing repository/commit fields.
+- `202` ignored event, branch, or untracked repository.
+- `200` successful update.
 
 ## GitHub Stats
 

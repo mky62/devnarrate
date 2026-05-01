@@ -75,21 +75,40 @@ const trustedOrigins = Array.from(
 )
 
 export const auth = betterAuth({
+  appName: "devnarrate",
   database: prismaAdapter(db, {
     provider: "postgresql",
   }),
 
+  advanced: {
+		ipAddress: {
+			ipAddressHeaders: ["x-client-ip", "x-forwarded-for"],
+			disableIpTracking: false
+		},
+    useSecureCookies: true,
+  },
+
+  cookies: {
+			session_token: {
+				name: "dn_token",
+				attributes: {
+					httpOnly: true,
+					secure: true
+				}
+			}
+		},
+
   rateLimit: {
     enabled: true,
     window: 60,
-    max: 30,
+    max: 20,
   },
+
+  secret: process.env.BETTER_AUTH_SECRET,
 
   account: {
     encryptOAuthTokens: true,
   },
-
-  trustedOrigins,
 
   socialProviders: {
     github: {
@@ -102,6 +121,8 @@ export const auth = betterAuth({
       },
     },
   },
+
+  trustedOrigins,
 
   baseURL: {
     fallback: normalizedBaseUrl,
