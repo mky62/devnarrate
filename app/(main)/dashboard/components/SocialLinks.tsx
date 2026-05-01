@@ -7,7 +7,6 @@ interface SocialLinksData {
   github?: string;
   twitter?: string;
   linkedin?: string;
-  website?: string;
 }
 
 interface SocialLinksProps {
@@ -48,17 +47,6 @@ export default function SocialLinks({ links }: SocialLinksProps) {
           title="LinkedIn"
         >
           <FaLinkedin size={16} />
-        </a>
-      )}
-      {links.website && (
-        <a
-          href={links.website}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="p-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-          title="Website"
-        >
-          <Globe size={18} />
         </a>
       )}
     </div>

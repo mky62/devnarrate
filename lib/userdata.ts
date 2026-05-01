@@ -4,7 +4,6 @@ export interface SocialLinks {
   github?: string;
   twitter?: string;
   linkedin?: string;
-  website?: string;
 }
 
 export interface User {
@@ -44,10 +43,10 @@ export async function updateUserProfile(payload: UpdateProfilePayload): Promise<
     body: JSON.stringify(payload),
   });
 
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error || "Failed to update profile");
+  const {user} = await res.json();
+  if (!res.ok) throw new Error("Failed to update profile");
 
-  return data.user;
+  return user;
 }
 
 // Post API
@@ -105,6 +104,7 @@ export async function getRepos(): Promise<Repo[]> {
 export interface AddRepoPayload {
   githubRepoId: number;
   name: string;
+  description?: string | null;
   language?: string | null;
   stargazers_count?: number;
   forks_count?: number;

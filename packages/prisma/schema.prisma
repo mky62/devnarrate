@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
@@ -55,7 +49,8 @@ model Session {
   ipAddress String?
   userAgent String?
   userId    String
-  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("session")
 }
@@ -65,8 +60,10 @@ model Account {
   accountId    String
   accountLogin String? // GitHub username/login
   providerId   String
-  userId       String
-  user         User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   accessToken  String?
   refreshToken String?
   idToken      String?
@@ -85,12 +82,13 @@ model Account {
 }
 
 model Verification {
-  id         String    @id @default(cuid())
+  id         String @id @default(cuid())
   identifier String
   value      String
   expiresAt  DateTime
-  createdAt  DateTime?
-  updatedAt  DateTime?
+
+  createdAt DateTime?
+  updatedAt DateTime?
 
   @@map("verification")
 }
@@ -99,7 +97,7 @@ model Repo {
   id String @id @default(cuid())
 
   userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   accountId String
   account   Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
@@ -117,9 +115,10 @@ model Repo {
   stars Int @default(0)
   forks Int @default(0)
 
-  latestCommitSha String?
+  latestCommitSha  String?
   indexedCommitSha String?
-  indexNamespace String?
+  indexNamespace   String?
+
   indexStatus String @default("NOT_INDEXED") // NOT_INDEXED | PENDING | INDEXING | COMPLETED | FAILED | STALE
 
   createdAt DateTime @default(now())
@@ -129,7 +128,9 @@ model Repo {
   @@index([accountId])
   @@index([githubRepoId])
   @@index([indexStatus])
+
   @@unique([userId, githubRepoId])
+
   @@map("repo")
 }
 
@@ -137,13 +138,13 @@ model Post {
   id String @id @default(cuid())
 
   userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   title       String
   projectLink String?
 
   bannerImage String?
-  content     String  @db.Text
+  content     String @db.Text
 
   views Int? @default(0)
 
@@ -154,6 +155,7 @@ model Post {
   updatedAt DateTime @updatedAt
 
   @@index([userId])
+
   @@map("post")
 }
 
@@ -161,31 +163,38 @@ model Like {
   id String @id @default(cuid())
 
   postId String
-  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  post   Post @relation(fields: [postId], references: [id], onDelete: Cascade)
 
   userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
 
   @@unique([postId, userId])
+
   @@index([userId])
   @@index([postId])
+
   @@map("like")
 }
 
 model RepoIndexJob {
-  id          String   @id @default(cuid())
-  repoId      String
-  userId      String
-  status      String   // PENDING | INDEXING | COMPLETED | FAILED
+  id String @id @default(cuid())
+
+  repoId String
+  userId String
+
+  status String // PENDING | INDEXING | COMPLETED | FAILED
+
   error       String?
   chunksCount Int?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([repoId])
   @@index([userId])
+
   @@map("repo_index_job")
 }
 
@@ -193,13 +202,13 @@ model ContributionClick {
   id String @id @default(cuid())
 
   postId String
-  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  post   Post @relation(fields: [postId], references: [id], onDelete: Cascade)
 
   authorId String
-  author   User   @relation("ContributionAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  author   User @relation("ContributionAuthor", fields: [authorId], references: [id], onDelete: Cascade)
 
   viewerId String?
-  viewer   User?   @relation("ContributionViewer", fields: [viewerId], references: [id], onDelete: SetNull)
+  viewer   User? @relation("ContributionViewer", fields: [viewerId], references: [id], onDelete: SetNull)
 
   referrer  String? @db.Text
   userAgent String? @db.Text
@@ -210,5 +219,6 @@ model ContributionClick {
   @@index([authorId])
   @@index([viewerId])
   @@index([createdAt])
+
   @@map("contribution_click")
 }

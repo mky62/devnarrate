@@ -115,7 +115,10 @@ Columns:
 - Calls `GET /api/github/search?q=...`.
 - Calls `POST /api/repos/add`.
 - Calls `DELETE /api/repos/delete`.
-- Keeps local saved repo state for immediate UI updates.
+- Calls `POST /api/repos/index` to start repository indexing jobs.
+- Owns index-status refresh through `useRepoIndexingPolling`, which refetches while any repo is `pending` or `indexing`.
+- Populates the shared TanStack Query `["repos"]` cache used by the dashboard and AI panel.
+- Keeps local mutation state for add/delete/index button feedback.
 
 ## Public Profile
 
@@ -160,6 +163,13 @@ The contribution link points to `/api/contributions/redirect?postId=...` instead
 - Saves posts with `POST /api/saveposts`.
 - Toggles the AI side panel.
 
+`app/p/components/AIPanel.tsx`:
+
+- Reads repository options from `useCachedRepos`, which subscribes to the existing `["repos"]` cache with `enabled: false`.
+- Does not fetch, poll, or start index jobs.
+- Shows only cached repos with `completed`, `failed_with_stale_index`, or `stale` status.
+- Calls `POST /api/ai/generate` only after a usable repo is selected.
+
 ## React Hooks
 
 Application data hooks:
@@ -168,6 +178,7 @@ Application data hooks:
 - `usePosts`: fetches current user's posts.
 - `useDeletePost`: optimistic post deletion.
 - `useRepos`: fetches current user's saved repos.
+- `useCachedRepos`: cache-only repo reader used by the AI panel.
 - `useAddRepo`: invalidates repo query after add.
 - `useDeleteRepo`: optimistic repo deletion.
 - `useUpdateProfile`: profile update mutation.

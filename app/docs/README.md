@@ -36,4 +36,4 @@ DevNarrate is a Next.js App Router application for developer storytelling. Users
 4. Post creation happens in `/p/create`, where Tiptap JSON is saved through `POST /api/saveposts`.
 5. Public profile pages live at `/:stageName` and load profile, posts, repos, and GitHub stats through public APIs.
 6. Post pages live at `/p/:id`, sanitize/render stored Tiptap JSON, expose the project link, and optionally redirect contribution clicks through tracking.
-7. AI writing requires a saved repository to be indexed. Indexing fetches repository files from GitHub, chunks them, embeds them with Hugging Face, stores vectors in Pinecone, and streams generated text from OpenRouter.
+7. AI writing uses repositories indexed from the dashboard `RepoList`. The AI panel reads the shared cached repo list, shows only usable indexed repos, retrieves relevant Pinecone chunks, and streams generated text from OpenRouter.

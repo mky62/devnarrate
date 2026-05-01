@@ -4,7 +4,23 @@ import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { repoSchema } from "@/lib/validation";
 import { serializeGithubRepoId } from "@/lib/github-repo-id";
-import { getRepoDetailsFromGithub, type RepoDetails } from "@/lib/github";
+import { getRedisClient } from "@/lib/redis";
+
+interface CachedGitHubRepo {
+    id: number;
+    name: string;
+    description?: string | null;
+    language?: string | null;
+    stargazers_count?: number;
+    forks_count?: number;
+}
+
+function isPrismaUniqueError(error: unknown) {
+    return typeof error === "object"
+        && error !== null
+        && "code" in error
+        && (error as { code?: string }).code === "P2002";
+}
 
 export async function POST(request: Request) {
     try {
@@ -29,6 +45,7 @@ export async function POST(request: Request) {
 
         const userId = session.user.id;
         const { githubRepoId } = validationResult.data;
+
         // Get user's GitHub account
         const account = await db.account.findFirst({
             where: { userId, providerId: "github" },
@@ -54,16 +71,23 @@ export async function POST(request: Request) {
             );
         }
 
-        let githubRepo: RepoDetails;
-        try {
-            githubRepo = await getRepoDetailsFromGithub({
-                repoId: String(githubRepoId),
-                accessToken: tokenResponse.accessToken,
-            });
-        } catch {
+        const redis = await getRedisClient();
+        const cachedRepos = await redis.get(`github:repos:${userId}`);
+
+        if (!cachedRepos) {
             return NextResponse.json(
-                { error: "Repository is not accessible with the connected GitHub account" },
-                { status: 403 }
+                { error: "Repository search expired. Search again before adding." },
+                { status: 400 }
+            );
+        }
+
+        const githubRepos = JSON.parse(cachedRepos) as CachedGitHubRepo[];
+        const githubRepo = githubRepos.find((repo) => BigInt(repo.id) === githubRepoId);
+
+        if (!githubRepo) {
+            return NextResponse.json(
+                { error: "Repository search expired. Search again before adding." },
+                { status: 400 }
             );
         }
 
@@ -79,12 +103,12 @@ export async function POST(request: Request) {
         // Create the repo
         const repo = await db.repo.create({
             data: {
-                githubRepoId: BigInt(githubRepo.id),
+                githubRepoId,
                 name: githubRepo.name,
-                description: githubRepo.description,
-                language: githubRepo.language,
-                stars: githubRepo.stars,
-                forks: githubRepo.forks,
+                description: githubRepo.description ?? null,
+                language: githubRepo.language ?? null,
+                stars: githubRepo.stargazers_count ?? 0,
+                forks: githubRepo.forks_count ?? 0,
                 userId,
                 accountId: account.id,
             },
@@ -92,11 +116,27 @@ export async function POST(request: Request) {
 
         return NextResponse.json({
             repo: {
-                ...repo,
+                id: repo.id,
+                userId: repo.userId,
+                accountId: repo.accountId,
                 githubRepoId: serializeGithubRepoId(repo.githubRepoId),
+                name: repo.name,
+                description: repo.description,
+                language: repo.language,
+                stars: repo.stars,
+                forks: repo.forks,
+                latestCommitSha: repo.latestCommitSha,
+                indexedCommitSha: repo.indexedCommitSha,
+                status: "not_indexed",
+                createdAt: repo.createdAt,
+                updatedAt: repo.updatedAt,
             },
         }, { status: 201 });
     } catch (error) {
+        if (isPrismaUniqueError(error)) {
+            return NextResponse.json({ error: "Repository already saved" }, { status: 409 });
+        }
+
         console.error("Add repo error:", error);
         return NextResponse.json(
             { error: "Internal server error" },

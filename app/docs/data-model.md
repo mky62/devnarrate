@@ -78,25 +78,34 @@ Saved GitHub repository metadata.
 
 Important fields:
 
-- `githubRepoId`: GitHub repository ID, unique per user.
+- `githubRepoId`: GitHub repository ID stored as `BigInt`, unique per user.
 - `name`: repository name as returned by search/save flow.
 - `description`
 - `language`
 - `stars`, `forks`
 - `userId`
 - `accountId`
+- `latestCommitSha`: latest commit seen from GitHub webhook events.
+- `indexedCommitSha`: commit SHA represented by the current usable index.
+- `indexNamespace`: Pinecone namespace that generation should query.
+- `indexStatus`: `NOT_INDEXED`, `PENDING`, `INDEXING`, `COMPLETED`, `FAILED`, or `STALE`.
 
 Indexes:
 
 - `userId`
 - `accountId`
 - `githubRepoId`
+- `indexStatus`
+- Unique `(userId, githubRepoId)`
 
 Current behavior:
 
 - `POST /api/repos/add` prevents saving the same `githubRepoId` more than once for the same user.
 - Repos are shown on dashboard and public profile pages.
-- AI indexing uses `userId` and `githubRepoId` together for the vector namespace.
+- `RepoList` is the only client component that starts indexing and polls active index jobs.
+- The AI panel only reads the shared repo query cache and only shows repos with usable index status.
+- Successful AI indexing writes vectors to a job-scoped namespace and stores that namespace in `Repo.indexNamespace`.
+- GitHub push webhooks mark matching repos `STALE` and store `latestCommitSha`.
 
 ### Post
 
@@ -154,7 +163,7 @@ Tracks repository indexing jobs.
 
 Important fields:
 
-- `repoId`: stored as a string version of GitHub repo ID.
+- `repoId`: stored as a string version of the GitHub repo ID.
 - `userId`
 - `status`: string status such as `PENDING`, `INDEXING`, `COMPLETED`, or `FAILED`.
 - `error`
@@ -169,8 +178,10 @@ Indexes:
 Current behavior:
 
 - `POST /api/repos/index` creates a `PENDING` job and sends an Inngest event.
-- The Inngest function updates status as work progresses.
-- `GET /api/repos/list` combines latest job status with Pinecone namespace presence and exposes user-facing statuses.
+- The Inngest function updates status as work progresses, writes vectors to `user-${userId}-repo-${repoId}-job-${jobId}`, and stores that namespace on the `Repo` after success.
+- Successful re-indexing removes older namespaces after the new namespace is usable.
+- Failed indexing removes the failed job namespace and records the error on the job.
+- `GET /api/repos/list` combines latest job status, `Repo.indexStatus`, and Pinecone namespace presence to expose user-facing statuses.
 
 ### ContributionClick
 
@@ -208,6 +219,10 @@ Migration files under `packages/prisma/migrations` show the schema evolved throu
 - Contribution tracking.
 - Repository indexing jobs.
 - `chunksCount` on repo index jobs.
+- Repository uniqueness scoped to `(userId, githubRepoId)`.
+- Repository webhook/index state: `latestCommitSha`, `indexedCommitSha`, and `indexStatus`.
+- GitHub repository IDs expanded to `BigInt`.
+- `indexNamespace` on `Repo` for job-scoped vector namespaces.
 
 ## Generated Client
 
