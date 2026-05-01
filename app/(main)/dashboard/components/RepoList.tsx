@@ -1,8 +1,7 @@
 "use client"
 
-import { useCallback, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Search, X, Loader2, Trash2 } from "lucide-react";
-import { useDebounce } from "@/hooks/use-debounce";
 import { FaCodeFork } from "react-icons/fa6";
 import { useAddRepo, useDeleteRepo, useRepos } from "@/hooks/useRepos";
 import { useRepoIndexingPolling } from "@/hooks/use-repo-indexing-polling";
@@ -27,7 +26,7 @@ export default function RepoList({ initialSavedRepos = [] }: RepoListProps) {
     const [searchQuery, setSearchQuery] = useState("");
     const [isSearching, setIsSearching] = useState(false);
     const [searchError, setSearchError] = useState<string | null>(null);
-    const [searchResults, setSearchResults] = useState<Repo[]>([]);
+    const [githubRepos, setGithubRepos] = useState<Repo[] | null>(null);
     const [addingRepoId, setAddingRepoId] = useState<number | null>(null);
     const [deletingRepoId, setDeletingRepoId] = useState<number | null>(null);
     const [indexingRepoId, setIndexingRepoId] = useState<number | null>(null);
@@ -37,42 +36,83 @@ export default function RepoList({ initialSavedRepos = [] }: RepoListProps) {
 
     useRepoIndexingPolling(savedRepos, refetchRepos);
 
-    const debouncedSearch = useDebounce(async (query: string) => {
-        if (query.trim().length === 0) {
-            setSearchResults([]);
+    useEffect(() => {
+        if (!showSearchModal || githubRepos !== null) return;
+
+        let cancelled = false;
+
+        const loadGithubRepos = async () => {
+            setIsSearching(true);
             setSearchError(null);
-            return;
-        }
 
-        setIsSearching(true);
-        setSearchError(null);
+            try {
+                const response = await fetch("/api/github/repos");
+                const data = await response.json();
 
-        try {
-            const response = await fetch(`/api/github/search?q=${encodeURIComponent(query)}`);
-            const data = await response.json();
+                if (cancelled) return;
 
-            if (response.ok) {
-                setSearchResults(data.repos);
-                setSearchError(null);
-            } else {
-                setSearchResults([]);
-                setSearchError(data.error || "GitHub search failed. Please try again.");
+                if (response.ok) {
+                    setGithubRepos(data.repos ?? []);
+                    setSearchError(null);
+                } else {
+                    setSearchError(data.error || "GitHub repos failed to load. Please try again.");
+                }
+            } catch (error) {
+                if (cancelled) return;
+                console.error("GitHub repos load error:", error);
+                setSearchError("GitHub repos failed to load. Please try again.");
+            } finally {
+                if (!cancelled) {
+                    setIsSearching(false);
+                }
             }
-        } catch (error) {
-            console.error("Search error:", error);
-            setSearchResults([]);
-            setSearchError("GitHub search failed. Please try again.");
-        } finally {
-            setIsSearching(false);
-        }
-    }, 300);
+        };
 
-    const handleSearch = useCallback(
-        (query: string) => {
-            setSearchQuery(query);
-            debouncedSearch(query);
-        },
-        [debouncedSearch]
+        void loadGithubRepos();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [githubRepos, showSearchModal]);
+
+    const searchResults = useMemo(() => {
+        const repos = githubRepos ?? [];
+        const query = searchQuery.trim().toLowerCase();
+
+        if (!query) {
+            return repos;
+        }
+
+        return repos.filter((repo) => {
+            const name = repo.name?.toLowerCase() ?? "";
+            const language = repo.language?.toLowerCase() ?? "";
+            const description = repo.description?.toLowerCase() ?? "";
+
+            return (
+                name.includes(query) ||
+                language.includes(query) ||
+                description.includes(query)
+            );
+        });
+    }, [githubRepos, searchQuery]);
+
+    const closeSearchModal = () => {
+        setShowSearchModal(false);
+        setSearchQuery("");
+        setSearchError(null);
+    };
+
+    const openSearchModal = () => {
+        setShowSearchModal(true);
+    };
+
+    const hasLoadedGithubRepos = githubRepos !== null;
+    const shouldShowNoResults = Boolean(
+        hasLoadedGithubRepos &&
+        !isSearching &&
+        searchQuery.trim() &&
+        searchResults.length === 0 &&
+        !searchError
     );
 
     const addRepo = async (repo: Repo) => {
@@ -183,7 +223,7 @@ export default function RepoList({ initialSavedRepos = [] }: RepoListProps) {
                         {savedRepos.length}
                     </span>
                     <button
-                        onClick={() => setShowSearchModal(true)}
+                        onClick={openSearchModal}
                         className="p-1 hover:bg-blue-50 rounded-md transition-colors"
                         title="Search GitHub repos"
                     >
@@ -255,7 +295,7 @@ export default function RepoList({ initialSavedRepos = [] }: RepoListProps) {
                         <div className="px-4 py-3 flex items-center justify-between">
                             <h3 className="font-semibold text-gray-800">Search GitHub Repositories</h3>
                             <button
-                                onClick={() => { setShowSearchModal(false); setSearchResults([]); setSearchQuery(""); setSearchError(null); }}
+                                onClick={closeSearchModal}
                                 className="p-1 hover:bg-gray-100 rounded-md transition-colors"
                             >
                                 <X size={18} className="text-gray-500" />
@@ -269,7 +309,7 @@ export default function RepoList({ initialSavedRepos = [] }: RepoListProps) {
                                     type="text"
                                     placeholder="Search repositories..."
                                     value={searchQuery}
-                                    onChange={(e) => handleSearch(e.target.value)}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
                                     className="w-full pl-10 pr-10 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     autoFocus
                                 />
@@ -284,6 +324,10 @@ export default function RepoList({ initialSavedRepos = [] }: RepoListProps) {
                                 <p className="px-4 py-3 text-sm text-red-600 border-b border-gray-100">
                                     {searchError}
                                 </p>
+                            )}
+
+                            {isSearching && !hasLoadedGithubRepos && (
+                                <p className="text-sm text-gray-500 text-center py-6">Loading repositories...</p>
                             )}
 
                             {searchResults.map((repo) => {
@@ -310,7 +354,7 @@ export default function RepoList({ initialSavedRepos = [] }: RepoListProps) {
                                 );
                             })}
 
-                            {!isSearching && searchQuery && searchResults.length === 0 && !searchError && (
+                            {shouldShowNoResults && (
                                 <p className="text-sm text-gray-500 text-center py-6">No repositories found.</p>
                             )}
                         </div>

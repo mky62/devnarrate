@@ -77,7 +77,7 @@ export async function POST(request: Request) {
 
         if (!cachedRepos) {
             return NextResponse.json(
-                { error: "Repository search expired. Search again before adding." },
+                { error: "Repository list expired. Open repository search again before adding." },
                 { status: 400 }
             );
         }
@@ -87,7 +87,7 @@ export async function POST(request: Request) {
             githubRepos = JSON.parse(cachedRepos) as CachedGitHubRepo[];
         } catch {
             return NextResponse.json(
-                { error: "Repository search expired. Search again before adding." },
+                { error: "Repository list expired. Open repository search again before adding." },
                 { status: 400 }
             );
         }
@@ -96,7 +96,7 @@ export async function POST(request: Request) {
 
         if (!githubRepo) {
             return NextResponse.json(
-                { error: "Repository search expired. Search again before adding." },
+                { error: "Repository list expired. Open repository search again before adding." },
                 { status: 400 }
             );
         }

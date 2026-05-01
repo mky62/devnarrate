@@ -111,8 +111,8 @@ Columns:
 `RepoList`:
 
 - Receives initial saved repos from the dashboard server component.
-- Opens a search modal.
-- Calls `GET /api/github/search?q=...`.
+- Opens a search modal and fetches GitHub repositories once per dashboard mount.
+- Calls `GET /api/github/repos`, then filters the cached browser list locally while typing.
 - Calls `POST /api/repos/add`.
 - Calls `DELETE /api/repos/delete`.
 - Calls `POST /api/repos/index` to start repository indexing jobs.
@@ -186,7 +186,6 @@ Application data hooks:
 
 UI utility hooks:
 
-- `useDebounce`
 - `useDebouncedValue`
 - `useThrottledCallback`
 - `useElementRect`

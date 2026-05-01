@@ -207,13 +207,13 @@ Looks up the user by `stageName`, returns that user's posts with viewer like sta
 
 ## Repositories
 
-### `GET /api/github/search?q=...`
+### `GET /api/github/repos`
 
 Requires authentication.
 
-Uses the user's GitHub OAuth token to fetch all repositories from `https://api.github.com/user/repos`, caches them in Redis for 30 minutes, then filters locally by repository name.
+Returns the user's GitHub repositories. The server reads from Redis when available; on a cache miss it uses the user's GitHub OAuth token to fetch all repositories from `https://api.github.com/user/repos` and caches them in Redis for 30 minutes.
 
-Returns repository search results with:
+Returns repositories with:
 
 - `githubRepoId`
 - `name`
