@@ -8,6 +8,8 @@ export interface RepoDetails {
   name: string;
   fullName: string;
   ownerLogin: string;
+  defaultBranch: string | null;
+  latestCommitSha: string | null;
   description: string | null;
   language: string | null;
   stars: number;
@@ -185,11 +187,38 @@ export async function getRepoDetailsFromGithub({
     throw new Error("GitHub repo details response missing full_name or owner.login");
   }
 
+  const defaultBranch = typeof repoInfo.default_branch === "string"
+    ? repoInfo.default_branch
+    : null;
+  let latestCommitSha: string | null = null;
+
+  if (defaultBranch) {
+    const commitRes = await fetch(
+      `https://api.github.com/repos/${repoInfo.full_name}/commits/${encodeURIComponent(defaultBranch)}`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          Accept: "application/vnd.github+json",
+          "User-Agent": "devnarrate-App",
+        },
+      }
+    );
+
+    if (commitRes.ok) {
+      const commitInfo = await commitRes.json();
+      latestCommitSha = typeof commitInfo?.sha === "string" ? commitInfo.sha : null;
+    } else if (commitRes.status !== 404 && commitRes.status !== 409) {
+      throw new Error(`Failed to fetch repo head commit: ${commitRes.status}`);
+    }
+  }
+
   return {
     id: repoInfo.id,
     name: repoInfo.name,
     fullName: repoInfo.full_name,
     ownerLogin: repoInfo.owner.login,
+    defaultBranch,
+    latestCommitSha,
     description: repoInfo.description ?? null,
     language: repoInfo.language ?? null,
     stars: repoInfo.stargazers_count ?? 0,

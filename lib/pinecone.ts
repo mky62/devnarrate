@@ -112,5 +112,23 @@ export async function namespaceExists(namespace: string): Promise<boolean> {
 }
 
 export async function deletePineconeNamespace(namespace: string): Promise<void> {
-  await getIndex().deleteAll({ namespace });
+  try {
+    await getIndex().deleteAll({ namespace });
+  } catch (error) {
+    const status = typeof error === "object" && error !== null && "status" in error
+      ? (error as { status?: unknown }).status
+      : undefined;
+    const name = error instanceof Error ? error.name : "";
+    const message = error instanceof Error ? error.message : "";
+
+    if (
+      status === 404 ||
+      name === "PineconeNotFoundError" ||
+      /status 404|not found/i.test(message)
+    ) {
+      return;
+    }
+
+    throw error;
+  }
 }

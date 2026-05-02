@@ -90,13 +90,16 @@ export const indexRepo = inngest.createFunction(
         return { accessToken: tokenResponse.accessToken };
       });
 
-      const { fullName } = await step.run("fetch-repo-details", async () => {
+      const { fullName, latestCommitSha } = await step.run("fetch-repo-details", async () => {
         const repo = await getRepoDetailsFromGithub({
           repoId,
           accessToken,
         });
 
-        return { fullName: repo.fullName };
+        return {
+          fullName: repo.fullName,
+          latestCommitSha: repo.latestCommitSha,
+        };
       });
 
       const chunkResult = await step.run("fetch-and-chunk-files", async () => {
@@ -132,16 +135,6 @@ export const indexRepo = inngest.createFunction(
             },
           });
 
-          const repo = await db.repo.findFirst({
-            where: {
-              githubRepoId,
-              userId,
-            },
-            select: {
-              latestCommitSha: true,
-            },
-          });
-
           await db.repo.updateMany({
             where: {
               githubRepoId,
@@ -149,7 +142,8 @@ export const indexRepo = inngest.createFunction(
             },
             data: {
               indexStatus: "COMPLETED",
-              indexedCommitSha: repo?.latestCommitSha ?? null,
+              latestCommitSha,
+              indexedCommitSha: latestCommitSha,
               indexNamespace: namespace,
             },
           });
@@ -207,16 +201,6 @@ export const indexRepo = inngest.createFunction(
           },
         });
 
-        const repo = await db.repo.findFirst({
-          where: {
-            githubRepoId,
-            userId,
-          },
-          select: {
-            latestCommitSha: true,
-          },
-        });
-
         await db.repo.updateMany({
           where: {
             githubRepoId,
@@ -224,7 +208,8 @@ export const indexRepo = inngest.createFunction(
           },
           data: {
             indexStatus: "COMPLETED",
-            indexedCommitSha: repo?.latestCommitSha ?? null,
+            latestCommitSha,
+            indexedCommitSha: latestCommitSha,
             indexNamespace: namespace,
           },
         });

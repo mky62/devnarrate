@@ -5,6 +5,7 @@ import { headers } from "next/headers";
 import { repoSchema } from "@/lib/validation";
 import { serializeGithubRepoId } from "@/lib/github-repo-id";
 import { getRedisClient } from "@/lib/redis";
+import { getRepoDetailsFromGithub } from "@/lib/github";
 
 interface CachedGitHubRepo {
     id: number;
@@ -110,15 +111,21 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: "Repository already saved" }, { status: 409 });
         }
 
+        const repoDetails = await getRepoDetailsFromGithub({
+            repoId: serializeGithubRepoId(githubRepoId),
+            accessToken: tokenResponse.accessToken,
+        });
+
         // Create the repo
         const repo = await db.repo.create({
             data: {
                 githubRepoId,
-                name: githubRepo.name,
-                description: githubRepo.description ?? null,
-                language: githubRepo.language ?? null,
-                stars: githubRepo.stargazers_count ?? 0,
-                forks: githubRepo.forks_count ?? 0,
+                name: repoDetails.name ?? githubRepo.name,
+                description: repoDetails.description ?? githubRepo.description ?? null,
+                language: repoDetails.language ?? githubRepo.language ?? null,
+                stars: repoDetails.stars ?? githubRepo.stargazers_count ?? 0,
+                forks: repoDetails.forks ?? githubRepo.forks_count ?? 0,
+                latestCommitSha: repoDetails.latestCommitSha,
                 userId,
                 accountId: account.id,
             },
