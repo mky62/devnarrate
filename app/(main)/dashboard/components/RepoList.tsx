@@ -158,20 +158,24 @@ export default function RepoList({ initialSavedRepos = [] }: RepoListProps) {
     const getStatusBadge = (status?: SavedRepo["status"]) => {
         switch (status) {
             case "completed":
-                return <span className="w-2 h-2 rounded-full bg-[#0556f7] "></span>;
+                return <span className="block w-2 h-2 rounded-full bg-[#0556f7]" title="Indexed" />;
             case "indexing":
-                return <span className="w-2 h-2 rounded-full bg-[#12df03] animate-pulse"></span>;
+                return <span className="block w-2 h-2 rounded-full bg-[#12df03] animate-pulse" title="Indexing" />;
             case "pending":
-                return <span className="w-2 h-2 rounded-full bg-[#f7ef05] animate-pulse"></span>;
+                return <span className="block w-2 h-2 rounded-full bg-[#f7ef05] animate-pulse" title="Pending" />;
             case "failed":
-                return <span className="w-2 h-2 rounded-full bg-[#dd0404] "></span>;
+                return <span className="block w-2 h-2 rounded-full bg-[#dd0404]" title="Failed" />;
             case "failed_with_stale_index":
             case "stale":
-                return <span className="w-2 h-2 rounded-full bg-[#e85704]"></span>;
+                return <span className="block w-2 h-2 rounded-full bg-[#e85704]" title="Stale" />;
             case "not_indexed":
-                return <span className="w-2 h-2 rounded-full bg-[#010107] animate-pulse" />;
+                return <span className="block w-2 h-2 rounded-full bg-[#010107] animate-pulse" title="Not indexed" />;
             default:
-                return <span className="w-2 h-2 rounded-full bg-[#0582f7] animate-pulse"></span>;
+                return (
+                    <span className="flex w-2 h-2 items-center justify-center" title="Checking">
+                        <Loader2 size={8} className="animate-spin text-[#0556f7]" />
+                    </span>
+                );
         }
     };
 

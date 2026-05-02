@@ -8,10 +8,16 @@ import { db } from "@/lib/prisma";
 import { getRepoNamespace } from "@/lib/repo-indexing";
 import { parseGithubRepoId } from "@/lib/github-repo-id";
 
+export const runtime = "nodejs";
+export const maxDuration = 60;
+
 const OPENROUTER_MODEL = "nvidia/nemotron-3-super-120b-a12b:free";
 const RETRIEVAL_TOP_K = 10;
 const MIN_RELEVANCE_SCORE = 0.2;
 const MAX_CONTEXT_CHARS = 14000;
+const RETRIEVAL_TIMEOUT_MS = 20000;
+const OPENROUTER_TIMEOUT_MS = 45000;
+const STREAM_IDLE_TIMEOUT_MS = 30000;
 
 const CONTENT_TYPES = ["tutorial", "overview", "changelog-style", "implementation deep dive"] as const;
 const AUDIENCES = ["beginner", "intermediate", "advanced"] as const;
@@ -174,7 +180,23 @@ const openRouter = new OpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY ?? "",
   httpReferer: process.env.BETTER_AUTH_URL || "http://localhost:3000",
   appTitle: "devnarrate",
+  timeoutMs: OPENROUTER_TIMEOUT_MS,
+  retryConfig: { strategy: "none" },
 });
+
+function withTimeout<T>(promise: Promise<T>, timeoutMs: number, label: string): Promise<T> {
+  let timeout: ReturnType<typeof setTimeout>;
+
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    timeout = setTimeout(() => {
+      reject(new Error(`${label} timed out after ${Math.round(timeoutMs / 1000)}s`));
+    }, timeoutMs);
+  });
+
+  return Promise.race([promise, timeoutPromise]).finally(() => {
+    clearTimeout(timeout);
+  });
+}
 
 export async function POST(req: Request) {
   const session = await auth.api.getSession({
@@ -240,47 +262,77 @@ export async function POST(req: Request) {
     repoId: repo.githubRepoId,
   });
 
-  // Check if repo is indexed
-  const isIndexed = await namespaceExists(namespace);
+  let context: string;
 
-  if (!isIndexed) {
-    return NextResponse.json(
-      { error: "Repo is still being indexed. Please try again in a moment." },
-      { status: 425 } // Too Early
+  try {
+    // Check if repo is indexed
+    const isIndexed = await withTimeout(
+      namespaceExists(namespace),
+      RETRIEVAL_TIMEOUT_MS,
+      "Repository index check"
     );
-  }
 
-  // Embed the user's prompt with the query prefix expected by E5 models.
-  const promptEmbedding = await embedQuery(trimmedPrompt);
+    if (!isIndexed) {
+      return NextResponse.json(
+        { error: "Repo is still being indexed. Please try again in a moment." },
+        { status: 425 } // Too Early
+      );
+    }
 
-  // Query Pinecone for relevant chunks
-  let chunks = filterRelevantChunks(await queryPinecone({
-    namespace,
-    embedding: promptEmbedding,
-    topK: RETRIEVAL_TOP_K,
-  }));
-
-  if (chunks.length === 0) {
-    const legacyPromptEmbedding = await embedText(trimmedPrompt);
-    chunks = filterRelevantChunks(await queryPinecone({
-      namespace,
-      embedding: legacyPromptEmbedding,
-      topK: RETRIEVAL_TOP_K,
-    }));
-  }
-
-  if (chunks.length === 0) {
-    return NextResponse.json(
-      { error: "No sufficiently relevant content found in the repository" },
-      { status: 404 }
+    // Embed the user's prompt with the query prefix expected by E5 models.
+    const promptEmbedding = await withTimeout(
+      embedQuery(trimmedPrompt),
+      RETRIEVAL_TIMEOUT_MS,
+      "Prompt embedding"
     );
-  }
 
-  const context = buildRepositoryContext(dedupeChunks(chunks));
-  if (!context) {
+    // Query Pinecone for relevant chunks
+    let chunks = filterRelevantChunks(await withTimeout(
+      queryPinecone({
+        namespace,
+        embedding: promptEmbedding,
+        topK: RETRIEVAL_TOP_K,
+      }),
+      RETRIEVAL_TIMEOUT_MS,
+      "Repository context search"
+    ));
+
+    if (chunks.length === 0) {
+      const legacyPromptEmbedding = await withTimeout(
+        embedText(trimmedPrompt),
+        RETRIEVAL_TIMEOUT_MS,
+        "Fallback prompt embedding"
+      );
+      chunks = filterRelevantChunks(await withTimeout(
+        queryPinecone({
+          namespace,
+          embedding: legacyPromptEmbedding,
+          topK: RETRIEVAL_TOP_K,
+        }),
+        RETRIEVAL_TIMEOUT_MS,
+        "Fallback repository context search"
+      ));
+    }
+
+    if (chunks.length === 0) {
+      return NextResponse.json(
+        { error: "No sufficiently relevant content found in the repository" },
+        { status: 404 }
+      );
+    }
+
+    context = buildRepositoryContext(dedupeChunks(chunks));
+    if (!context) {
+      return NextResponse.json(
+        { error: "No usable repository context found" },
+        { status: 404 }
+      );
+    }
+  } catch (error) {
+    console.error("AI retrieval error:", error);
     return NextResponse.json(
-      { error: "No usable repository context found" },
-      { status: 404 }
+      { error: error instanceof Error ? error.message : "Failed to retrieve repository context" },
+      { status: 504 }
     );
   }
 
@@ -292,34 +344,56 @@ export async function POST(req: Request) {
       );
     }
 
-    const stream = await openRouter.chat.send({
-      chatRequest: {
-        model: OPENROUTER_MODEL,
-        messages: [
-          {
-            role: "system",
-            content: buildSystemPrompt(generationOptions),
+    const stream = await withTimeout(
+      openRouter.chat.send(
+        {
+          chatRequest: {
+            model: OPENROUTER_MODEL,
+            messages: [
+              {
+                role: "system",
+                content: buildSystemPrompt(generationOptions),
+              },
+              {
+                role: "user",
+                content: buildUserPrompt({
+                  context,
+                  prompt: trimmedPrompt,
+                  options: generationOptions,
+                }),
+              },
+            ],
+            stream: true,
+            temperature: 0.7,
           },
-          {
-            role: "user",
-            content: buildUserPrompt({
-              context,
-              prompt: trimmedPrompt,
-              options: generationOptions,
-            }),
-          },
-        ],
-        stream: true,
-        temperature: 0.7,
-      },
-    });
+        },
+        {
+          timeoutMs: OPENROUTER_TIMEOUT_MS,
+          retries: { strategy: "none" },
+          retryCodes: [],
+        }
+      ),
+      OPENROUTER_TIMEOUT_MS,
+      "AI provider"
+    );
 
     const encoder = new TextEncoder();
+    const iterator = stream[Symbol.asyncIterator]();
+
+    const readNextChunk = () =>
+      withTimeout(
+        iterator.next(),
+        STREAM_IDLE_TIMEOUT_MS,
+        "AI stream"
+      );
 
     const responseStream = new ReadableStream({
       async start(controller) {
         try {
-          for await (const chunk of stream) {
+          while (true) {
+            const { done, value: chunk } = await readNextChunk();
+            if (done) break;
+
             if ("error" in chunk) {
               throw new Error(chunk.error?.message || "OpenRouter stream error");
             }

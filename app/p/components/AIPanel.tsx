@@ -8,6 +8,7 @@ import type { Repo } from "@/lib/userdata";
 const CONTENT_TYPES = ["tutorial", "overview", "changelog-style", "implementation deep dive"] as const;
 const AUDIENCES = ["beginner", "intermediate", "advanced"] as const;
 const TONES = ["concise", "explanatory", "polished"] as const;
+const GENERATE_TIMEOUT_MS = 75000;
 
 type ContentType = (typeof CONTENT_TYPES)[number];
 type Audience = (typeof AUDIENCES)[number];
@@ -63,10 +64,16 @@ export default function AIPanel({ onInsert, onClose }: AIPanelProps) {
     setGeneratedContent("");
     setError(null);
 
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => {
+      controller.abort();
+    }, GENERATE_TIMEOUT_MS);
+
     try {
       const res = await fetch("/api/ai/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        signal: controller.signal,
         body: JSON.stringify({
           repoId: selectedRepo,
           prompt: prompt.trim(),
@@ -113,9 +120,19 @@ export default function AIPanel({ onInsert, onClose }: AIPanelProps) {
           contentRef.current.scrollTop = contentRef.current.scrollHeight;
         }
       }
+
+      if (!content.trim()) {
+        throw new Error("AI provider returned an empty response. Please try again.");
+      }
     } catch (err) {
+      if (err instanceof DOMException && err.name === "AbortError") {
+        setError("Generation timed out. Please try again with a shorter prompt or a different repository.");
+        return;
+      }
+
       setError(err instanceof Error ? err.message : "Generation failed");
     } finally {
+      window.clearTimeout(timeout);
       setIsGenerating(false);
     }
   };
