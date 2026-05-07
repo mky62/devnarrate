@@ -24,10 +24,13 @@ async function searchUsers(query: string): Promise<SearchResult[]> {
     return data.users ?? [];
 }
 
-export default function SearchBar() {
+export default function SearchBar({ size = "default" }: { size?: "small" | "default" }) {
     const router = useRouter();
     const [query, setQuery] = useState("");
     const [open, setOpen] = useState(false);
+    
+    const height = size === "small" ? "h-8" : "h-12";
+    const textSize = size === "small" ? "sm:text-sm" : "text-base";
     
     const debouncedQuery = useDebouncedValue(query, 300);
     
@@ -41,18 +44,18 @@ export default function SearchBar() {
 
     return (
 
-        <div className="relative mx-auto w-full max-w-sm">
+        <div className="relative w-full">
             <div
                 className={`
-      relative rounded-xl  shadow-[inset_0_2px_6px_rgba(0,0,0,0.2)]
+      relative rounded-xl border border-white/10
       ${open && query.trim().length >= 2 ? "rounded-b-none border-b-0" : ""}
     `}
             >
-                <div className="flex items-center gap-3 px-5 h-8">
+                <div className={`flex items-center gap-3 px-5 ${height}`}>
 
                     {/* Search Icon */}
                     <svg
-                        className="size-4 shrink-0 text-muted-foreground"
+                        className="size-4 shrink-0 text-white"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
@@ -70,12 +73,12 @@ export default function SearchBar() {
                         onFocus={() => setOpen(true)}
                         onBlur={() => setTimeout(() => setOpen(false), 150)}
                         placeholder="Search builders..."
-                        className="
+                        className={`
           w-full bg-transparent
-          text-base sm:text-sm
+          text-white ${textSize}
           outline-none
-          placeholder:text-muted-foreground/60
-        "
+          placeholder:text-white/60
+        `}
                     />
 
                     {/* Loader */}
@@ -99,18 +102,18 @@ export default function SearchBar() {
                     className="
         absolute left-0 right-0 z-50
         rounded-b-2xl
-        bg-gradient-to-br from-green-200 to-blue-200  dark:bg-blue-900/40
+        bg-gradient-to-br from-[#1946BD] via-[#2B5AC0] to-[#D5824A]
         backdrop-blur-xl
         shadow-[0_20px_60px_rgba(0,0,0,0.15)]
         overflow-hidden
       "
                 >
                     {results.length === 0 && !loading ? (
-                        <div className="px-5 py-8 text-center text-sm text-muted-foreground">
+                        <div className="px-5 py-8 text-center text-sm text-white/80">
                             No builders found for “{query}”
                         </div>
                     ) : (
-                        <div className="max-h-80 bg-gradient-to-br from-green-200 to-blue-200  overflow-y-auto py-2">
+                        <div className="max-h-80 bg-gradient-to-br from-[#1946BD] via-[#2B5AC0] to-[#D5824A] overflow-y-auto py-2">
                             {results.map((user) => (
                                 <button
                                     key={user.stageName}
@@ -120,10 +123,10 @@ export default function SearchBar() {
                 flex w-full items-center gap-4
                 px-5 py-3 text-left
                 transition-all
-                hover:bg-black/5 dark:hover:bg-white/5
+                hover:bg-white/10
               "
                                 >
-                                    <div className="relative size-10 shrink-0 overflow-hidden rounded-xl bg-muted">
+                                    <div className="relative size-10 shrink-0 overflow-hidden rounded-xl bg-white/20">
                                         {user.avatarUrl ? (
                                             <Image
                                                 src={user.avatarUrl}
@@ -133,23 +136,23 @@ export default function SearchBar() {
                                                 className="object-cover"
                                             />
                                         ) : (
-                                            <div className="flex size-full items-center justify-center text-sm font-bold text-muted-foreground">
+                                            <div className="flex size-full items-center justify-center text-sm font-bold text-white">
                                                 {(user.stageName ?? user.name ?? "?").charAt(0).toUpperCase()}
                                             </div>
                                         )}
                                     </div>
 
                                     <div className="min-w-0 flex-1">
-                                        <div className="truncate font-semibold">
+                                        <div className="truncate font-semibold text-white">
                                             {user.stageName ?? user.name}
                                         </div>
-                                        <div className="truncate text-sm text-muted-foreground">
+                                        <div className="truncate text-sm text-white/60">
                                             {user.name} · {user._count.repos} repositories
                                         </div>
                                     </div>
 
                                     <svg
-                                        className="size-4 text-muted-foreground"
+                                        className="size-4 text-white/60"
                                         viewBox="0 0 24 24"
                                         fill="none"
                                         stroke="currentColor"

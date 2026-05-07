@@ -21,13 +21,16 @@ export default function SignInForm({ callbackURL }: SignInFormProps) {
         setIsSigningIn(true)
 
         try {
+            console.log("Starting GitHub sign in...")
             await signIn.social(
                 {
                     provider: "github",
                     callbackURL,
+                    disableRedirect: false,
                 },
                 {
-                    onError() {
+                    onError: (ctx) => {
+                        console.error("Sign in error:", ctx)
                         setIsSigningIn(false)
                     },
                 }
@@ -114,9 +117,12 @@ export default function SignInForm({ callbackURL }: SignInFormProps) {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.4, duration: 0.4 }}
                     >
-                        <Button
+                        <button
                             type="button"
-                            onClick={handleClick}
+                            onClick={(e) => {
+                              console.log("Button clicked!", e);
+                              handleClick(e);
+                            }}
                             disabled={isSigningIn}
                             className="w-full py-3 bg-white/20 hover:bg-white/30 border border-white/30 text-white font-medium rounded-xl transition-all duration-200 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group"
                         >
@@ -142,7 +148,7 @@ export default function SignInForm({ callbackURL }: SignInFormProps) {
                                     <span>Continue with GitHub</span>
                                 </>
                             )}
-                        </Button>
+                        </button>
                     </motion.div>
 
                     <motion.p

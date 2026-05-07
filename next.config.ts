@@ -14,17 +14,11 @@ const tiptapAliases = {
 } as const;
 
 const nextConfig: NextConfig = {
+  serverExternalPackages: ["@prisma/client", "better-auth", "prisma"],
   turbopack: {
     resolveAlias: {
       ...tiptapAliases,
     },
-  },
-  webpack: (config) => {
-    config.resolve.alias = {
-      ...(config.resolve.alias ?? {}),
-      ...tiptapAliases,
-    };
-    return config;
   },
   images: {
     remotePatterns: [

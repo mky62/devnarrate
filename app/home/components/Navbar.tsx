@@ -38,7 +38,7 @@ export default function Navbar() {
                     {/* Desktop Navigation */}
                     <div className="hidden md:flex items-center gap-8">
                         <div className="flex-1 max-w-md">
-                            <SearchBar />
+                            <SearchBar size="small" />
                         </div>
                         
                         <div className="flex items-center gap-4">
@@ -80,7 +80,7 @@ export default function Navbar() {
                 {/* Mobile menu */}
                 {mobileOpen && (
                     <div ref={mobileRef} className="md:hidden py-4 space-y-4 border-t border-white/20 mt-4 pt-4 bg-gradient-to-b from-transparent to-[#1946BD]/20">
-                        <SearchBar />
+                        <SearchBar size="small" />
                         <div className="flex flex-col gap-3">
                             {!session ? (
                                 <Link
