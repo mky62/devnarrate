@@ -7,6 +7,7 @@ import ProfileBanner from "./ProfileBanner";
 import SocialLinks from "./SocialLinks";
 import ProfileEditModal from "./ProfileEditModal";
 import GitStats from "./GitStats";
+import DeleteProfile from "./DeleteProfile";
 import { useUser } from "@/hooks/useUser";
 import type { GitStats as GitStatsData } from "@/lib/github-stats";
 
@@ -92,6 +93,10 @@ export default function ProfileSection({ user, initialGitStats }: ProfileSection
       </div>
 
       <GitStats initialStats={initialGitStats} />
+
+      <div className="mt-4 pt-4 border-t border-white/20">
+        <DeleteProfile />
+      </div>
 
       <ProfileEditModal
         key={isEditing ? "open" : "closed"}

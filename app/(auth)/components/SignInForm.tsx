@@ -124,7 +124,7 @@ export default function SignInForm({ callbackURL }: SignInFormProps) {
                               handleClick(e);
                             }}
                             disabled={isSigningIn}
-                            className="w-full py-3 bg-white/20 hover:bg-white/30 border border-white/30 text-white font-medium rounded-xl transition-all duration-200 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group"
+                            className="w-full py-3 bg-white/20 hover:bg-[#1946BD] border border-white/30 text-white font-medium rounded-xl transition-all duration-200 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group"
                         >
                             <motion.span
                                 className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"
