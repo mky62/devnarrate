@@ -137,7 +137,7 @@ export default async function DashboardPage() {
           <div className="flex-1 bg-white/80 backdrop-blur-sm border border-blue-500 rounded-2xl p-2 shadow-sm flex flex-col gap-3 overflow-hidden">
             <RepoList
               initialSavedRepos={repos.map((repo) => ({
-                githubRepoId: serializeGithubRepoId(repo.githubRepoId),
+                githubRepoId: repo.githubRepoId,
                 name: repo.name,
                 language: repo.language,
                 stars: repo.stars,

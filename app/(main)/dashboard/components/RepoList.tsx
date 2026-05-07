@@ -1,6 +1,6 @@
 interface SavedRepo {
-  githubRepoId: string;
-  name: string;
+  githubRepoId: string | number;
+  name: string | null;
   language: string | null;
   stars: number;
   forks: number;
