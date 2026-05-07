@@ -10,7 +10,7 @@ interface ProfileAvatarProps {
 export default function ProfileAvatar({ image, displayName }: ProfileAvatarProps) {
   return (
     <div className="relative px-4 -mt-10 shrink-0">
-      <div className="w-20 h-20 rounded-xl border-4 border-white bg-white shadow-md overflow-hidden">
+      <div className="w-20 h-20 rounded-xl border-4 border-[#1946BD] bg-white/10 backdrop-blur-md shadow-lg overflow-hidden">
         {image ? (
           <Image
             src={image}
@@ -21,7 +21,7 @@ export default function ProfileAvatar({ image, displayName }: ProfileAvatarProps
             unoptimized
           />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white text-2xl font-bold">
+          <div className="w-full h-full bg-gradient-to-br from-[#1946BD] to-[#D5824A] flex items-center justify-center text-white text-2xl font-bold">
             {displayName?.charAt(0).toUpperCase() || "U"}
           </div>
         )}

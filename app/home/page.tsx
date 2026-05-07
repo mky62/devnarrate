@@ -7,6 +7,7 @@ import { BlurFade } from "@/components/ui/blur-fade";
 import { Marquee } from "@/components/ui/marquee";
 import { StackingCard } from "@/components/ui/stacking-scroll";
 import { LiveStats } from "./components/LiveStats";
+import { FloatingAscii } from "./components/FloatingAscii";
 import BuilderCard, { type BuilderCardData } from "@/app/explore/components/BuilderCard";
 import heroBg from "@/public/herobg.jpg";
 import {
@@ -111,6 +112,7 @@ export default async function HomePage() {
             sizes="100vw"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black/40" />
+          <FloatingAscii />
         </div>
 
         <div className="relative z-10 mx-auto max-w-4xl">

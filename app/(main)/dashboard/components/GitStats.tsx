@@ -29,11 +29,11 @@ export default function GitStats({ initialStats }: GitStatsProps) {
 
   if (isLoading) {
     return (
-      <div className="p-4 border-t border-gray-200">
+      <div className="p-4 border-t border-white/20">
         <div className="flex items-center justify-between">
-          <div className="h-4 bg-gray-200 rounded animate-pulse w-1/4" />
-          <div className="h-4 bg-gray-200 rounded animate-pulse w-1/4" />
-          <div className="h-4 bg-gray-200 rounded animate-pulse w-1/4" />
+          <div className="h-4 bg-white/10 rounded animate-pulse w-1/4" />
+          <div className="h-4 bg-white/10 rounded animate-pulse w-1/4" />
+          <div className="h-4 bg-white/10 rounded animate-pulse w-1/4" />
         </div>
       </div>
     );
@@ -44,32 +44,32 @@ export default function GitStats({ initialStats }: GitStatsProps) {
   }
 
   return (
-    <div className="bg-white/40 p-4 border-t border-gray-200">
+    <div className="bg-white/5 p-4 border-t border-white/20">
       <div className="flex items-center justify-between text-center">
         <div className="flex-1">
-          <p className="text-2xl font-bold text-gray-900">{data.totalContributions.toLocaleString()}</p>
-          <p className="text-sm font-medium text-gray-700 mt-1">Total Contributions</p>
-          <p className="text-xs text-gray-600 mt-1">
+          <p className="text-2xl font-bold text-white">{data.totalContributions.toLocaleString()}</p>
+          <p className="text-sm font-medium text-white/70 mt-1">Total Contributions</p>
+          <p className="text-xs text-white/50 mt-1">
             {formatDate(data.startDate)} - Present
           </p>
         </div>
 
-        <div className="w-px h-16 bg-gray-300 mx-4" />
+        <div className="w-px h-16 bg-white/20 mx-4" />
 
         <div className="flex-1">
-          <p className="text-2xl font-bold text-gray-900">{data.currentStreak}</p>
-          <p className="text-sm font-medium text-gray-700 mt-1">Current Streak</p>
-          <p className="text-xs text-gray-600 mt-1">
+          <p className="text-2xl font-bold text-white">{data.currentStreak}</p>
+          <p className="text-sm font-medium text-white/70 mt-1">Current Streak</p>
+          <p className="text-xs text-white/50 mt-1">
             {formatDate(data.currentStreakStart)} - {formatDate(data.currentStreakEnd)}
           </p>
         </div>
 
-        <div className="w-px h-16 bg-gray-300 mx-4" />
+        <div className="w-px h-16 bg-white/20 mx-4" />
 
         <div className="flex-1">
-          <p className="text-2xl font-bold text-gray-900">{data.longestStreak}</p>
-          <p className="text-sm font-medium text-gray-700 mt-1">Longest Streak</p>
-          <p className="text-xs text-gray-600 mt-1">
+          <p className="text-2xl font-bold text-white">{data.longestStreak}</p>
+          <p className="text-sm font-medium text-white/70 mt-1">Longest Streak</p>
+          <p className="text-xs text-white/50 mt-1">
             {formatDate(data.longestStreakStart)} - {formatDate(data.longestStreakEnd)}
           </p>
         </div>

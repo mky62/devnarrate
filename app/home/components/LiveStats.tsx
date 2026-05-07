@@ -46,11 +46,11 @@ function AnimatedNumber({ value, label, delay, suffix = "" }: StatItemProps) {
   return (
     <BlurFade delay={delay}>
       <div ref={ref} className="text-center">
-        <div className="text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl flex items-center justify-center gap-1">
+        <div className="text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl flex items-center justify-center gap-1">
           <motion.span>{display}</motion.span>
           {suffix && <span>{suffix}</span>}
         </div>
-        <div className="mt-1 text-sm text-slate-500">{label}</div>
+        <div className="mt-1 text-xs text-white/70 sm:text-sm">{label}</div>
       </div>
     </BlurFade>
   );
@@ -93,9 +93,9 @@ export function LiveStats() {
   ];
 
   return (
-    <section className="relative py-24 sm:py-32">
-      <div className="mx-auto max-w-5xl px-6 sm:px-8">
-        <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
+    <section className="relative py-16 sm:py-24 lg:py-32">
+      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-2 gap-4 sm:gap-8 md:grid-cols-4">
           {statItems.map((stat, i) => (
             <AnimatedNumber
               key={stat.label}

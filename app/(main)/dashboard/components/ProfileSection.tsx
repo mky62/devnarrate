@@ -41,12 +41,12 @@ export default function ProfileSection({ user, initialGitStats }: ProfileSection
 
   if (!resolvedUser) {
     return (
-      <div className="h-full rounded-xl flex flex-col overflow-hidden border-blue-500 border-2">
-        <div className="relative w-full h-28 animate-pulse bg-gray-200" />
+      <div className="h-full rounded-xl flex flex-col overflow-hidden border-white/20 border min-h-0">
+        <div className="relative w-full h-28 animate-pulse bg-white/10" />
         <div className="flex-1 p-4 space-y-3">
-          <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4" />
-          <div className="h-3 bg-gray-200 rounded animate-pulse w-1/2" />
-          <div className="h-3 bg-gray-200 rounded animate-pulse w-2/3" />
+          <div className="h-4 bg-white/10 rounded animate-pulse w-3/4" />
+          <div className="h-3 bg-white/10 rounded animate-pulse w-1/2" />
+          <div className="h-3 bg-white/10 rounded animate-pulse w-2/3" />
         </div>
       </div>
     );
@@ -59,27 +59,27 @@ export default function ProfileSection({ user, initialGitStats }: ProfileSection
     : null;
 
   return (
-    <div className="h-full rounded-xl flex flex-col overflow-hidden opaacity-20 border-blue-500 border-2">
+    <div className="h-full rounded-xl flex flex-col overflow-hidden min-h-0">
       <ProfileBanner userId={resolvedUser.id} onEdit={() => setIsEditing(true)} />
       <ProfileAvatar image={resolvedUser.image} displayName={displayName} />
 
-      <div className="flex-1 p-4 pt-3 space-y-3  min-h-0 overflow-y-auto">
+      <div className="flex-1 p-4 pt-3 space-y-3 min-h-0 overflow-y-auto dashboard-scroll">
         <div>
-          <h2 className="font-bold text-gray-900 text-lg leading-tight truncate">
+          <h2 className="font-bold text-white text-lg leading-tight truncate">
             {displayName || "Anonymous"}
           </h2>
           {resolvedUser.stageName && resolvedUser.name !== resolvedUser.stageName && (
-            <p className="text-sm text-gray-500">{resolvedUser.name}</p>
+            <p className="text-sm text-white/60">{resolvedUser.name}</p>
           )}
         </div>
 
         {resolvedUser.description && (
-          <p className="text-sm text-gray-600 break-words whitespace-pre-wrap">
+          <p className="text-sm text-white/70 break-words whitespace-pre-wrap">
             {resolvedUser.description}
           </p>
         )}
 
-        <div className="flex flex-wrap gap-2 text-xs text-gray-500">
+        <div className="flex flex-wrap gap-2 text-xs text-white/50">
           {joinedDate && (
             <span className="flex items-center gap-1">
               <Calendar size={12} />
