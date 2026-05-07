@@ -7,6 +7,7 @@ import { BlurFade } from "@/components/ui/blur-fade";
 import { Marquee } from "@/components/ui/marquee";
 import { StackingCard } from "@/components/ui/stacking-scroll";
 import { LiveStats } from "./components/LiveStats";
+import BuilderCard, { type BuilderCardData } from "@/app/explore/components/BuilderCard";
 import heroBg from "@/public/herobg.jpg";
 import {
   GitBranch,
@@ -16,6 +17,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { FaGithub, FaXTwitter } from "react-icons/fa6";
+import { db } from "@/lib/prisma";
 
 const features = [
   {
@@ -56,9 +58,44 @@ const steps = [
   },
 ];
 
-export default function HomePage() {
+export default async function HomePage() {
+  const builders = (await db.user.findMany({
+    where: {
+      stageName: {
+        not: null,
+      },
+    },
+    select: {
+      id: true,
+      name: true,
+      stageName: true,
+      image: true,
+      description: true,
+      repo: {
+        select: {
+          stars: true,
+        },
+      },
+      _count: {
+        select: {
+          post: true,
+        },
+      },
+    },
+    orderBy: [
+      {
+        post: {
+          _count: "desc",
+        },
+      },
+      {
+        createdAt: "desc",
+      },
+    ],
+  })) as BuilderCardData[];
+
   return (
-    <main className="relative overflow-hidden bg-white font-montserrat font-light text-slate-900">
+    <main className="relative overflow-hidden bg-gradient-to-br from-[#1946BD] via-[#2B5AC0] to-[#D5824A] font-montserrat font-light text-white">
       <Navbar />
 
       {/* ========== HERO ========== */}
@@ -73,28 +110,27 @@ export default function HomePage() {
             className="object-cover"
             sizes="100vw"
           />
-          <div className="absolute inset-0 bg-white/40" />
-          <div className="absolute inset-0 bg-gradient-to-b from-white/30 via-transparent to-white/80" />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black/40" />
         </div>
 
         <div className="relative z-10 mx-auto max-w-4xl">
           <BlurFade delay={0}>
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-4 py-1.5">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-4 py-1.5">
               <span className="relative flex h-1.5 w-1.5">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-blue-400 opacity-75" />
-                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-blue-400" />
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75" />
+                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-white" />
               </span>
-              <AnimatedShinyText className="text-xs font-medium tracking-wide">
+              <AnimatedShinyText className="text-xs font-medium tracking-wide text-white">
                 dev.narrate is live
               </AnimatedShinyText>
             </div>
           </BlurFade>
 
           <BlurFade delay={0.1}>
-            <h1 className="mx-auto max-w-3xl text-5xl font-semibold leading-[1.1] tracking-tight sm:text-6xl md:text-7xl lg:text-8xl">
+            <h1 className="mx-auto max-w-3xl text-5xl font-semibold leading-[1.1] tracking-tight text-white sm:text-6xl md:text-7xl lg:text-8xl">
               Ship stories,{" "}
               <AuroraText
-                colors={["#2563eb", "#06b6d4", "#8b5cf6", "#2563eb"]}
+                colors={["#1946BD", "#3C66C7", "#CF5329", "#D5824A"]}
                 speed={1.2}
               >
                 not just code
@@ -102,26 +138,19 @@ export default function HomePage() {
             </h1>
           </BlurFade>
 
-          <BlurFade delay={0.2}>
-            <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-slate-500 sm:text-lg">
-              The platform where builders turn repositories into clear project
-              narratives. Explain architecture, tradeoffs, and shipped work
-              with the same care you put into the code.
-            </p>
-          </BlurFade>
 
           <BlurFade delay={0.3}>
             <div className="mt-10 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
               <Link
                 href="/p/create"
-                className="group inline-flex h-12 items-center gap-2 rounded-xl bg-blue-600 px-8 text-sm font-semibold text-white transition-all hover:bg-blue-500 hover:shadow-[0_0_32px_rgba(59,130,246,0.25)]"
+                className="group inline-flex h-12 items-center gap-2 rounded-xl bg-white/20 border border-white/30 px-8 text-sm font-semibold text-white transition-all hover:bg-white/30 hover:shadow-[0_0_32px_rgba(255,255,255,0.25)]"
               >
                 Start writing
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </Link>
               <Link
                 href="/explore"
-                className="inline-flex h-12 items-center justify-center rounded-xl border border-slate-200 bg-white px-8 text-sm font-semibold text-slate-600 transition-all hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
+                className="inline-flex h-12 items-center justify-center rounded-xl border border-white/30 bg-white/10 px-8 text-sm font-semibold text-white transition-all hover:bg-[#1946BD] hover:border-white/40"
               >
                 Explore stories
               </Link>
@@ -131,63 +160,59 @@ export default function HomePage() {
 
         {/* Hero visual */}
         <BlurFade delay={0.5} className="relative z-10 mt-16 w-full max-w-5xl">
-          <div className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 shadow-2xl shadow-slate-200/50">
-            <div className="flex items-center gap-2 border-b border-slate-200 bg-white px-4 py-3">
+          <div className="group relative overflow-hidden rounded-2xl border border-white/20 bg-white/10 backdrop-blur-md shadow-2xl shadow-[#1946BD]/20">
+            <div className="flex items-center gap-2 border-b border-white/20 bg-white/10 px-4 py-3">
               <div className="h-3 w-3 rounded-full bg-red-400" />
               <div className="h-3 w-3 rounded-full bg-amber-400" />
               <div className="h-3 w-3 rounded-full bg-green-400" />
-              <span className="ml-2 text-xs text-slate-400">project-story.md</span>
+              <span className="ml-2 text-xs text-white/60">project-story.md</span>
             </div>
-            <div className="p-6 text-left font-mono text-sm leading-relaxed text-slate-600 sm:p-8">
-              <p className="text-slate-400"># Why I built this</p>
+            <div className="p-6 text-left font-mono text-sm leading-relaxed text-white/80 sm:p-8">
+              <p className="text-white/60"># Why I built this</p>
               <p className="mt-2">
-                <span className="text-blue-600">&gt;</span> The problem was
+                <span className="text-white/90">&gt;</span> The problem was
                 simple: recruiters see repos, not reasoning.
               </p>
               <p className="mt-1">
-                <span className="text-blue-600">&gt;</span> So I built a
+                <span className="text-white/90">&gt;</span> So I built a
                 pipeline that turns commit history into architecture diagrams
                 and narrative.
               </p>
               <p className="mt-1">
-                <span className="text-blue-600">&gt;</span> Tradeoffs
+                <span className="text-white/90">&gt;</span> Tradeoffs
                 documented. Lessons learned. Shipped in 6 weeks.
               </p>
-              <p className="mt-3 text-slate-400">## Stack</p>
+              <p className="mt-3 text-white/60">## Stack</p>
               <p className="mt-1">Next.js · PostgreSQL · TipTap · OpenAI</p>
             </div>
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent opacity-60" />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-transparent opacity-60" />
           </div>
         </BlurFade>
       </section>
 
-      {/* ========== LOGOS MARQUEE ========== */}
-      <section className="relative border-y border-slate-100 bg-slate-50/50 py-10 overflow-hidden">
+      {/* ========== BUILDERS MARQUEE ========== */}
+      <section className="relative border-y border-white/20 bg-white/5 py-10 overflow-hidden">
         <div className="relative">
           {/* Side fades */}
-          <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-slate-50/50 to-transparent z-10" />
-          <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-slate-50/50 to-transparent z-10" />
+          <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[#1946BD]/50 to-transparent z-10" />
+          <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[#D5824A]/50 to-transparent z-10" />
 
           <BlurFade>
-            <p className="text-xs font-medium uppercase tracking-widest text-slate-400 text-center mb-6">
+            <p className="text-xs font-medium uppercase tracking-widest text-white/60 text-center mb-6">
               Built for developers who ship
             </p>
           </BlurFade>
 
           {/* Marquee */}
-          <Marquee className="[--duration:30s]" pauseOnHover>
-            {[...Array(8)].map((_, i) => (
-              <div
-                key={i}
-                className="flex items-center gap-2 px-6 py-3 rounded-full bg-white border border-slate-200 shadow-sm"
-              >
-                <GitBranch className="w-4 h-4 text-blue-600" />
-                <span className="text-sm font-medium text-slate-700">
-                  {["Next.js", "React", "TypeScript", "Node.js", "PostgreSQL", "Prisma", "Tailwind", "OpenAI"][i]}
-                </span>
-              </div>
-            ))}
-          </Marquee>
+          {builders.length > 0 && (
+            <Marquee className="[--duration:40s]" pauseOnHover>
+              {[...builders, ...builders].map((builder, i) => (
+                <div key={`${builder.id}-${i}`} className="px-4">
+                  <BuilderCard builder={builder} />
+                </div>
+              ))}
+            </Marquee>
+          )}
         </div>
       </section>
 
@@ -196,11 +221,11 @@ export default function HomePage() {
         <div className="mx-auto max-w-5xl px-6 sm:px-8">
           <BlurFade>
             <div className="mb-16 text-center">
-              <h2 className="text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
+              <h2 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">
                 Everything you need to{" "}
-                <span className="text-blue-600">tell your story</span>
+                <span className="text-white/90">tell your story</span>
               </h2>
-              <p className="mx-auto mt-4 max-w-lg text-slate-500">
+              <p className="mx-auto mt-4 max-w-lg text-white/80">
                 From repo analysis to published narrative in minutes, not hours.
               </p>
             </div>
@@ -213,17 +238,17 @@ export default function HomePage() {
                 key={f.title}
                 index={i}
                 totalCards={features.length}
-                className="p-8"
+                className="p-8 border-white/20 bg-white/10 backdrop-blur-md shadow-lg shadow-[#1946BD]/20"
               >
                 <div className="flex items-start gap-6">
-                  <div className="shrink-0 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-blue-600">
+                  <div className="shrink-0 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-white/20 text-white">
                     <f.icon className="h-7 w-7" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-semibold text-slate-900 mb-2">
+                    <h3 className="text-xl font-semibold text-white mb-2">
                       {f.title}
                     </h3>
-                    <p className="text-base leading-relaxed text-slate-500">
+                    <p className="text-base leading-relaxed text-white/80">
                       {f.description}
                     </p>
                   </div>
@@ -235,14 +260,14 @@ export default function HomePage() {
       </section>
 
       {/* ========== HOW IT WORKS ========== */}
-      <section className="relative py-24 sm:py-32 bg-slate-50/50">
+      <section className="relative py-24 sm:py-32 bg-white/5">
         <div className="mx-auto max-w-5xl px-6 sm:px-8">
           <BlurFade>
             <div className="mb-16 text-center">
-              <h2 className="text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
+              <h2 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">
                 How it works
               </h2>
-              <p className="mx-auto mt-4 max-w-lg text-slate-500">
+              <p className="mx-auto mt-4 max-w-lg text-white/80">
                 Three steps from raw repo to published story.
               </p>
             </div>
@@ -252,13 +277,13 @@ export default function HomePage() {
             {steps.map((step, i) => (
               <BlurFade key={step.number} delay={0.1 + i * 0.15}>
                 <div className="relative">
-                  <span className="text-5xl font-bold text-slate-100">
+                  <span className="text-5xl font-bold text-white/20">
                     {step.number}
                   </span>
-                  <h3 className="mt-2 text-lg font-semibold text-slate-900">
+                  <h3 className="mt-2 text-lg font-semibold text-white">
                     {step.title}
                   </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-slate-500">
+                  <p className="mt-2 text-sm leading-relaxed text-white/80">
                     {step.description}
                   </p>
                 </div>
@@ -271,66 +296,24 @@ export default function HomePage() {
       {/* ========== LIVE STATS ========== */}
       <LiveStats />
 
-      {/* ========== CTA ========== */}
-      <section className="relative py-24 sm:py-32">
-        <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute -left-20 bottom-0 h-72 w-72 rounded-full bg-blue-100 blur-[100px]" />
-          <div className="absolute right-10 top-20 h-96 w-96 rounded-full bg-sky-50 blur-[120px]" />
-        </div>
-
-        <div className="relative mx-auto max-w-3xl px-6 text-center sm:px-8">
-          <BlurFade>
-            <Zap className="mx-auto h-8 w-8 text-blue-600" />
-          </BlurFade>
-          <BlurFade delay={0.1}>
-            <h2 className="mt-6 text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl md:text-5xl">
-              Ready to tell your story?
-            </h2>
-          </BlurFade>
-          <BlurFade delay={0.2}>
-            <p className="mx-auto mt-4 max-w-lg text-slate-500">
-              Join thousands of developers who turn their code into compelling
-              project narratives.
-            </p>
-          </BlurFade>
-          <BlurFade delay={0.3}>
-            <div className="mt-10 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
-              <Link
-                href="/p/create"
-                className="inline-flex h-12 items-center gap-2 rounded-xl bg-blue-600 px-8 text-sm font-semibold text-white transition-all hover:bg-blue-500 hover:shadow-[0_0_32px_rgba(59,130,246,0.25)]"
-              >
-                Start writing free
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-              <Link
-                href="/explore"
-                className="inline-flex h-12 items-center justify-center rounded-xl border border-slate-200 bg-white px-8 text-sm font-semibold text-slate-600 transition-all hover:border-slate-300 hover:bg-slate-50"
-              >
-                See examples
-              </Link>
-            </div>
-          </BlurFade>
-        </div>
-      </section>
-
       {/* ========== FOOTER ========== */}
-      <footer className="border-t border-slate-100 bg-white">
+      <footer className="border-t border-white/20 bg-white/5">
         <div className="mx-auto max-w-5xl px-6 py-12 sm:px-8">
           <div className="flex flex-col items-center justify-between gap-8 sm:flex-row">
             <div className="flex items-center gap-2">
-              <span className="text-lg font-semibold tracking-tight text-slate-900">
-                dev<span className="text-blue-600">.</span>narrate
+              <span className="text-lg font-semibold tracking-tight text-white">
+                dev<span className="text-white/90">.</span>narrate
               </span>
             </div>
 
-            <nav className="flex gap-8 text-sm text-slate-500">
-              <Link href="/explore" className="transition-colors hover:text-slate-900">
+            <nav className="flex gap-8 text-sm text-white/80">
+              <Link href="/explore" className="transition-colors hover:text-white">
                 Explore
               </Link>
-              <Link href="/p/create" className="transition-colors hover:text-slate-900">
+              <Link href="/p/create" className="transition-colors hover:text-white">
                 Create
               </Link>
-              <Link href="/docs" className="transition-colors hover:text-slate-900">
+              <Link href="/docs" className="transition-colors hover:text-white">
                 Docs
               </Link>
             </nav>
@@ -340,14 +323,14 @@ export default function HomePage() {
                 href="https://github.com/mky62/devnarrate"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-slate-400 transition-colors hover:text-slate-900"
+                className="text-white/60 transition-colors hover:text-white"
               >
                 <FaGithub className="h-5 w-5" />
               </a>
             </div>
           </div>
 
-          <div className="mt-8 text-center text-xs text-slate-400">
+          <div className="mt-8 text-center text-xs text-white/60">
             &copy; {new Date().getFullYear()} dev.narrate. Built for developers who ship stories.
           </div>
         </div>

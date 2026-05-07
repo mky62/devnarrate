@@ -24,48 +24,49 @@ export default function Navbar() {
     }, []);
 
     return (
-        <div className="pointer-events-none fixed top-0 left-0 right-0 z-40 flex justify-center px-3 md:px-4 pt-3 md:pt-5">
-            <header className="pointer-events-auto w-full max-w-4xl rounded-2xl border border-white/[0.15] bg-white/80 backdrop-blur-xl shadow-lg shadow-black/10">
-                <div className="flex h-[48px] md:h-[52px] items-center justify-between px-3 md:px-4">
+        <div className="pointer-events-none fixed top-0 left-0 right-0 z-50 flex justify-center px-4 pt-4">
+            <header className="pointer-events-auto w-full max-w-4xl rounded-2xl bg-gradient-to-r from-[#1946BD] to-[#D5824A] backdrop-blur-md shadow-lg shadow-[#1946BD]/20">
+                <div className="flex h-16 items-center justify-between px-6">
 
                     {/* Logo */}
-                    <Link href="/">
-                        <h1 className="text-base md:text-lg font-arimo tracking-tight text-blue-600" >
-                            dev<span className="text-blue-900 text-xl md:text-xl">.</span>narrate
+                    <Link href="/" className="flex items-center">
+                        <h1 className="text-xl font-semibold tracking-tight text-white">
+                            dev<span className="text-white/90">.</span>narrate
                         </h1>
                     </Link>
 
-                    {/* Desktop SearchBar */}
-                    <div className="hidden md:flex">
-                        <SearchBar />
+                    {/* Desktop Navigation */}
+                    <div className="hidden md:flex items-center gap-8">
+                        <div className="flex-1 max-w-md">
+                            <SearchBar />
+                        </div>
+                        
+                        <div className="flex items-center gap-4">
+                            {!isPending && !session ? (
+                                <Link
+                                    href="/sign-in"
+                                    className="inline-flex items-center gap-2 bg-white/10 hover:bg-[#1946BD] border border-white/20 px-4 py-2 rounded-lg text-sm font-semibold text-white transition-all"
+                                >
+                                    Get Started <MdArrowOutward className="w-4 h-4" />
+                                </Link>
+                            ) : (
+                                <Link
+                                    href="/dashboard"
+                                    className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 px-4 py-2 rounded-lg text-sm font-semibold text-white transition-all"
+                                >
+                                    Dashboard <MdArrowOutward className="w-4 h-4" />
+                                </Link>
+                            )}
+                        </div>
                     </div>
 
-                    {/* Right side - Desktop */}
-                    <div className="hidden md:flex items-center gap-1.5">
-
-                      {!isPending && !session ? (
-                        <Link
-                            href="/sign-in"
-                            className="inline-flex h-8 items-center gap-2 bg-zinc-900 hover:bg-zinc-800 px-3.5 rounded-sm text-[13px] font-semibold sm:text-sm text-white transition-colors"
-                        >
-                            Get Started <MdArrowOutward />
-                        </Link>) :
-                        (<Link
-                            href="/dashboard"
-                            className="inline-flex h-8 items-center gap-2 bg-zinc-900 hover:bg-zinc-800 px-3.5 rounded-sm text-[13px] font-semibold sm:text-sm text-white transition-colors"
-                        > 
-                            dashboard <MdArrowOutward />
-                        </Link>)}
-
-                    </div>
-
-                    {/* Hamburger button - Mobile */}
+                    {/* Mobile menu button */}
                     <Button
                         type="button"
                         onClick={() => setMobileOpen((v) => !v)}
-                        className="md:hidden inline-flex h-8 w-8 items-center justify-center rounded-xl border border-zinc-200 bg-zinc-50 text-zinc-600 transition-colors"
+                        className="md:hidden inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/20 bg-white/10 text-white transition-colors"
                     >
-                        <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+                        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             {mobileOpen ? (
                                 <path d="M18 6 6 18M6 6l12 12" />
                             ) : (
@@ -78,47 +79,26 @@ export default function Navbar() {
 
                 {/* Mobile menu */}
                 {mobileOpen && (
-                    <div ref={mobileRef} className="md:hidden border-t border-zinc-200 p-3 space-y-3">
+                    <div ref={mobileRef} className="md:hidden py-4 space-y-4 border-t border-white/20 mt-4 pt-4 bg-gradient-to-b from-transparent to-[#1946BD]/20">
                         <SearchBar />
-                        <div className="flex flex-col gap-2">
+                        <div className="flex flex-col gap-3">
                             {!session ? (
                                 <Link
                                     href="/sign-in"
                                     onClick={() => setMobileOpen(false)}
-                                    className="inline-flex h-9 items-center justify-center gap-2 bg-zinc-900 hover:bg-zinc-800 rounded-lg text-sm font-semibold text-white transition-colors"
+                                    className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 px-4 py-3 rounded-lg text-sm font-semibold text-white transition-all"
                                 >
-                                    Get Started <MdArrowOutward />
+                                    Get Started <MdArrowOutward className="w-4 h-4" />
                                 </Link>
                             ) : (
                                 <Link
                                     href="/dashboard"
                                     onClick={() => setMobileOpen(false)}
-                                    className="inline-flex h-9 items-center justify-center gap-2 bg-zinc-900 hover:bg-zinc-800 rounded-lg text-sm font-semibold text-white transition-colors"
+                                    className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 px-4 py-3 rounded-lg text-sm font-semibold text-white transition-all"
                                 >
-                                    dashboard <MdArrowOutward />
+                                    Dashboard <MdArrowOutward className="w-4 h-4" />
                                 </Link>
                             )}
-                            {/* <Link
-                                href="/blog"
-                                onClick={() => setMobileOpen(false)}
-                                className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium text-white/50 transition-colors hover:bg-white/[0.05] hover:text-white/90"
-                            >
-                                <svg className="size-[15px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M12 20h9" />
-                                    <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
-                                </svg>
-                                Blog
-                            </Link>
-                            <Link
-                                href="/policy"
-                                onClick={() => setMobileOpen(false)}
-                                className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium text-white/50 transition-colors hover:bg-white/[0.05] hover:text-white/90"
-                            >
-                                <svg className="size-[15px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                                </svg>
-                                Policy
-                            </Link> */}
                         </div>
                     </div>
                 )}

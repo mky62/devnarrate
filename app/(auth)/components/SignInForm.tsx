@@ -39,10 +39,10 @@ export default function SignInForm({ callbackURL }: SignInFormProps) {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-zinc-50 via-white to-zinc-100 flex items-center justify-center px-4 relative overflow-hidden">
+        <div className="min-h-screen bg-gradient-to-br from-[#1946BD] via-[#2B5AC0] to-[#D5824A] flex items-center justify-center px-4 relative overflow-hidden">
             {/* Animated background shapes */}
             <motion.div
-                className="absolute top-20 left-10 w-72 h-72 bg-blue-100/50 rounded-full blur-3xl"
+                className="absolute top-20 left-10 w-72 h-72 bg-white/20 rounded-full blur-3xl"
                 animate={{
                     x: [0, 30, 0],
                     y: [0, -20, 0],
@@ -55,7 +55,7 @@ export default function SignInForm({ callbackURL }: SignInFormProps) {
                 }}
             />
             <motion.div
-                className="absolute bottom-20 right-10 w-96 h-96 bg-purple-100/40 rounded-full blur-3xl"
+                className="absolute bottom-20 right-10 w-96 h-96 bg-white/15 rounded-full blur-3xl"
                 animate={{
                     x: [0, -20, 0],
                     y: [0, 30, 0],
@@ -78,7 +78,7 @@ export default function SignInForm({ callbackURL }: SignInFormProps) {
                 >
                     <Link href="/" className="inline-block group">
                         <motion.h1
-                            className="text-2xl font-semibold tracking-tight text-zinc-900"
+                            className="text-2xl font-semibold tracking-tight text-white"
                             whileHover={{ scale: 1.02 }}
                             transition={{ type: "spring", stiffness: 400 }}
                         >
@@ -89,7 +89,7 @@ export default function SignInForm({ callbackURL }: SignInFormProps) {
 
                 {/* Card */}
                 <motion.div
-                    className="bg-white/80 backdrop-blur-sm rounded-2xl border border-zinc-200/60 shadow-xl shadow-zinc-200/50 p-8"
+                    className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-lg shadow-[#1946BD]/20 p-8"
                     initial={{ opacity: 0, y: 20, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
@@ -100,10 +100,10 @@ export default function SignInForm({ callbackURL }: SignInFormProps) {
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.3, duration: 0.4 }}
                     >
-                        <h2 className="text-lg font-medium text-zinc-900 mb-2">
+                        <h2 className="text-lg font-medium text-white mb-2">
                             Welcome back
                         </h2>
-                        <p className="text-sm text-zinc-500">
+                        <p className="text-sm text-white/80">
                             Sign in to continue to your dashboard
                         </p>
                     </motion.div>
@@ -118,7 +118,7 @@ export default function SignInForm({ callbackURL }: SignInFormProps) {
                             type="button"
                             onClick={handleClick}
                             disabled={isSigningIn}
-                            className="w-full py-3 bg-zinc-900 hover:bg-zinc-800 text-white font-medium rounded-xl transition-all duration-200 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group"
+                            className="w-full py-3 bg-white/20 hover:bg-white/30 border border-white/30 text-white font-medium rounded-xl transition-all duration-200 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group"
                         >
                             <motion.span
                                 className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"
@@ -146,7 +146,7 @@ export default function SignInForm({ callbackURL }: SignInFormProps) {
                     </motion.div>
 
                     <motion.p
-                        className="text-center text-xs text-zinc-400 mt-6"
+                                className="text-center text-xs text-white/60 mt-6"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.5, duration: 0.4 }}
@@ -157,7 +157,7 @@ export default function SignInForm({ callbackURL }: SignInFormProps) {
 
                 {/* Footer */}
                 <motion.p
-                    className="text-center text-sm text-zinc-500 mt-8"
+                    className="text-center text-sm text-white/80 mt-8"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.6, duration: 0.4 }}
@@ -165,7 +165,7 @@ export default function SignInForm({ callbackURL }: SignInFormProps) {
                     New to dev.narrate?{" "}
                     <Link
                         href="/"
-                        className="text-zinc-900 font-medium hover:underline inline-block transition-transform hover:translate-x-0.5"
+                        className="text-white font-medium hover:underline inline-block transition-transform hover:translate-x-0.5"
                     >
                         Learn more
                     </Link>
