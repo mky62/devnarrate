@@ -1,5 +1,5 @@
 interface SavedRepo {
-  githubRepoId: string | number;
+  githubRepoId: string | number | bigint;
   name: string | null;
   language: string | null;
   stars: number;
