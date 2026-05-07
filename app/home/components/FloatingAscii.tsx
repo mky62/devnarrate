@@ -25,7 +25,7 @@ const asciiChars = [
   { char: ">>>", delay: 9.5 },
 ];
 
-function AsciiItem({ char, delay }: { char: string; delay: number }) {
+function AsciiItem({ char, delay, left }: { char: string; delay: number; left: number }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 100 }}
@@ -42,7 +42,7 @@ function AsciiItem({ char, delay }: { char: string; delay: number }) {
       }}
       className="absolute font-mono text-xl sm:text-2xl font-bold text-white/50 whitespace-nowrap"
       style={{
-        left: `${Math.random() * 70 + 15}%`,
+        left: `${left}%`,
         top: "50%",
       }}
     >
@@ -292,7 +292,7 @@ export function FloatingAscii() {
       <BranchIcon />
       <StarIcon />
       {asciiChars.map((item, i) => (
-        <AsciiItem key={i} char={item.char} delay={item.delay} />
+        <AsciiItem key={i} char={item.char} delay={item.delay} left={15 + (i * 70 / asciiChars.length)} />
       ))}
     </div>
   );

@@ -1,7 +1,7 @@
 "use client";
 
 import { X, Loader2, Save } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { z } from "zod";
 import { useUpdateProfile } from "@/hooks/useUpdateProfile";
 import { profileSchema } from "@/lib/profileValidation";
@@ -52,6 +52,19 @@ export default function ProfileEditModal({ user, isOpen, onClose }: ProfileEditM
   const [fieldErrors, setFieldErrors] = useState<Partial<Record<keyof ProfileFormData, string>>>({});
   const [formData, setFormData] = useState<FormData>(() => getInitialFormData(user));
 
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [isOpen, onClose]);
+
   const handleSave = () => {
     const result = profileSchema.safeParse(formData);
 
@@ -87,11 +100,21 @@ export default function ProfileEditModal({ user, isOpen, onClose }: ProfileEditM
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[100]" onClick={onClose}>
-      <div className="bg-gradient-to-br from-[#1946BD] to-[#D5824A] rounded-2xl shadow-2xl w-full max-w-md max-h-[85vh] flex flex-col border border-white/20 mx-4" onClick={(e) => e.stopPropagation()}>
+    <div 
+      role="dialog" 
+      aria-modal="true"
+      aria-labelledby="profile-edit-title"
+      className="fixed inset-0 bg-black/70 flex items-center justify-center z-[100]" 
+      onClick={onClose}
+    >
+      <div 
+        className="bg-gradient-to-br from-[#1946BD] to-[#D5824A] rounded-2xl shadow-2xl w-full max-w-md max-h-[85vh] flex flex-col border border-white/20 mx-4" 
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="px-4 py-3 border-b border-white/20 flex items-center justify-between shrink-0">
-          <h3 className="font-semibold text-white">Edit Profile</h3>
+          <h3 id="profile-edit-title" className="font-semibold text-white">Edit Profile</h3>
           <button
+            type="button"
             onClick={onClose}
             className="p-1.5 hover:bg-white/10 rounded-lg transition-colors"
             disabled={updateProfile.isPending}
@@ -258,6 +281,7 @@ export default function ProfileEditModal({ user, isOpen, onClose }: ProfileEditM
 
         <div className="p-3 border-t border-white/20 flex justify-end gap-2 shrink-0">
           <button
+            type="button"
             onClick={onClose}
             disabled={updateProfile.isPending}
             className="px-4 py-2 text-sm text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
@@ -265,6 +289,7 @@ export default function ProfileEditModal({ user, isOpen, onClose }: ProfileEditM
             Cancel
           </button>
           <button
+            type="button"
             onClick={handleSave}
             disabled={updateProfile.isPending}
             className="px-4 py-2 text-sm bg-white/20 text-white hover:bg-white/30 border border-white/20 rounded-lg transition-colors flex items-center gap-2 disabled:opacity-50"

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { BlurFade } from "@/components/ui/blur-fade";
 import { AuroraText } from "@/components/ui/aurora-text";
 import { RotatingText } from "@/components/ui/rotating-text";
@@ -108,10 +109,10 @@ export default async function ExplorePage() {
                       Be the first to share your developer story and inspire others with your journey.
                     </p>
                   </div>
-                  <button className="mx-auto inline-flex items-center gap-2 rounded-xl bg-white/20 border border-white/30 px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-white/30">
+                  <Link href="/sign-in" className="mx-auto inline-flex items-center gap-2 rounded-xl bg-white/20 border border-white/30 px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-white/30">
                     <Sparkles className="h-4 w-4" />
                     Start your story
-                  </button>
+                  </Link>
                 </div>
               </div>
             </BlurFade>

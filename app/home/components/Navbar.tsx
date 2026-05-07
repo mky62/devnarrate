@@ -4,25 +4,14 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import SearchBar from "./Searchbar";
 import { MdArrowOutward } from "react-icons/md";
-import { authClient } from "@/lib/auth-client";
-import { Button } from "@/packages/tiptap/components/ui/button";
+import { useSession } from "@/lib/auth-client";
 
 export default function Navbar() {
     const [mobileOpen, setMobileOpen] = useState(false);
     const mobileRef = useRef<HTMLDivElement>(null);
     const toggleRef = useRef<HTMLButtonElement>(null);
     const isClickingToggle = useRef(false);
-    const [session, setSession] = useState<any>(null);
-    const [isPending, setIsPending] = useState(true);
-
-    useEffect(() => {
-        authClient.getSession().then(({ data, error }) => {
-            setSession(data?.session);
-            setIsPending(false);
-        }).catch(() => {
-            setIsPending(false);
-        });
-    }, []);
+    const { data: session, isPending } = useSession();
 
     useEffect(() => {
         function handleClickOutside(e: MouseEvent) {

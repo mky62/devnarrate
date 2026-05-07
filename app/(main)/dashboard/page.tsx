@@ -1,13 +1,14 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+
+export const dynamic = "force-dynamic";
+import { auth } from "@/lib/auth";
 import { serializePostSummaries } from "@/lib/posts";
 import { db } from "@/lib/prisma";
 import { getGitStatsForUser } from "@/lib/github-stats";
-import { serializeGithubRepoId } from "@/lib/github-repo-id";
 import { getRepoStatus } from "@/lib/repo-status";
 import ProfileSection from "./components/ProfileSection";
 import RepoList from "./components/RepoList";
-import DeleteProfile from "./components/DeleteProfile";
 import PostSection from "./components/PostSection";
 import TopStories from "./components/TopStories";
 import ConnectNodes from "./components/ConnectNodes";
@@ -32,12 +33,17 @@ interface UserData {
 }
 
 export default async function DashboardPage() {
-  // TEMP: Skip auth - use first user from DB
   const requestHeaders = await headers();
-  
-  // Get first user from DB as dummy
-  const dummyUser = await db.user.findFirst();
-  const userId = dummyUser?.id || "cm5x1234567890abcdef";
+  const session = await auth.api.getSession({
+    headers: requestHeaders,
+  });
+
+  if (!session?.user?.id) {
+    redirect("/sign-in");
+  }
+
+  const userId = session.user.id;
+  const username = session.user.name?.replace("@", "") || "";
 
   const [user, repos, rawPosts, initialGitStats] = await Promise.all([
     db.user.findUnique({
@@ -92,7 +98,7 @@ export default async function DashboardPage() {
     }),
     getGitStatsForUser({
       userId,
-      username: "demo",
+      username,
       cacheKey: `github:stats:${userId}`,
       requestHeaders,
     }),

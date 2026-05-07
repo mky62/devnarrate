@@ -24,7 +24,7 @@ export default function ConnectNodes({ knowledgeNodes = [] }: ConnectNodesProps)
           <Brain size={16} className="text-white/60" />
           <h3 className="text-sm font-semibold text-white">Knowledge Base</h3>
         </div>
-        <button className="py-2 px-3 rounded-lg bg-white/10 border border-white/20 text-white text-xs font-medium hover:bg-white/20 transition-all flex items-center gap-1.5">
+        <button type="button" className="py-2 px-3 rounded-lg bg-white/10 border border-white/20 text-white text-xs font-medium hover:bg-white/20 transition-all flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
           <Plus size={14} />
           Add
         </button>
@@ -54,7 +54,11 @@ export default function ConnectNodes({ knowledgeNodes = [] }: ConnectNodesProps)
                   </div>
                   <h4 className="text-sm text-white/90 font-medium truncate">{node.title}</h4>
                 </div>
-                <div className={`w-2 h-2 rounded-full ${node.indexed ? 'bg-green-400' : 'bg-yellow-400'}`} />
+                <div 
+                  className={`w-2 h-2 rounded-full ${node.indexed ? 'bg-green-400' : 'bg-yellow-400'}`}
+                  aria-label={node.indexed ? 'Indexed' : 'Pending'}
+                  title={node.indexed ? 'Indexed' : 'Pending'}
+                />
               </div>
             </div>
           ))}

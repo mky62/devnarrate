@@ -326,6 +326,48 @@
   display: none;
 }
 
+/* Docs decorative scrollbar - forced visibility */
+.docs-sidebar,
+.docs-panel,
+.docs-nav {
+  scrollbar-width: thin;
+  scrollbar-color: #D5824A rgba(255,255,255,0.15);
+}
+
+.docs-sidebar::-webkit-scrollbar,
+.docs-panel::-webkit-scrollbar,
+.docs-nav::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.docs-sidebar::-webkit-scrollbar-track,
+.docs-panel::-webkit-scrollbar-track,
+.docs-nav::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.15);
+  border-radius: 5px;
+}
+
+.docs-sidebar::-webkit-scrollbar-thumb,
+.docs-panel::-webkit-scrollbar-thumb,
+.docs-nav::-webkit-scrollbar-thumb {
+  background: #D5824A;
+  border-radius: 5px;
+  border: 2px solid rgba(255,255,255,0.2);
+}
+
+.docs-sidebar::-webkit-scrollbar-thumb:hover,
+.docs-panel::-webkit-scrollbar-thumb:hover,
+.docs-nav::-webkit-scrollbar-thumb:hover {
+  background: #E8935A;
+}
+
+.docs-sidebar::-webkit-scrollbar-thumb:hover,
+.docs-panel::-webkit-scrollbar-thumb:hover,
+.docs-nav::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #3C66C7 0%, #E8935A 100%);
+}
+
 .dashboard-scroll::-webkit-scrollbar {
   display: none;
 }

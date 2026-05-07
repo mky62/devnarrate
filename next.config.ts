@@ -20,6 +20,13 @@ const nextConfig: NextConfig = {
       ...tiptapAliases,
     },
   },
+  webpack: (config) => {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      ...tiptapAliases,
+    };
+    return config;
+  },
   images: {
     remotePatterns: [
       {

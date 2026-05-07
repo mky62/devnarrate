@@ -16,6 +16,26 @@ interface SavedRepo {
   indexedCommitSha: string | null;
 }
 
+interface StatusBadge {
+  label: string;
+  classes: string;
+}
+
+function getStatusBadge(status: SavedRepo["status"]): StatusBadge {
+  const statusMap: Record<string, StatusBadge> = {
+    completed: { label: "indexed", classes: "bg-green-500/20 text-green-400 border border-green-500/30" },
+    indexed: { label: "indexed", classes: "bg-green-500/20 text-green-400 border border-green-500/30" },
+    pending: { label: "pending", classes: "bg-blue-500/20 text-blue-400 border border-blue-500/30" },
+    not_indexed: { label: "pending", classes: "bg-blue-500/20 text-blue-400 border border-blue-500/30" },
+    indexing: { label: "indexing", classes: "bg-blue-500/20 text-blue-400 border border-blue-500/30" },
+    tracked: { label: "tracked", classes: "bg-blue-500/20 text-blue-400 border border-blue-500/30" },
+    failed: { label: "failed", classes: "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30" },
+    failed_with_stale_index: { label: "stale index", classes: "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30" },
+    stale: { label: "stale", classes: "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30" },
+  };
+  return statusMap[status] || { label: status, classes: "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30" };
+}
+
 interface RepoListProps {
   initialSavedRepos: SavedRepo[];
 }
@@ -75,9 +95,11 @@ export default function RepoList({ initialSavedRepos }: RepoListProps) {
             No repos found
           </div>
         ) : (
-          filteredRepos.map((repo) => (
+          filteredRepos.map((repo) => {
+            const badge = getStatusBadge(repo.status);
+            return (
             <div
-              key={repo.githubRepoId}
+              key={String(repo.githubRepoId)}
               className="p-3 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-colors cursor-pointer"
             >
               <div className="flex items-center justify-between">
@@ -85,15 +107,9 @@ export default function RepoList({ initialSavedRepos }: RepoListProps) {
                   {repo.name}
                 </h4>
                 <span
-                  className={`text-xs px-2 py-0.5 rounded-full ${
-                    repo.status === "completed" || repo.status === "indexed"
-                      ? "bg-green-500/20 text-green-400 border border-green-500/30"
-                      : repo.status === "pending" || repo.status === "indexing" || repo.status === "tracked"
-                      ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
-                      : "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30"
-                  }`}
+                  className={`text-xs px-2 py-0.5 rounded-full ${badge.classes}`}
                 >
-                  {repo.status === "completed" ? "indexed" : repo.status === "not_indexed" ? "pending" : repo.status}
+                  {badge.label}
                 </span>
               </div>
               {repo.description && (
@@ -107,7 +123,8 @@ export default function RepoList({ initialSavedRepos }: RepoListProps) {
                 {repo.language && <span>{repo.language}</span>}
               </div>
             </div>
-          ))
+            );
+          })
         )}
       </div>
     </div>
