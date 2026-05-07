@@ -251,7 +251,7 @@ export default function ClientPage() {
                         <Button
                             onClick={handlePost}
                             disabled={loading || !title}
-                            className="rounded-full px-5 bg-primary text-primary-foreground font-medium shadow-sm hover:shadow-md transition-all text-sm"
+                            className="rounded-full px-5 bg-blue-600 text-primary-foreground font-medium shadow-sm hover:shadow-md transition-all text-sm"
                         >
                             {loading ? <Loader className="w-4 h-4" /> : "Publish"}
                         </Button>
@@ -295,6 +295,7 @@ export default function ClientPage() {
                     <AIPanel
                         onInsert={handleAIInsert}
                         onClose={() => setShowAIPanel(false)}
+                        isDarkMode={isEditorDarkMode}
                     />
                 )}
             </div>

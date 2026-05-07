@@ -25,7 +25,7 @@ export default function Navbar() {
 
     return (
         <div className="pointer-events-none fixed top-0 left-0 right-0 z-40 flex justify-center px-3 md:px-4 pt-3 md:pt-5">
-            <header className="pointer-events-auto w-full max-w-4xl rounded-2xl border border-white/[0.07] bg-gradient-to-br from-green-200 to-blue-200 shadow-2xl shadow-black/40 backdrop-blur-xl">
+            <header className="pointer-events-auto w-full max-w-4xl rounded-2xl border border-white/[0.15] bg-white/80 backdrop-blur-xl shadow-lg shadow-black/10">
                 <div className="flex h-[48px] md:h-[52px] items-center justify-between px-3 md:px-4">
 
                     {/* Logo */}
@@ -46,13 +46,13 @@ export default function Navbar() {
                       {!isPending && !session ? (
                         <Link
                             href="/sign-in"
-                            className="inline-flex h-8 items-center gap-2 bg-linear-to-t from-blue-500 to-blue-600 px-4 rounded-sm px-3.5 text-[13px] font-semibold sm:text-sm text-gray/50 transition-colors hover:text-blue-900/90"
+                            className="inline-flex h-8 items-center gap-2 bg-zinc-900 hover:bg-zinc-800 px-3.5 rounded-sm text-[13px] font-semibold sm:text-sm text-white transition-colors"
                         >
                             Get Started <MdArrowOutward />
                         </Link>) :
                         (<Link
                             href="/dashboard"
-                            className="inline-flex h-8 items-center gap-2 bg-linear-to-t from-blue-500 to-blue-600 px-4 rounded-sm px-3.5 text-[13px] font-semibold sm:text-sm text-gray/50 transition-colors hover:text-blue-900/90"
+                            className="inline-flex h-8 items-center gap-2 bg-zinc-900 hover:bg-zinc-800 px-3.5 rounded-sm text-[13px] font-semibold sm:text-sm text-white transition-colors"
                         > 
                             dashboard <MdArrowOutward />
                         </Link>)}
@@ -63,9 +63,9 @@ export default function Navbar() {
                     <Button
                         type="button"
                         onClick={() => setMobileOpen((v) => !v)}
-                        className="md:hidden inline-flex h-8 w-8 items-center justify-center rounded-xl border border-white/[0.07] bg-white/[0.08] text-white/70 transition-colors"
+                        className="md:hidden inline-flex h-8 w-8 items-center justify-center rounded-xl border border-zinc-200 bg-zinc-50 text-zinc-600 transition-colors"
                     >
-                        <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+                        <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
                             {mobileOpen ? (
                                 <path d="M18 6 6 18M6 6l12 12" />
                             ) : (
@@ -78,14 +78,14 @@ export default function Navbar() {
 
                 {/* Mobile menu */}
                 {mobileOpen && (
-                    <div ref={mobileRef} className="md:hidden border-t border-white/[0.07] p-3 space-y-3">
+                    <div ref={mobileRef} className="md:hidden border-t border-zinc-200 p-3 space-y-3">
                         <SearchBar />
                         <div className="flex flex-col gap-2">
                             {!session ? (
                                 <Link
                                     href="/sign-in"
                                     onClick={() => setMobileOpen(false)}
-                                    className="inline-flex h-9 items-center justify-center gap-2 bg-gradient-to-t from-blue-500 to-blue-600 rounded-lg text-sm font-semibold text-white/50 transition-colors hover:text-blue-900/90"
+                                    className="inline-flex h-9 items-center justify-center gap-2 bg-zinc-900 hover:bg-zinc-800 rounded-lg text-sm font-semibold text-white transition-colors"
                                 >
                                     Get Started <MdArrowOutward />
                                 </Link>
@@ -93,7 +93,7 @@ export default function Navbar() {
                                 <Link
                                     href="/dashboard"
                                     onClick={() => setMobileOpen(false)}
-                                    className="inline-flex h-9 items-center justify-center gap-2 bg-gradient-to-t from-blue-500 to-blue-600 rounded-lg text-sm font-semibold text-white/50 transition-colors hover:text-blue-900/90"
+                                    className="inline-flex h-9 items-center justify-center gap-2 bg-zinc-900 hover:bg-zinc-800 rounded-lg text-sm font-semibold text-white transition-colors"
                                 >
                                     dashboard <MdArrowOutward />
                                 </Link>

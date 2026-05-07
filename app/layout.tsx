@@ -12,7 +12,7 @@ const geist = Geist({
 const montserrat = Montserrat({
   subsets: ["latin", "latin-ext"],
   variable: "--font-montserrat",
-  weight: "400",
+  weight: ["300", "400"],
 });
 
 const arimo = Arimo({

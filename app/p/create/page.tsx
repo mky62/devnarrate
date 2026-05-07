@@ -12,8 +12,5 @@ export default async function Create() {
     redirect("/sign-in")
   }
 
-  return (
-
-    <ClientPage />
-  )
+  return <ClientPage />
 }
