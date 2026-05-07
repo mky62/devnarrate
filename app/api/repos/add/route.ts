@@ -3,9 +3,10 @@ import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { repoSchema } from "@/lib/validation";
-import { serializeGithubRepoId } from "@/lib/github-repo-id";
+import { serializeGithubRepoId, parseGithubRepoId } from "@/lib/github-repo-id";
 import { getRedisClient } from "@/lib/redis";
 import { getRepoDetailsFromGithub } from "@/lib/github";
+import { inngest } from "@/inngest/client";
 
 interface CachedGitHubRepo {
     id: number;
@@ -127,6 +128,27 @@ export async function POST(request: Request) {
                 forks: repoDetails.forks ?? githubRepo.forks_count ?? 0,
                 latestCommitSha: repoDetails.latestCommitSha,
                 userId,
+                accountId: account.id,
+                indexStatus: "PENDING",
+            },
+        });
+
+        // Create indexing job and trigger Inngest
+        const job = await db.repoIndexJob.create({
+            data: {
+                repoId: String(githubRepoId),
+                userId,
+                status: "PENDING",
+            },
+        });
+
+        await inngest.send({
+            name: "repos/index",
+            data: {
+                jobId: job.id,
+                repoId: String(githubRepoId),
+                userId,
+                repoName: repoDetails.name ?? githubRepo.name,
                 accountId: account.id,
             },
         });

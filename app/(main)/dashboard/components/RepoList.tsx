@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { Search, X } from "lucide-react";
+import { useState, useMemo, useTransition, useEffect } from "react";
+import { Search, X, Plus, RefreshCw } from "lucide-react";
+import RepoSearchModal from "./RepoSearchModal";
 
 interface SavedRepo {
   githubRepoId: string | number | bigint;
@@ -42,6 +43,42 @@ interface RepoListProps {
 
 export default function RepoList({ initialSavedRepos }: RepoListProps) {
   const [searchQuery, setSearchQuery] = useState("");
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [indexingRepoId, setIndexingRepoId] = useState<string | null>(null);
+  const [repos, setRepos] = useState(initialSavedRepos);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  // Update repos when initialSavedRepos changes or when refreshKey changes
+  useEffect(() => {
+    setRepos(initialSavedRepos);
+  }, [initialSavedRepos, refreshKey]);
+
+  const triggerRefresh = () => {
+    setRefreshKey(k => k + 1);
+  };
+
+  const triggerIndex = async (githubRepoId: number, name: string | null, accountId: string) => {
+    setIndexingRepoId(String(githubRepoId));
+    try {
+      const res = await fetch("/api/repos/index", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          repoId: githubRepoId,
+          repoName: name,
+          accountId,
+        }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        console.error("Failed to start indexing:", data.error);
+      }
+    } catch (error) {
+      console.error("Failed to start indexing:", error);
+    } finally {
+      setIndexingRepoId(null);
+    }
+  };
 
   const filteredRepos = useMemo(() => {
     if (!searchQuery.trim()) return initialSavedRepos;
@@ -69,6 +106,22 @@ export default function RepoList({ initialSavedRepos }: RepoListProps) {
         <h3 className="text-sm font-semibold text-white/80 flex-shrink-0">Repositories</h3>
         <span className="text-xs text-white/50">{filteredRepos.length}</span>
         <div className="flex-1" />
+        <button
+          type="button"
+          onClick={triggerRefresh}
+          className="p-1 text-white/50 hover:text-white"
+          title="Refresh repos"
+        >
+          <RefreshCw size={12} />
+        </button>
+        <button
+          type="button"
+          onClick={() => setIsSearchOpen(true)}
+          className="flex items-center gap-1 px-2 py-1 text-xs bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg text-white/80 transition-colors"
+        >
+          <Plus size={12} />
+          Add
+        </button>
         <div className="relative w-32">
           <Search size={12} className="absolute left-2 top-1/2 -translate-y-1/2 text-white/40" />
           <input
@@ -106,11 +159,28 @@ export default function RepoList({ initialSavedRepos }: RepoListProps) {
                 <h4 className="font-medium text-sm text-white truncate">
                   {repo.name}
                 </h4>
-                <span
-                  className={`text-xs px-2 py-0.5 rounded-full ${badge.classes}`}
-                >
-                  {badge.label}
-                </span>
+                <div className="flex items-center gap-2">
+                  {(repo.status === "not_indexed" || repo.status === "pending" || repo.status === "indexing" || repo.status === "failed" || repo.status === "stale") && (
+                    <button
+                      type="button"
+                      onClick={() => triggerIndex(Number(repo.githubRepoId), repo.name, repo.accountId)}
+                      disabled={indexingRepoId === String(repo.githubRepoId)}
+                      className="p-1 text-white/50 hover:text-white disabled:opacity-50"
+                      title="Start indexing"
+                    >
+                      {indexingRepoId === String(repo.githubRepoId) ? (
+                        <RefreshCw size={12} className="animate-spin" />
+                      ) : (
+                        <RefreshCw size={12} />
+                      )}
+                    </button>
+                  )}
+                  <span
+                    className={`text-xs px-2 py-0.5 rounded-full ${badge.classes}`}
+                  >
+                    {badge.label}
+                  </span>
+                </div>
               </div>
               {repo.description && (
                 <p className="text-xs text-white/50 mt-1 line-clamp-2">
@@ -127,6 +197,12 @@ export default function RepoList({ initialSavedRepos }: RepoListProps) {
           })
         )}
       </div>
+
+      <RepoSearchModal 
+        isOpen={isSearchOpen} 
+        onClose={() => setIsSearchOpen(false)} 
+        onRepoAdded={triggerRefresh}
+      />
     </div>
   );
 }
