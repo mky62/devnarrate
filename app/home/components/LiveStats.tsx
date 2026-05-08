@@ -15,9 +15,17 @@ interface StatItemProps {
   label: string;
   delay: number;
   suffix?: string;
+  precision?: number;
 }
 
-function AnimatedNumber({ value, label, delay, suffix = "" }: StatItemProps) {
+function formatNumber(value: number, precision: number = 0): string {
+  return value.toLocaleString(undefined, {
+    minimumFractionDigits: precision,
+    maximumFractionDigits: precision,
+  });
+}
+
+function AnimatedNumber({ value, label, delay, suffix = "", precision = 0 }: StatItemProps) {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
   const [hasAnimated, setHasAnimated] = useState(false);
@@ -29,7 +37,7 @@ function AnimatedNumber({ value, label, delay, suffix = "" }: StatItemProps) {
   });
 
   const display = useTransform(spring, (current) =>
-    Math.round(current).toLocaleString()
+    formatNumber(current, precision)
   );
 
   useEffect(() => {
@@ -86,10 +94,10 @@ export function LiveStats() {
   };
 
   const statItems = [
-    { value: displayStats.developers, label: "Developers", suffix: "+" },
-    { value: displayStats.articles, label: "Stories published", suffix: "+" },
-    { value: displayStats.repos, label: "Repositories", suffix: "+" },
-    { value: 4.9, label: "User satisfaction", suffix: "/5" },
+    { value: displayStats.developers, label: "Developers", suffix: "+", precision: 0 },
+    { value: displayStats.articles, label: "Stories published", suffix: "+", precision: 0 },
+    { value: displayStats.repos, label: "Repositories", suffix: "+", precision: 0 },
+    { value: 4.9, label: "User satisfaction", suffix: "/5", precision: 1 },
   ];
 
   return (
@@ -103,6 +111,7 @@ export function LiveStats() {
               label={stat.label}
               delay={0.05 + i * 0.08}
               suffix={stat.suffix}
+              precision={stat.precision}
             />
           ))}
         </div>

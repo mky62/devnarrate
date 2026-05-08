@@ -84,7 +84,7 @@ export default function SearchBar({ size = "default" }: { size?: "small" | "defa
                     {/* Loader */}
                     {loading && (
                         <svg
-                            className="size-5 animate-spin text-muted-foreground"
+                            className="size-5 animate-spin text-white"
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"

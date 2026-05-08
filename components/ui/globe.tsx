@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, type FC } from "react";
+import { useEffect, useRef, useState, type FC } from "react";
 
 interface GlobeProps {
   className?: string;
@@ -8,18 +8,34 @@ interface GlobeProps {
 
 export const Globe: FC<GlobeProps> = ({ className }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
+    // Set canvas size with devicePixelRatio for crisp rendering
+    const dpr = window.devicePixelRatio || 1;
+    const logicalWidth = 300;
+    const logicalHeight = 300;
+    canvas.width = logicalWidth * dpr;
+    canvas.height = logicalHeight * dpr;
+    canvas.style.width = `${logicalWidth}px`;
+    canvas.style.height = `${logicalHeight}px`;
+
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
+
+    // Scale for DPR
+    ctx.scale(dpr, dpr);
+
+    // Check for reduced motion preference
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     let animationId: number;
     let rotation = 0;
 
-    const dots: { x: number; y: number; z: number; baseZ: number }[] = [];
+    const dots: { x: number; y: number; z: number }[] = [];
 
     for (let lat = -90; lat <= 90; lat += 3) {
       const r = 95 * Math.cos((lat * Math.PI) / 180);
@@ -29,13 +45,14 @@ export const Globe: FC<GlobeProps> = ({ className }) => {
           x: r * Math.cos(theta),
           y: 80 * Math.sin((lat * Math.PI) / 180),
           z: r * Math.sin(theta),
-          baseZ: r * Math.sin(theta),
         });
       }
     }
 
     const draw = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (!isVisible) return;
+      
+      ctx.clearRect(0, 0, logicalWidth, logicalHeight);
 
       const sortedDots = dots.map((dot) => {
         const cos = Math.cos(rotation);
@@ -44,8 +61,8 @@ export const Globe: FC<GlobeProps> = ({ className }) => {
         const newZ = dot.x * sin + dot.z * cos;
         const scale = 300 / (300 + newZ);
         return {
-          x: newX * scale + canvas.width / 2,
-          y: dot.y * scale + canvas.height / 2,
+          x: newX * scale + logicalWidth / 2,
+          y: dot.y * scale + logicalHeight / 2,
           z: newZ,
           scale,
         };
@@ -62,20 +79,34 @@ export const Globe: FC<GlobeProps> = ({ className }) => {
         ctx.fill();
       });
 
-      rotation += 0.01;
+      if (!prefersReducedMotion) {
+        rotation += 0.01;
+      }
       animationId = requestAnimationFrame(draw);
     };
 
+    // Intersection Observer to pause when off-screen
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          setIsVisible(entry.isIntersecting);
+        });
+      },
+      { threshold: 0 }
+    );
+    observer.observe(canvas);
+
     draw();
 
-    return () => cancelAnimationFrame(animationId);
-  }, []);
+    return () => {
+      cancelAnimationFrame(animationId);
+      observer.disconnect();
+    };
+  }, [isVisible]);
 
   return (
     <canvas
       ref={canvasRef}
-      width={300}
-      height={300}
       className={className}
     />
   );

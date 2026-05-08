@@ -40,7 +40,7 @@ export const metadata: Metadata = {
       rel: "icon",
     },
     {
-      url: "/icon.svg",
+      url: "/icon.png",
       rel: "apple-touch-icon",
     },
   ],

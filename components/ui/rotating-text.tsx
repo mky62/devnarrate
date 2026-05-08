@@ -17,6 +17,7 @@ export const RotatingText: FC<RotatingTextProps> = ({
   colors = ["#1946BD", "#3C66C7", "#CF5329", "#D5824A"],
   speed = 1.2,
   className,
+  ...rest
 }) => {
   const [index, setIndex] = useState(0);
 
@@ -28,6 +29,11 @@ export const RotatingText: FC<RotatingTextProps> = ({
     return () => clearInterval(interval);
   }, [words.length, duration]);
 
+  // Guard against empty words array
+  if (words.length === 0) {
+    return null;
+  }
+
   const gradientStyle = {
     backgroundImage: `linear-gradient(135deg, ${colors.join(", ")}, ${colors[0]})`,
     WebkitBackgroundClip: "text",
@@ -36,7 +42,7 @@ export const RotatingText: FC<RotatingTextProps> = ({
   };
 
   return (
-    <span className={cn("relative inline-block", className)}>
+    <span className={cn("relative inline-block", className)} {...rest}>
       <span
         key={index}
         className="animate-aurora relative bg-[length:200%_auto] bg-clip-text text-transparent"

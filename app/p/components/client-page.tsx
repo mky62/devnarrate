@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
+import { AnimatePresence } from "framer-motion"
 import { useRouter } from "next/navigation";
 import { Button } from "@/packages/tiptap/components/ui/button"
 import Link from "next/link";
@@ -291,13 +292,15 @@ export default function ClientPage() {
                 </main>
 
                 {/* AI Panel */}
-                {showAIPanel && (
-                    <AIPanel
-                        onInsert={handleAIInsert}
-                        onClose={() => setShowAIPanel(false)}
-                        isDarkMode={isEditorDarkMode}
-                    />
-                )}
+                <AnimatePresence>
+                    {showAIPanel && (
+                        <AIPanel
+                            onInsert={handleAIInsert}
+                            onClose={() => setShowAIPanel(false)}
+                            isDarkMode={isEditorDarkMode}
+                        />
+                    )}
+                </AnimatePresence>
             </div>
         </div>
     )

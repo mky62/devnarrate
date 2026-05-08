@@ -151,14 +151,28 @@ export default function AIPanel({ onInsert, onClose, isDarkMode = false }: AIPan
     }
   };
 
+  const copyTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
   const handleCopy = async () => {
-    await navigator.clipboard.writeText(generatedContent);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    try {
+      await navigator.clipboard.writeText(generatedContent);
+      setCopied(true);
+      copyTimeoutRef.current = setTimeout(() => setCopied(false), 2000);
+    } catch (error) {
+      console.error("Failed to copy to clipboard:", error);
+    }
   };
 
+  useEffect(() => {
+    return () => {
+      if (copyTimeoutRef.current) {
+        clearTimeout(copyTimeoutRef.current);
+      }
+    };
+  }, []);
+
   const getStatusBadge = (status: RepoStatus) => {
-    const styles: Record<string, string> = {
+    const lightStyles: Record<string, string> = {
       completed: "bg-emerald-50 text-emerald-700 border-emerald-200",
       indexing: "bg-amber-50 text-amber-700 border-amber-200",
       pending: "bg-blue-50 text-blue-700 border-blue-200",
@@ -166,6 +180,16 @@ export default function AIPanel({ onInsert, onClose, isDarkMode = false }: AIPan
       failed_with_stale_index: "bg-orange-50 text-orange-700 border-orange-200",
       stale: "bg-purple-50 text-purple-700 border-purple-200",
       not_indexed: "bg-gray-50 text-gray-600 border-gray-200",
+    };
+
+    const darkStyles: Record<string, string> = {
+      completed: "bg-emerald-900/50 text-emerald-400 border-emerald-800",
+      indexing: "bg-amber-900/50 text-amber-400 border-amber-800",
+      pending: "bg-blue-900/50 text-blue-400 border-blue-800",
+      failed: "bg-red-900/50 text-red-400 border-red-800",
+      failed_with_stale_index: "bg-orange-900/50 text-orange-400 border-orange-800",
+      stale: "bg-purple-900/50 text-purple-400 border-purple-800",
+      not_indexed: "bg-gray-800/50 text-gray-400 border-gray-700",
     };
 
     const labels: Record<string, string> = {
@@ -178,8 +202,10 @@ export default function AIPanel({ onInsert, onClose, isDarkMode = false }: AIPan
       not_indexed: "Not Indexed",
     };
 
+    const styles = isDarkMode ? darkStyles : lightStyles;
+
     return (
-      <span className={`text-[10px] px-2.5 py-1 rounded-full border font-medium ${styles[status] || "bg-gray-50 text-gray-600 border-gray-200"}`}>
+      <span className={`text-[10px] px-2.5 py-1 rounded-full border font-medium ${styles[status] || styles.not_indexed}`}>
         {labels[status] || "Not Indexed"}
       </span>
     );
