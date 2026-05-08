@@ -8,7 +8,7 @@ interface StatsData {
   repos: number;
 }
 
-export default function Stat() {
+export  function Stat() {
   const [stats, setStats] = useState<StatsData | null>(null);
   const [loading, setLoading] = useState(true);
 

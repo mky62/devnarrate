@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation";
 import { Button } from "@/packages/tiptap/components/ui/button"
+import { AnimatePresence } from "framer-motion"
 import Link from "next/link";
 import { ArrowLeft, Loader, Moon, Sparkles, Sun } from 'lucide-react';
 import { EditorContent, EditorContext, useEditor } from "@tiptap/react"
@@ -251,7 +252,7 @@ export default function ClientPage() {
                         <Button
                             onClick={handlePost}
                             disabled={loading || !title}
-                            className="rounded-full px-5 bg-primary text-primary-foreground font-medium shadow-sm hover:shadow-md transition-all text-sm"
+                             className="rounded-full px-5 bg-blue-600 text-primary-foreground font-medium shadow-sm hover:shadow-md transition-all text-sm"
                         >
                             {loading ? <Loader className="w-4 h-4" /> : "Publish"}
                         </Button>
@@ -291,12 +292,15 @@ export default function ClientPage() {
                 </main>
 
                 {/* AI Panel */}
-                {showAIPanel && (
-                    <AIPanel
-                        onInsert={handleAIInsert}
-                        onClose={() => setShowAIPanel(false)}
-                    />
-                )}
+                <AnimatePresence>
+                    {showAIPanel && (
+                        <AIPanel
+                            onInsert={handleAIInsert}
+                            onClose={() => setShowAIPanel(false)}
+                            isDarkMode={isEditorDarkMode}
+                        />
+                    )}
+                </AnimatePresence>
             </div>
         </div>
     )
