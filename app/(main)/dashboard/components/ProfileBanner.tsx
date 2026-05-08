@@ -10,19 +10,11 @@ interface ProfileBannerProps {
 
 export default function ProfileBanner({ userId, onEdit }: ProfileBannerProps) {
   return (
-    <div className="relative w-full h-28 shrink-0">
-      <Image
-        src={`https://picsum.photos/seed/${userId}/400/120`}
-        alt="profile banner"
-        fill
-        className="object-cover opacity-80"
-        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-        loading="eager"
-        priority
-      />
+    <div className="relative w-full h-24 shrink-0 rounded-t-xl overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-r from-[#1946BD] to-[#D5824A]" />
       <button
         onClick={onEdit}
-        className="absolute top-2 right-2 p-2 bg-white/90 hover:bg-white rounded-lg shadow-sm text-gray-600 hover:text-blue-600 transition-all"
+        className="absolute top-2 right-2 p-2 bg-white/20 hover:bg-white/30 rounded-lg text-white/80 hover:text-white transition-all border border-white/20"
         title="Edit Profile"
       >
         <Pencil size={16} />

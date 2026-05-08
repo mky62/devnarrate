@@ -73,7 +73,9 @@ const serializeRepo = (repo: GitHubRepo) => ({
     forks_count: repo.forks_count,
 });
 
-export async function GET() {
+export async function GET(request: Request) {
+    const { searchParams } = new URL(request.url);
+    const query = searchParams.get("q")?.toLowerCase() || "";
     try {
         const requestHeaders = await headers();
         const session = await auth.api.getSession({
@@ -91,7 +93,10 @@ export async function GET() {
 
         if (cachedRepos) {
             const repos = JSON.parse(cachedRepos) as GitHubRepo[];
-            return NextResponse.json({ repos: repos.map(serializeRepo) });
+            const filtered = query 
+                ? repos.filter(r => r.name.toLowerCase().includes(query) || r.description?.toLowerCase().includes(query))
+                : repos;
+            return NextResponse.json({ repos: filtered.map(serializeRepo) });
         }
 
         const tokenResponse = await auth.api.getAccessToken({
@@ -113,7 +118,11 @@ export async function GET() {
         const repos = await getAllRepos(token);
         await redis.set(cacheKey, JSON.stringify(repos), { EX: CACHE_TTL_SECONDS });
 
-        return NextResponse.json({ repos: repos.map(serializeRepo) });
+        const filtered = query 
+            ? repos.filter(r => r.name.toLowerCase().includes(query) || r.description?.toLowerCase().includes(query))
+            : repos;
+
+        return NextResponse.json({ repos: filtered.map(serializeRepo) });
     } catch (error) {
         if (error instanceof Error && error.message.includes("GitHub auth error")) {
             return NextResponse.json(

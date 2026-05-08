@@ -12,7 +12,7 @@ const geist = Geist({
 const montserrat = Montserrat({
   subsets: ["latin", "latin-ext"],
   variable: "--font-montserrat",
-  weight: "400",
+  weight: ["300", "400"],
 });
 
 const arimo = Arimo({
@@ -29,15 +29,21 @@ const grapeNuts = Grape_Nuts({
 export const metadata: Metadata = {
   title: "dev.narrate",
   description: "Share your coding journey with the world",
-  icons: {
-    icon: [
-      {
-        url: "/icon.svg",
-        type: "image/svg+xml",
-      },
-    ],
-    shortcut: "/icon.svg",
-  },
+  icons: [
+    {
+      url: "/favicon.ico",
+      rel: "icon",
+    },
+    {
+      url: "/icon.svg",
+      type: "image/svg+xml",
+      rel: "icon",
+    },
+    {
+      url: "/icon.png",
+      rel: "apple-touch-icon",
+    },
+  ],
 };
 
 export default function RootLayout({

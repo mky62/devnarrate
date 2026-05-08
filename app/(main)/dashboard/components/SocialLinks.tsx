@@ -21,7 +21,7 @@ export default function SocialLinks({ links }: SocialLinksProps) {
           href={links.github}
           target="_blank"
           rel="noopener noreferrer"
-          className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors text-sm font-medium"
+          className="p-2 text-white/60 hover:text-white hover:bg-white/10 rounded-lg transition-colors text-sm font-medium"
           title="GitHub"
         >
           <FaGithub size={16} />
@@ -32,7 +32,7 @@ export default function SocialLinks({ links }: SocialLinksProps) {
           href={links.twitter}
           target="_blank"
           rel="noopener noreferrer"
-          className="p-2 text-gray-600 hover:text-blue-400 hover:bg-blue-50 rounded-lg transition-colors text-sm font-medium"
+          className="p-2 text-white/60 hover:text-white hover:bg-white/10 rounded-lg transition-colors text-sm font-medium"
           title="Twitter"
         >
           <FaXTwitter size={16} />
@@ -43,7 +43,7 @@ export default function SocialLinks({ links }: SocialLinksProps) {
           href={links.linkedin}
           target="_blank"
           rel="noopener noreferrer"
-          className="p-2 text-gray-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors text-sm font-medium"
+          className="p-2 text-white/60 hover:text-white hover:bg-white/10 rounded-lg transition-colors text-sm font-medium"
           title="LinkedIn"
         >
           <FaLinkedin size={16} />

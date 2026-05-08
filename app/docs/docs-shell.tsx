@@ -10,7 +10,6 @@ import {
   GitBranch,
   Settings2,
 } from "lucide-react";
-import ThemeToggle from "./theme-toggle";
 
 type DocConfig = {
   slug: string;
@@ -542,10 +541,10 @@ function SidebarLink({ item, currentSlug }: { item: SidebarItem; currentSlug: st
   return (
     <Link
       href={item.href}
-      className={`block transition-colors ${active ? "docs-active" : "docs-link"}`}
+      className={`block p-2 rounded-lg transition-all ${active ? "docs-active" : "docs-link hover:bg-white/5"}`}
     >
-      <span className="block text-lg font-semibold leading-tight">{item.label}</span>
-      <span className="docs-faint mt-1 block text-xs font-medium leading-snug">
+      <span className="block text-sm font-semibold leading-tight">{item.label}</span>
+      <span className="docs-faint mt-0.5 block text-xs font-medium leading-snug">
         {item.detail}
       </span>
     </Link>
@@ -557,46 +556,27 @@ export default async function DocsShell({ slug }: { slug: string }) {
   const blocks = parseMarkdown(await readDoc(doc.file));
 
   return (
-    <main className="docs-shell h-dvh w-full overflow-hidden">
+    <main className="docs-shell h-dvh w-full overflow-hidden bg-gradient-to-br from-[#1946BD] via-[#2B5AC0] to-[#D5824A]">
       <style>{`
         .docs-shell {
-          --docs-bg: #070b13;
-          --docs-sidebar: #171c26;
-          --docs-panel: #141922;
-          --docs-code: #0d1220;
-          --docs-border: #334155;
+          --docs-bg: transparent;
+          --docs-sidebar: rgba(255,255,255,0.08);
+          --docs-panel: rgba(255,255,255,0.08);
+          --docs-code: rgba(0,0,0,0.2);
+          --docs-border: rgba(255,255,255,0.15);
           --docs-strong: #ffffff;
           --docs-heading: #ffffff;
           --docs-subheading: #f1f5f9;
-          --docs-body: #cbd5e1;
-          --docs-muted: #94a3b8;
-          --docs-faint: #64748b;
+          --docs-body: rgba(255,255,255,0.75);
+          --docs-muted: rgba(255,255,255,0.55);
+          --docs-faint: rgba(255,255,255,0.4);
           --docs-hover: #ffffff;
-          --docs-pill-from: #64748b;
-          --docs-pill-to: #0f172a;
-          background: var(--docs-bg);
-          color: var(--docs-strong);
+          --docs-pill-from: #1946BD;
+          --docs-pill-to: #D5824A;
         }
 
-        html.docs-light .docs-shell {
-          --docs-bg: #f4f7fb;
-          --docs-sidebar: #e8edf5;
-          --docs-panel: #ffffff;
-          --docs-code: #eef3fb;
-          --docs-border: #c8d1df;
-          --docs-strong: #0f172a;
-          --docs-heading: #0f172a;
-          --docs-subheading: #1e293b;
-          --docs-body: #334155;
-          --docs-muted: #64748b;
-          --docs-faint: #7c8798;
-          --docs-hover: #0f172a;
-          --docs-pill-from: #ffffff;
-          --docs-pill-to: #cbd5e1;
-        }
-
-        .docs-sidebar { background: var(--docs-sidebar); }
-        .docs-panel { background: var(--docs-panel); border-color: var(--docs-border); }
+        .docs-sidebar { background: var(--docs-sidebar); backdrop-filter: blur(12px); }
+        .docs-panel { background: var(--docs-panel); backdrop-filter: blur(12px); border-color: var(--docs-border); }
         .docs-border { border-color: var(--docs-border); }
         .docs-heading { color: var(--docs-heading); }
         .docs-subheading { color: var(--docs-subheading); }
@@ -606,10 +586,10 @@ export default async function DocsShell({ slug }: { slug: string }) {
         .docs-faint { color: var(--docs-faint); }
         .docs-link { color: var(--docs-muted); }
         .docs-link:hover { color: var(--docs-hover); }
-        .docs-active { color: var(--docs-strong); }
+        .docs-active { color: var(--docs-strong); background: rgba(255,255,255,0.1); border-radius: 0.5rem; }
         .docs-theme-pill {
           color: var(--docs-strong);
-          background: linear-gradient(to bottom, var(--docs-pill-from), var(--docs-pill-to));
+          background: linear-gradient(135deg, #1946BD, #D5824A);
         }
         .docs-code-block,
         .docs-inline-code {
@@ -630,16 +610,15 @@ export default async function DocsShell({ slug }: { slug: string }) {
         }
       `}</style>
 
-      <div className="grid h-dvh grid-cols-[minmax(240px,304px)_minmax(0,1fr)] gap-4">
-        <aside className="docs-sidebar flex min-h-0 flex-col overflow-hidden p-6">
-          <div className="mb-6 flex items-center justify-between gap-4">
-            <p className="docs-faint text-lg font-medium uppercase tracking-[0.35em]">
+      <div className="grid h-dvh grid-cols-[minmax(240px,280px)_minmax(0,1fr)] gap-2 p-2">
+        <aside className="docs-sidebar flex min-h-0 flex-col p-4 rounded-xl border overflow-hidden">
+          <div className="mb-4 flex items-center justify-between gap-4">
+            <p className="docs-faint text-sm font-semibold uppercase tracking-[0.35em]">
               Index
             </p>
-            <ThemeToggle />
           </div>
 
-          <nav className="min-h-0 flex-1 space-y-8 overflow-y-auto pr-2">
+          <nav className="docs-nav min-h-0 flex-1 space-y-8 overflow-y-auto pr-2">
             {indexGroups.map((group) => (
               <section key={group.title}>
                 <p className="docs-faint mb-4 text-sm font-medium uppercase tracking-[0.35em]">
@@ -684,13 +663,13 @@ export default async function DocsShell({ slug }: { slug: string }) {
           </nav>
         </aside>
 
-        <section className="docs-panel overflow-y-auto border p-7">
-          <div className="mb-10 flex items-center">
+        <section className="docs-panel overflow-y-auto border rounded-xl p-5 overflow-hidden">
+          <div className="mb-6 flex items-center">
             <Link
               href="/home"
-              className="docs-link flex items-center gap-3 text-xl font-medium transition-colors"
+              className="docs-link flex items-center gap-2 text-sm font-medium transition-colors hover:text-white"
             >
-              <span className="text-2xl leading-none">←</span>
+              <span className="text-lg leading-none">←</span>
               Home
             </Link>
           </div>

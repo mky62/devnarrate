@@ -51,11 +51,12 @@ export default function DeleteProfile() {
   }
 
   return (
-    <div className="border-blue-200  border-2 rounded-xl bg-white">
+    <div className="rounded-lg bg-white/5 border border-white/10">
       <button
         onClick={() => setIsConfirming(true)}
-        className="w-full px-4 py-2 text-sm font-medium text-red-600 bg-red-400 hover:bg-red-700 border border-red-200 rounded-lg transition-colors"
+        className="w-full px-3 py-2 text-sm font-medium text-red-400 hover:bg-red-500/20 rounded-lg transition-colors flex items-center justify-center gap-2"
       >
+        <Trash2 size={14} />
         Delete Account
       </button>
 
