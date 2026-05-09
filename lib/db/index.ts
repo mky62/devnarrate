@@ -1,3 +1,4 @@
 // Database exports
-export { db, default } from "./prisma";
+export { db } from "./prisma";
+export { default } from "./prisma";
 export { getRedisClient } from "./redis";
