@@ -43,9 +43,6 @@
       ],
       "@/*": [
         "./*"
-      ],
-      "@packages/prisma/*": [
-        "./packages/prisma/*"
       ]
     }
   },
