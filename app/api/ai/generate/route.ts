@@ -176,13 +176,20 @@ function filterRelevantChunks(chunks: RetrievedChunk[]): RetrievedChunk[] {
   return chunks.filter((chunk) => chunk.score >= MIN_RELEVANCE_SCORE);
 }
 
-const openRouter = new OpenRouter({
-  apiKey: process.env.OPENROUTER_API_KEY ?? "",
-  httpReferer: process.env.BETTER_AUTH_URL || "http://localhost:3000",
-  appTitle: "devnarrate",
-  timeoutMs: OPENROUTER_TIMEOUT_MS,
-  retryConfig: { strategy: "none" },
-});
+function getOpenRouterClient(): OpenRouter {
+  const apiKey = process.env.OPENROUTER_API_KEY;
+  if (!apiKey) {
+    throw new Error("Missing OPENROUTER_API_KEY");
+  }
+
+  return new OpenRouter({
+    apiKey,
+    httpReferer: process.env.BETTER_AUTH_URL || "http://localhost:3000",
+    appTitle: "devnarrate",
+    timeoutMs: OPENROUTER_TIMEOUT_MS,
+    retryConfig: { strategy: "none" },
+  });
+}
 
 function withTimeout<T>(promise: Promise<T>, timeoutMs: number, label: string): Promise<T> {
   let timeout: ReturnType<typeof setTimeout>;
@@ -337,12 +344,7 @@ export async function POST(req: Request) {
   }
 
   try {
-    if (!process.env.OPENROUTER_API_KEY) {
-      return NextResponse.json(
-        { error: "Missing OPENROUTER_API_KEY" },
-        { status: 500 }
-      );
-    }
+    const openRouter = getOpenRouterClient();
 
     const stream = await withTimeout(
       openRouter.chat.send(
