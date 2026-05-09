@@ -483,7 +483,11 @@ export default function AIPanel({
   const hasEmptyState = indexedRepos.length === 0;
 
   async function handleGenerate() {
-    if (!selectedRepo || !prompt.trim()) return;
+    console.log("handleGenerate called", { selectedRepo, prompt: prompt.trim() });
+    if (!selectedRepo || !prompt.trim()) {
+      console.log("Early return - missing repo or prompt");
+      return;
+    }
 
     setIsGenerating(true);
     setGeneratedContent("");
@@ -495,6 +499,7 @@ export default function AIPanel({
     }, GENERATE_TIMEOUT_MS);
 
     try {
+      console.log("Sending fetch request...");
       const res = await fetch("/api/ai/generate", {
         method: "POST",
         signal: controller.signal,
@@ -535,6 +540,7 @@ export default function AIPanel({
         }
       }
     } catch (err) {
+      console.error("Generate error:", err);
       if (err instanceof Error) {
         if (err.name === "AbortError") {
           setError("Generation timed out. Try a smaller prompt.");
