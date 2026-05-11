@@ -1,3 +1,5 @@
+import pLimit from 'p-limit';
+
 export interface RepoFile {
   path: string;
   content: string;
@@ -117,45 +119,63 @@ export async function getRepoFilesFromGithub({
   // Limit number of files
   const limitedFiles = files.slice(0, maxFiles);
 
-  // Fetch content for each file
+  // Fetch content for each file in parallel with concurrency limit
+  const limit = pLimit(10); // 10 concurrent requests
   const filesWithContent: RepoFile[] = [];
 
-  for (const file of limitedFiles) {
-    try {
-      const contentRes = await fetch(
-        `https://api.github.com/repos/${owner}/${repo}/contents/${file.path}?ref=${defaultBranch}`,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            Accept: 'application/vnd.github.v3+json',
-          },
-        }
-      );
+  const fetchPromises = limitedFiles.map(async (file) => {
+    return limit(async () => {
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 10000);
 
-      if (!contentRes.ok) {
-        console.warn(`Failed to fetch ${file.path}: ${contentRes.status}`);
-        continue;
-      }
+        const contentRes = await fetch(
+          `https://api.github.com/repos/${owner}/${repo}/contents/${file.path}?ref=${defaultBranch}`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              Accept: 'application/vnd.github.v3+json',
+            },
+            signal: controller.signal,
+          }
+        );
 
-      const contentData = await contentRes.json();
+        clearTimeout(timeout);
 
-      // GitHub returns base64 encoded content
-      if (contentData.content) {
-        const decoded = Buffer.from(contentData.content, 'base64').toString('utf-8');
-
-        // Skip files that are too large (>100KB)
-        if (decoded.length > 100000) {
-          console.warn(`Skipping large file ${file.path} (${decoded.length} chars)`);
-          continue;
+        if (!contentRes.ok) {
+          console.warn(`Failed to fetch ${file.path}: ${contentRes.status}`);
+          return null;
         }
 
-        filesWithContent.push({
-          path: file.path,
-          content: decoded,
-        });
+        const contentData = await contentRes.json();
+
+        // GitHub returns base64 encoded content
+        if (contentData.content) {
+          const decoded = Buffer.from(contentData.content, 'base64').toString('utf-8');
+
+          // Skip files that are too large (>100KB)
+          if (decoded.length > 100000) {
+            console.warn(`Skipping large file ${file.path} (${decoded.length} chars)`);
+            return null;
+          }
+
+          return {
+            path: file.path,
+            content: decoded,
+          };
+        }
+        return null;
+      } catch (err) {
+        console.warn(`Error fetching ${file.path}:`, err);
+        return null;
       }
-    } catch (err) {
-      console.warn(`Error fetching ${file.path}:`, err);
+    });
+  });
+
+  const results = await Promise.all(fetchPromises);
+  for (const result of results) {
+    if (result) {
+      filesWithContent.push(result);
     }
   }
 

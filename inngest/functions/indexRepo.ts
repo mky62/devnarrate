@@ -4,7 +4,7 @@ import { db } from "@/lib/prisma";
 import { getRepoDetailsFromGithub, getRepoFilesFromGithub, RepoFile } from "@/lib/github";
 import { chunkCodeFile, Chunk } from "@/lib/chunking";
 import { embedPassages } from "@/lib/embeddings";
-import { deletePineconeNamespace, upsertChunksToPinecone } from "@/lib/pinecone";
+import { deletePineconeNamespace, upsertChunksToPinecone } from "@/lib/services/ai/pinecone";
 import { parseGithubRepoId } from "@/lib/github-repo-id";
 import { getRepoIndexJobNamespace, getRepoNamespace } from "@/lib/repo-indexing";
 

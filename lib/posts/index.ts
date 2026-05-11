@@ -5,6 +5,7 @@ export interface SerializedPostSummary {
   title: string;
   projectLink: string | null;
   content: string;
+  contentPreview: string;
   createdAt: string;
   likeCount: number;
   likedByViewer: boolean;
@@ -69,6 +70,13 @@ function getCanLike(postUserId: string, viewerId?: string, readOnly?: boolean) {
   return postUserId !== viewerId;
 }
 
+function getContentPreview(content: string, maxLength: number = 500): string {
+  if (content.length <= maxLength) {
+    return content;
+  }
+  return content.slice(0, maxLength) + '...';
+}
+
 export async function serializePostSummaries(
   posts: PostWithLikeCount[],
   viewerId?: string,
@@ -88,6 +96,7 @@ export async function serializePostSummaries(
       title: post.title,
       projectLink: post.projectLink,
       content: post.content,
+      contentPreview: getContentPreview(post.content),
       createdAt: post.createdAt.toISOString(),
       likeCount: post._count.likes,
       likedByViewer: canLike ? likedPostIds.has(post.id) : false,

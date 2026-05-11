@@ -7,6 +7,7 @@ import { queryPinecone, namespaceExists } from "@/lib/pinecone";
 import { db } from "@/lib/prisma";
 import { getRepoNamespace } from "@/lib/repo-indexing";
 import { parseGithubRepoId } from "@/lib/github-repo-id";
+import { checkRateLimit, getRateLimitKey } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -212,6 +213,27 @@ export async function POST(req: Request) {
 
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  // Rate limit: 10 requests per minute per user for AI generation
+  const rateLimitResult = await checkRateLimit({
+    key: getRateLimitKey(session.user.id, "ai:generate"),
+    limit: 10,
+    window: 60,
+  });
+
+  if (!rateLimitResult.allowed) {
+    return NextResponse.json(
+      { error: "Rate limit exceeded. Please try again later." },
+      { 
+        status: 429,
+        headers: {
+          "X-RateLimit-Limit": "10",
+          "X-RateLimit-Remaining": "0",
+          "X-RateLimit-Reset": rateLimitResult.resetAt.toString(),
+        }
+      }
+    );
   }
 
   let body: {

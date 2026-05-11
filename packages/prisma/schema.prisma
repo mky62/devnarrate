@@ -155,6 +155,7 @@ model Post {
   updatedAt DateTime @updatedAt
 
   @@index([userId])
+  @@index([userId, createdAt])
 
   @@map("post")
 }
@@ -219,6 +220,7 @@ model ContributionClick {
   @@index([authorId])
   @@index([viewerId])
   @@index([createdAt])
+  @@index([postId, createdAt])
 
   @@map("contribution_click")
 }

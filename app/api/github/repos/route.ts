@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import { getRedisClient } from "@/lib/redis";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
+import { checkRateLimit, getRateLimitKey } from "@/lib/rate-limit";
 
 interface GitHubRepo {
     id: number;
@@ -83,6 +84,27 @@ export async function GET() {
         const userId = session?.user?.id;
         if (!userId) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
+        // Rate limit: 5 requests per minute per user for GitHub repos
+        const rateLimitResult = await checkRateLimit({
+            key: getRateLimitKey(userId, "github:repos"),
+            limit: 5,
+            window: 60,
+        });
+
+        if (!rateLimitResult.allowed) {
+            return NextResponse.json(
+                { error: "Rate limit exceeded. Please try again later." },
+                { 
+                    status: 429,
+                    headers: {
+                        "X-RateLimit-Limit": "5",
+                        "X-RateLimit-Remaining": "0",
+                        "X-RateLimit-Reset": rateLimitResult.resetAt.toString(),
+                    }
+                }
+            );
         }
 
         const cacheKey = `github:repos:${userId}`;
