@@ -26,6 +26,7 @@ export function getRepoStatus({
     case "STALE":
       return "stale";
     case "NOT_INDEXED":
+      return indexNamespace ? "completed" : "not_indexed";
     default:
       return "not_indexed";
   }

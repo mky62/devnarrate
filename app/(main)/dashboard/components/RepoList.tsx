@@ -21,6 +21,8 @@ interface RepoListProps {
     initialSavedRepos?: SavedRepo[];
 }
 
+type RepoId = SavedRepo["githubRepoId"];
+
 export default function RepoList({ initialSavedRepos = [] }: RepoListProps) {
     const [showSearchModal, setShowSearchModal] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
@@ -28,8 +30,8 @@ export default function RepoList({ initialSavedRepos = [] }: RepoListProps) {
     const [searchError, setSearchError] = useState<string | null>(null);
     const [githubRepos, setGithubRepos] = useState<Repo[] | null>(null);
     const [addingRepoId, setAddingRepoId] = useState<number | null>(null);
-    const [deletingRepoId, setDeletingRepoId] = useState<number | null>(null);
-    const [indexingRepoId, setIndexingRepoId] = useState<number | null>(null);
+    const [deletingRepoId, setDeletingRepoId] = useState<RepoId | null>(null);
+    const [indexingRepoId, setIndexingRepoId] = useState<RepoId | null>(null);
     const { data: savedRepos = initialSavedRepos, refetch: refetchRepos } = useRepos(initialSavedRepos);
     const addRepoMutation = useAddRepo();
     const deleteRepoMutation = useDeleteRepo();
@@ -116,7 +118,7 @@ export default function RepoList({ initialSavedRepos = [] }: RepoListProps) {
     );
 
     const addRepo = async (repo: Repo) => {
-        if (!repo.name || savedRepos.some(r => r.githubRepoId === repo.githubRepoId) || addingRepoId === repo.githubRepoId) {
+        if (!repo.name || savedRepos.some(r => String(r.githubRepoId) === String(repo.githubRepoId)) || addingRepoId === repo.githubRepoId) {
             return;
         }
 
@@ -139,7 +141,7 @@ export default function RepoList({ initialSavedRepos = [] }: RepoListProps) {
     };
 
 
-    const deleteRepo = async (githubRepoId: number) => {
+    const deleteRepo = async (githubRepoId: RepoId) => {
         if (deletingRepoId === githubRepoId) return;
 
         if (!confirm("Delete this repository from your list?")) return;
@@ -189,7 +191,7 @@ export default function RepoList({ initialSavedRepos = [] }: RepoListProps) {
     };
 
     const indexRepo = async (repo: SavedRepo) => {
-        if (!canIndexRepo(repo) || indexingRepoId === repo.githubRepoId) return;
+        if (!canIndexRepo(repo) || String(indexingRepoId) === String(repo.githubRepoId)) return;
 
         setIndexingRepoId(repo.githubRepoId);
 
@@ -266,22 +268,22 @@ export default function RepoList({ initialSavedRepos = [] }: RepoListProps) {
                             {canIndexRepo(repo) && (
                                 <button
                                     onClick={() => indexRepo(repo)}
-                                    disabled={indexingRepoId === repo.githubRepoId}
+                                    disabled={String(indexingRepoId) === String(repo.githubRepoId)}
                                     className="text-[10px] flex items-center gap-1 px-2 py-1 rounded-full border border-white/20 text-white/70 hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
                                     title="Index repository for AI writer"
                                 >
-                                    {indexingRepoId === repo.githubRepoId && <Loader2 size={10} className="animate-spin" />}
-                                    {indexingRepoId === repo.githubRepoId ? "Indexing" : "Index"}
+                                    {String(indexingRepoId) === String(repo.githubRepoId) && <Loader2 size={10} className="animate-spin" />}
+                                    {String(indexingRepoId) === String(repo.githubRepoId) ? "Indexing" : "Index"}
                                 </button>
                             )}
 
                             <button
                                 onClick={() => deleteRepo(repo.githubRepoId)}
-                                disabled={deletingRepoId === repo.githubRepoId}
+                                disabled={String(deletingRepoId) === String(repo.githubRepoId)}
                                 className="transition-opacity text-white/40 hover:text-white/70 disabled:opacity-50"
                                 title="Remove repository"
                             >
-                                {deletingRepoId === repo.githubRepoId ? (
+                                {String(deletingRepoId) === String(repo.githubRepoId) ? (
                                     <Loader2 size={14} className="animate-spin" />
                                 ) : (
                                     <Trash2 size={14} />
@@ -335,7 +337,7 @@ export default function RepoList({ initialSavedRepos = [] }: RepoListProps) {
                             )}
 
                             {searchResults.map((repo) => {
-                                const isSaved = savedRepos.some(r => r.githubRepoId === repo.githubRepoId);
+                                const isSaved = savedRepos.some(r => String(r.githubRepoId) === String(repo.githubRepoId));
                                 const isAdding = addingRepoId === repo.githubRepoId;
 
                                 return (
