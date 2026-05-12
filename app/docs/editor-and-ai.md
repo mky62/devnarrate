@@ -274,6 +274,7 @@ Validation:
 - Rejects prompts above 4000 characters.
 - Requires an indexed Pinecone namespace stored on the repo, or the deterministic base namespace fallback.
 - Requires `OPENROUTER_API_KEY`.
+- OpenRouter/configuration failures are returned as non-secret client-safe errors, including quota, rate limit, provider unavailable, authentication, and timeout responses.
 
 Generation model:
 

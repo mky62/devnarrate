@@ -361,7 +361,11 @@ Responses:
 - `413` prompt too long.
 - `425` repo not indexed yet.
 - `404` no relevant chunks.
-- `500` missing OpenRouter key or generation failure.
+- `402` OpenRouter quota or credits are insufficient.
+- `429` OpenRouter rate limit exceeded.
+- `502` OpenRouter rejected the request or authentication failed.
+- `503` missing OpenRouter key or provider unavailable.
+- `504` retrieval or generation timed out.
 
 Successful response is `text/plain; charset=utf-8` streamed content.
 

@@ -43,6 +43,124 @@ interface RetrievedChunk {
   score: number;
 }
 
+interface GenerationErrorResponse {
+  error: string;
+  status: number;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function getProviderStatusCode(error: unknown): number | null {
+  if (!isRecord(error)) {
+    return null;
+  }
+
+  const statusCode = error.statusCode ?? error.status;
+  return typeof statusCode === "number" ? statusCode : null;
+}
+
+function normalizeProviderMessage(message: string): string | null {
+  const trimmed = message.replace(/\s+/g, " ").trim();
+  if (!trimmed || /<html|<!doctype/i.test(trimmed)) {
+    return null;
+  }
+
+  return trimmed.length > 300 ? `${trimmed.slice(0, 300)}...` : trimmed;
+}
+
+function getProviderMessage(error: unknown): string | null {
+  if (!isRecord(error)) {
+    return null;
+  }
+
+  const providerError = error.error;
+  if (isRecord(providerError) && typeof providerError.message === "string") {
+    return normalizeProviderMessage(providerError.message);
+  }
+
+  if (typeof error.body === "string") {
+    try {
+      const parsed = JSON.parse(error.body) as unknown;
+      if (isRecord(parsed)) {
+        const parsedError = parsed.error;
+        if (isRecord(parsedError) && typeof parsedError.message === "string") {
+          return normalizeProviderMessage(parsedError.message);
+        }
+      }
+    } catch {
+      return normalizeProviderMessage(error.body);
+    }
+
+    return null;
+  }
+
+  return error instanceof Error ? normalizeProviderMessage(error.message) : null;
+}
+
+function getGenerationErrorResponse(error: unknown): GenerationErrorResponse {
+  const message = getProviderMessage(error);
+
+  if (message === "Missing OPENROUTER_API_KEY") {
+    return {
+      error: "AI generation is not configured. Missing OpenRouter API key.",
+      status: 503,
+    };
+  }
+
+  if (error instanceof Error && /timed out/i.test(error.message)) {
+    return {
+      error: "AI provider timed out. Please try again.",
+      status: 504,
+    };
+  }
+
+  switch (getProviderStatusCode(error)) {
+    case 400:
+    case 404:
+    case 422:
+      return {
+        error: message ?? "AI provider rejected the generation request.",
+        status: 502,
+      };
+    case 401:
+    case 403:
+      return {
+        error: "AI provider authentication failed. Check the OpenRouter API key.",
+        status: 502,
+      };
+    case 402:
+      return {
+        error: "AI provider quota or credits are insufficient.",
+        status: 402,
+      };
+    case 408:
+    case 524:
+      return {
+        error: "AI provider timed out. Please try again.",
+        status: 504,
+      };
+    case 429:
+      return {
+        error: "AI provider rate limit exceeded. Please try again later.",
+        status: 429,
+      };
+    case 500:
+    case 502:
+    case 503:
+      return {
+        error: "AI provider is temporarily unavailable. Please try again.",
+        status: 503,
+      };
+    default:
+      return {
+        error: message ?? "Failed to generate content",
+        status: 502,
+      };
+  }
+}
+
 function pickOption<T extends readonly string[]>(
   value: unknown,
   allowed: T,
@@ -442,9 +560,10 @@ export async function POST(req: Request) {
     });
   } catch (error) {
     console.error("AI generation error:", error);
+    const response = getGenerationErrorResponse(error);
     return NextResponse.json(
-      { error: "Failed to generate content" },
-      { status: 500 }
+      { error: response.error },
+      { status: response.status }
     );
   }
 }
