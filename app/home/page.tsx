@@ -219,10 +219,9 @@ import {
   GitBranch,
   FileText,
   Globe,
-  Zap,
   ArrowRight,
 } from "lucide-react";
-import { FaGithub, FaXTwitter } from "react-icons/fa6";
+import { FaGithub } from "react-icons/fa6";
 import { db } from "@/lib/prisma";
 import { Stat } from "./components/Stats";
 
@@ -415,7 +414,10 @@ export default async function HomePage() {
           {builders.length > 0 && (
             <Marquee className="[--duration:40s]" pauseOnHover>
               {[...builders, ...builders].map((builder, i) => (
-                <div key={`${builder.id}-${i}`} className="px-4">
+                <div
+                  key={`${builder.id}-${i}`}
+                  className="w-[min(84vw,560px)] shrink-0 px-2 sm:px-4"
+                >
                   <BuilderCard builder={builder} />
                 </div>
               ))}
