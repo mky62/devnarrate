@@ -509,6 +509,13 @@ export default async function HomePage() {
         <div className="mx-auto max-w-5xl px-6 py-12 sm:px-8">
           <div className="flex flex-col items-center justify-between gap-8 sm:flex-row">
             <div className="flex items-center gap-2">
+              <Image
+                src="/icon.svg"
+                alt="dev.narrate icon"
+                width={28}
+                height={28}
+                className="h-7 w-7 rounded-md"
+              />
               <span className="text-lg font-semibold tracking-tight text-white">
                 dev<span className="text-white/90">.</span>narrate
               </span>
