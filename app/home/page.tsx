@@ -301,13 +301,13 @@ export default async function HomePage() {
   })) as BuilderCardData[];
 
   return (
-    <main className="relative overflow-hidden bg-gradient-to-br from-[#1946BD] via-[#2B5AC0] to-[#D5824A] font-montserrat font-light text-white">
+    <main className="relative w-full min-w-0 max-w-full overflow-x-clip bg-gradient-to-br from-[#1946BD] via-[#2B5AC0] to-[#D5824A] font-montserrat font-light text-white">
       <Navbar />
 
       {/* ========== HERO ========== */}
-      <section className="relative flex min-h-screen flex-col items-center justify-center px-6 pt-28 pb-20 text-center sm:px-8 md:pt-32">
+      <section className="relative flex min-h-screen w-full max-w-full flex-col items-center justify-center overflow-hidden px-6 pt-28 pb-20 text-center sm:px-8 md:pt-32">
         {/* Background image */}
-        <div className="pointer-events-none absolute inset-0">
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
           <Image
             src={heroBg}
             alt="Hero background"
@@ -398,8 +398,8 @@ export default async function HomePage() {
       </section>
 
       {/* ========== BUILDERS MARQUEE ========== */}
-      <section className="relative border-y border-white/20 bg-white/5 py-10 overflow-hidden">
-        <div className="relative">
+      <section className="relative w-full max-w-full overflow-hidden border-y border-white/20 bg-white/5 py-10">
+        <div className="relative w-full max-w-full overflow-hidden">
           {/* Side fades */}
           <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[#1946BD]/50 to-transparent z-10" />
           <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[#D5824A]/50 to-transparent z-10" />
@@ -412,7 +412,7 @@ export default async function HomePage() {
 
           {/* Marquee */}
           {builders.length > 0 && (
-            <Marquee className="[--duration:40s]" pauseOnHover>
+            <Marquee className="w-full max-w-full [--duration:40s]" pauseOnHover>
               {[...builders, ...builders].map((builder, i) => (
                 <div
                   key={`${builder.id}-${i}`}
