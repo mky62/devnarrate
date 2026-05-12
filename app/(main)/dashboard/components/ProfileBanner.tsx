@@ -6,26 +6,28 @@ import { Pencil } from "lucide-react";
 interface ProfileBannerProps {
   userId: string;
   onEdit: () => void;
+  image?: string;
 }
 
-export default function ProfileBanner({ userId, onEdit }: ProfileBannerProps) {
+export default function ProfileBanner({ userId, onEdit, image }: ProfileBannerProps) {
   return (
-    <div className="relative w-full h-28 shrink-0">
-      <Image
-        src={`https://picsum.photos/seed/${userId}/400/120`}
-        alt="profile banner"
-        fill
-        className="object-cover opacity-80"
-        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-        loading="eager"
-        priority
-      />
+    <div className="relative w-full h-24">
+      {image ? (
+        <Image
+          src={image}
+          alt="Profile banner"
+          fill
+          className="object-cover"
+        />
+      ) : (
+        <div className="w-full h-full bg-gradient-to-br from-white/10 to-white/5" />
+      )}
       <button
         onClick={onEdit}
-        className="absolute top-2 right-2 p-2 bg-white/90 hover:bg-white rounded-lg shadow-sm text-gray-600 hover:text-blue-600 transition-all"
+        className="absolute top-2 right-2 p-1.5 bg-white/10 hover:bg-white/20 rounded-lg shadow-sm text-white/70 hover:text-white/90 transition-all"
         title="Edit Profile"
       >
-        <Pencil size={16} />
+        <Pencil size={14} />
       </button>
     </div>
   );

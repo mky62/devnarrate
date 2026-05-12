@@ -218,26 +218,26 @@ export default function RepoList({ initialSavedRepos = [] }: RepoListProps) {
     };
 
     return (
-        <div className="border-blue-500 border-2  h-full rounded-xl flex flex-col overflow-hidden">
+        <div className="border-white/10 border-2  h-full rounded-2xl flex flex-col overflow-hidden min-w-0">
             {/* Header */}
-            <div className="px-4 py-3 border-b border-blue-100 flex items-center justify-between shrink-0">
-                <h2 className="font-semibold text-gray-800 text-sm">Repositories</h2>
+            <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between shrink-0">
+                <h2 className="font-semibold text-white/90 text-sm">Repositories</h2>
                 <div className="flex items-center gap-2">
-                    <span className="text-xs bg-blue-100 text-blue-600 font-medium px-2 py-0.5 rounded-full">
+                    <span className="text-xs bg-white/10 text-white/70 font-medium px-2 py-0.5 rounded-full">
                         {savedRepos.length}
                     </span>
                     <button
                         onClick={openSearchModal}
-                        className="p-1 hover:bg-blue-50 rounded-md transition-colors"
+                        className="p-1 hover:bg-white/10 rounded-md transition-colors"
                         title="Search GitHub repos"
                     >
-                        <Search size={14} className="text-blue-600" />
+                        <Search size={14} className="text-white/70" />
                     </button>
                 </div>
             </div>
 
             {/* Saved Repos List */}
-            <div className="flex-1 overflow-y-auto divide-y divide-gray-100 p-2">
+            <div className="flex-1 overflow-y-auto divide-y divide-white/5 p-2 min-h-0">
                 {savedRepos.length === 0 ? (
                     <div className="flex flex-col items-center justify-center h-full text-center py-8">
                         <p className="text-gray-400 text-sm">No repositories saved yet</p>
@@ -247,18 +247,18 @@ export default function RepoList({ initialSavedRepos = [] }: RepoListProps) {
                     savedRepos.map((repo) => (
                         <div
                             key={repo.githubRepoId}
-                            className="px-4 py-3 flex gap-2 items-center justify-between bg-gray-100/30 hover:border-b-2 hover:border-blue-500 rounded-xl mx-1"
+                            className="px-3 py-2 flex gap-2 items-center justify-between bg-white/5 hover:bg-white/10 rounded-lg mx-1 transition-colors"
                         >
                             <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium text-gray-800 truncate">{repo.name}</p>
+                                <p className="text-xs font-medium text-white/90 truncate">{repo.name}</p>
                                 <div className="mt-1 flex items-center gap-2">
                                     {repo.language && (
-                                        <p className="text-xs text-gray-500">{repo.language}</p>
+                                        <p className="text-[10px] text-white/50">{repo.language}</p>
                                     )}
                                     {getStatusBadge(repo.status)}
                                 </div>
                             </div>
-                            <div className="text-xs text-gray-400 flex items-center gap-3">
+                            <div className="text-[10px] text-white/40 flex items-center gap-2">
                                 {repo.stars !== undefined && <span>⭐ {repo.stars}</span>}
                                 {repo.forks !== undefined && <span className="flex items-center gap-1"><FaCodeFork /> {repo.forks}</span>}
                             </div>
@@ -267,10 +267,10 @@ export default function RepoList({ initialSavedRepos = [] }: RepoListProps) {
                                 <button
                                     onClick={() => indexRepo(repo)}
                                     disabled={indexingRepoId === repo.githubRepoId}
-                                    className="text-xs flex items-center gap-1 px-2.5 py-1 rounded-full border border-blue-500 text-blue-600 hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
+                                    className="text-[10px] flex items-center gap-1 px-2 py-1 rounded-full border border-white/20 text-white/70 hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
                                     title="Index repository for AI writer"
                                 >
-                                    {indexingRepoId === repo.githubRepoId && <Loader2 size={12} className="animate-spin" />}
+                                    {indexingRepoId === repo.githubRepoId && <Loader2 size={10} className="animate-spin" />}
                                     {indexingRepoId === repo.githubRepoId ? "Indexing" : "Index"}
                                 </button>
                             )}
@@ -278,13 +278,13 @@ export default function RepoList({ initialSavedRepos = [] }: RepoListProps) {
                             <button
                                 onClick={() => deleteRepo(repo.githubRepoId)}
                                 disabled={deletingRepoId === repo.githubRepoId}
-                                className="transition-opacity text-red-400 hover:text-red-600 disabled:opacity-50"
+                                className="transition-opacity text-white/40 hover:text-white/70 disabled:opacity-50"
                                 title="Remove repository"
                             >
                                 {deletingRepoId === repo.githubRepoId ? (
-                                    <Loader2 size={16} className="animate-spin" />
+                                    <Loader2 size={14} className="animate-spin" />
                                 ) : (
-                                    <Trash2 size={16} />
+                                    <Trash2 size={14} />
                                 )}
                             </button>
                         </div>

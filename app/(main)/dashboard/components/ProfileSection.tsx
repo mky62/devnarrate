@@ -59,36 +59,41 @@ export default function ProfileSection({ user, initialGitStats }: ProfileSection
     : null;
 
   return (
-    <div className="h-full rounded-xl flex flex-col overflow-hidden opaacity-20 border-blue-500 border-2">
+    <div className="h-full rounded-2xl flex flex-col overflow-hidden border-white/10 border-2 min-w-0">
       <ProfileBanner userId={resolvedUser.id} onEdit={() => setIsEditing(true)} />
       <ProfileAvatar image={resolvedUser.image} displayName={displayName} />
 
       <div className="flex-1 p-4 pt-3 space-y-3  min-h-0 overflow-y-auto">
         <div>
-          <h2 className="font-bold text-gray-900 text-lg leading-tight truncate">
+          <h2 className="font-semibold text-white/90 text-base leading-tight truncate">
             {displayName || "Anonymous"}
           </h2>
           {resolvedUser.stageName && resolvedUser.name !== resolvedUser.stageName && (
-            <p className="text-sm text-gray-500">{resolvedUser.name}</p>
+            <p className="text-xs text-white/50">{resolvedUser.name}</p>
           )}
         </div>
 
         {resolvedUser.description && (
-          <p className="text-sm text-gray-600 break-words whitespace-pre-wrap">
-            {resolvedUser.description}
-          </p>
+          <p className="text-xs text-white/60 line-clamp-3">{resolvedUser.description}</p>
         )}
 
-        <div className="flex flex-wrap gap-2 text-xs text-gray-500">
-          {joinedDate && (
-            <span className="flex items-center gap-1">
-              <Calendar size={12} />
-              Joined {joinedDate}
-            </span>
-          )}
-        </div>
-
         <SocialLinks links={socialLinks} />
+
+        {resolvedUser.contributionUrl && (
+          <a
+            href={resolvedUser.contributionUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 text-xs text-white/70 hover:text-white/90 transition-colors"
+          >
+            <Calendar size={14} />
+            View Contributions
+          </a>
+        )}
+
+        {joinedDate && (
+          <p className="text-[10px] text-white/40">Joined {joinedDate}</p>
+        )}
       </div>
 
       <GitStats initialStats={initialGitStats} />

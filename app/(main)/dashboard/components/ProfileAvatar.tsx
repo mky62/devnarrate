@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { User } from "lucide-react";
 
 interface ProfileAvatarProps {
   image?: string | null;
@@ -9,20 +10,19 @@ interface ProfileAvatarProps {
 
 export default function ProfileAvatar({ image, displayName }: ProfileAvatarProps) {
   return (
-    <div className="relative px-4 -mt-10 shrink-0">
-      <div className="w-20 h-20 rounded-xl border-4 border-white bg-white shadow-md overflow-hidden">
+    <div className="relative px-4 -mt-8 shrink-0">
+      <div className="w-16 h-16 rounded-xl border-4 border-white/10 bg-white/5 shadow-md overflow-hidden">
         {image ? (
           <Image
             src={image}
-            alt={displayName || "Profile"}
-            width={80}
-            height={80}
-            className="object-cover w-full h-full"
-            unoptimized
+            alt={displayName || "Avatar"}
+            width={64}
+            height={64}
+            className="object-cover"
           />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white text-2xl font-bold">
-            {displayName?.charAt(0).toUpperCase() || "U"}
+          <div className="w-full h-full bg-white/5 flex items-center justify-center">
+            <User size={28} className="text-white/40" />
           </div>
         )}
       </div>

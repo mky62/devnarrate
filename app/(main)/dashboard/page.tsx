@@ -1,7 +1,5 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import DashBg from "@/public/dashbg.jpg";
-import Image from "next/image";
 import { auth } from "@/lib/auth";
 import { serializePostSummaries } from "@/lib/posts";
 import { db } from "@/lib/prisma";
@@ -12,6 +10,9 @@ import ProfileSection from "./components/ProfileSection";
 import RepoList from "./components/RepoList";
 import DeleteProfile from "./components/DeleteProfile";
 import PostSection from "./components/PostSection";
+import KnowledgeBase from "./components/KnowledgeBase";
+import TrendingStories from "./components/TrendingStories";
+import { Particles } from "@/components/ui/particles";
 import type { Post } from "@/lib/userdata";
 
 interface SocialLinks {
@@ -112,29 +113,32 @@ export default async function DashboardPage() {
   });
 
   return (
-    <div className="h-full w-full flex">
-      <Image
-        src={DashBg}
-        alt="dashboard-bg"
-        className="absolute inset-0 z-[-1] w-full h-full object-cover"
-      />
+    <div className="h-full w-full flex min-h-screen bg-gradient-to-br from-[#1946BD] via-[#2B5AC0] to-[#D5824A] relative overflow-hidden">
+      <div className="absolute inset-0 bg-black/30 -z-20" />
+      <Particles className="absolute inset-0 -z-10" />
 
-      <div className="relative flex gap-2 min-h-screen w-full p-4">
-        <div className="w-1/4 h-full flex flex-col">
-          <div className="flex-1 bg-white/80 backdrop-blur-sm border border-blue-500 rounded-2xl p-2 shadow-sm flex flex-col gap-3 overflow-hidden">
+      <div className="relative flex gap-3 min-h-screen w-full p-2 z-10">
+        {/* Left Sidebar - Profile */}
+        <div className="w-1/4 h-full flex flex-col overflow-hidden">
+          <div className="flex-1 bg-white/10 backdrop-blur-xl border border-white/10 rounded-3xl p-2 shadow-lg flex flex-col gap-2 overflow-hidden min-h-0">
             <ProfileSection user={user as UserData} initialGitStats={initialGitStats} />
             <DeleteProfile />
           </div>
         </div>
 
-        <div className="w-2/4 h-full flex flex-col">
-          <div className="flex-1 bg-white/80 backdrop-blur-sm border border-blue-500 rounded-2xl p-2 shadow-sm flex flex-col gap-3 overflow-hidden">
+        {/* Center Column - Posts + Knowledge Base */}
+        <div className="w-2/4 h-full flex flex-col gap-2 overflow-hidden">
+          <div className="flex-1 bg-white/10 backdrop-blur-xl border border-white/10 rounded-3xl p-2 shadow-lg flex flex-col gap-2 overflow-hidden min-h-0">
             <PostSection initialPosts={initialPosts} />
+          </div>
+          <div className="h-1/3 bg-white/10 backdrop-blur-xl border border-white/10 rounded-3xl p-2 shadow-lg flex flex-col gap-2 overflow-hidden min-h-0">
+            <KnowledgeBase />
           </div>
         </div>
 
-        <div className="w-1/4 h-full flex flex-col">
-          <div className="flex-1 bg-white/80 backdrop-blur-sm border border-blue-500 rounded-2xl p-2 shadow-sm flex flex-col gap-3 overflow-hidden">
+        {/* Right Column - Repos + Trending Stories */}
+        <div className="w-1/4 h-full flex flex-col gap-2 overflow-hidden">
+          <div className="flex-1 bg-white/10 backdrop-blur-xl border border-white/10 rounded-3xl p-2 shadow-lg flex flex-col gap-2 overflow-hidden min-h-0">
             <RepoList
               initialSavedRepos={repos.map((repo) => ({
                 githubRepoId: serializeGithubRepoId(repo.githubRepoId),
@@ -149,6 +153,9 @@ export default async function DashboardPage() {
                 indexedCommitSha: repo.indexedCommitSha,
               }))}
             />
+          </div>
+          <div className="h-1/3 bg-white/10 backdrop-blur-xl border border-white/10 rounded-3xl p-2 shadow-lg flex flex-col gap-2 overflow-hidden min-h-0">
+            <TrendingStories />
           </div>
         </div>
       </div>

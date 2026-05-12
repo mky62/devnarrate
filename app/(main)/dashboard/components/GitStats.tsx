@@ -44,34 +44,30 @@ export default function GitStats({ initialStats }: GitStatsProps) {
   }
 
   return (
-    <div className="bg-white/40 p-4 border-t border-gray-200">
+    <div className="bg-white/5 p-3 border-t border-white/10">
       <div className="flex items-center justify-between text-center">
         <div className="flex-1">
-          <p className="text-2xl font-bold text-gray-900">{data.totalContributions.toLocaleString()}</p>
-          <p className="text-sm font-medium text-gray-700 mt-1">Total Contributions</p>
-          <p className="text-xs text-gray-600 mt-1">
+          <p className="text-lg font-semibold text-white/90">{data.totalContributions.toLocaleString()}</p>
+          <p className="text-[10px] font-medium text-white/60 mt-1">Total Contributions</p>
+          <p className="text-[9px] text-white/40 mt-1">
             {formatDate(data.startDate)} - Present
           </p>
         </div>
 
-        <div className="w-px h-16 bg-gray-300 mx-4" />
+        <div className="w-px h-12 bg-white/10 mx-3" />
 
         <div className="flex-1">
-          <p className="text-2xl font-bold text-gray-900">{data.currentStreak}</p>
-          <p className="text-sm font-medium text-gray-700 mt-1">Current Streak</p>
-          <p className="text-xs text-gray-600 mt-1">
-            {formatDate(data.currentStreakStart)} - {formatDate(data.currentStreakEnd)}
-          </p>
+          <p className="text-lg font-semibold text-white/90">{data.currentStreak}</p>
+          <p className="text-[10px] font-medium text-white/60 mt-1">Current Streak</p>
+          <p className="text-[9px] text-white/40 mt-1">days</p>
         </div>
 
-        <div className="w-px h-16 bg-gray-300 mx-4" />
+        <div className="w-px h-12 bg-white/10 mx-3" />
 
         <div className="flex-1">
-          <p className="text-2xl font-bold text-gray-900">{data.longestStreak}</p>
-          <p className="text-sm font-medium text-gray-700 mt-1">Longest Streak</p>
-          <p className="text-xs text-gray-600 mt-1">
-            {formatDate(data.longestStreakStart)} - {formatDate(data.longestStreakEnd)}
-          </p>
+          <p className="text-lg font-semibold text-white/90">{data.longestStreak}</p>
+          <p className="text-[10px] font-medium text-white/60 mt-1">Longest Streak</p>
+          <p className="text-[9px] text-white/40 mt-1">days</p>
         </div>
       </div>
     </div>
