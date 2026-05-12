@@ -294,9 +294,9 @@ export default function RepoList({ initialSavedRepos = [] }: RepoListProps) {
 
             {/* Search Modal */}
             {showSearchModal && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-xl shadow-xl w-full max-w-lg max-h-[80vh] flex flex-col">
-                        <div className="px-4 py-3 flex items-center justify-between">
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-hidden">
+                    <div className="bg-white rounded-xl shadow-xl w-full max-w-lg max-h-[60vh] flex flex-col overflow-hidden">
+                        <div className="px-4 py-3 flex items-center justify-between shrink-0">
                             <h3 className="font-semibold text-gray-800">Search GitHub Repositories</h3>
                             <button
                                 onClick={closeSearchModal}
@@ -306,7 +306,7 @@ export default function RepoList({ initialSavedRepos = [] }: RepoListProps) {
                             </button>
                         </div>
 
-                        <div className="px-4 py-3 ">
+                        <div className="px-4 py-3 shrink-0">
                             <div className="relative">
                                 <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                                 <input
@@ -323,15 +323,15 @@ export default function RepoList({ initialSavedRepos = [] }: RepoListProps) {
                             </div>
                         </div>
 
-                        <div className="overflow-y-auto flex-1 divide-y divide-gray-100">
+                        <div className="overflow-y-auto flex-1 divide-y divide-gray-100 min-h-0">
                             {searchError && (
-                                <p className="px-4 py-3 text-sm text-red-600 border-b border-gray-100">
+                                <p className="px-4 py-3 text-sm text-red-600 border-b border-gray-100 shrink-0">
                                     {searchError}
                                 </p>
                             )}
 
                             {isSearching && !hasLoadedGithubRepos && (
-                                <p className="text-sm text-gray-500 text-center py-6">Loading repositories...</p>
+                                <p className="text-sm text-gray-500 text-center py-6 shrink-0">Loading repositories...</p>
                             )}
 
                             {searchResults.map((repo) => {
@@ -341,7 +341,7 @@ export default function RepoList({ initialSavedRepos = [] }: RepoListProps) {
                                 return (
                                     <div
                                         key={repo.githubRepoId}
-                                        className="px-4 py-3 flex items-center justify-between hover:bg-gray-50"
+                                        className="px-4 py-3 flex items-center justify-between hover:bg-gray-50 shrink-0"
                                     >
                                         <div className="flex-1 min-w-0">
                                             <p className="text-sm font-medium text-gray-800 truncate">{repo.name}</p>
@@ -350,7 +350,7 @@ export default function RepoList({ initialSavedRepos = [] }: RepoListProps) {
                                         <button
                                             onClick={() => addRepo(repo)}
                                             disabled={isSaved || isAdding}
-                                            className="text-xs px-3 py-1 rounded-full border border-blue-500 text-blue-600 hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
+                                            className="text-xs px-3 py-1 rounded-full border border-blue-500 text-blue-600 hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors whitespace-nowrap shrink-0"
                                         >
                                             {isAdding ? "Adding…" : isSaved ? "Added" : "Add"}
                                         </button>
@@ -359,7 +359,7 @@ export default function RepoList({ initialSavedRepos = [] }: RepoListProps) {
                             })}
 
                             {shouldShowNoResults && (
-                                <p className="text-sm text-gray-500 text-center py-6">No repositories found.</p>
+                                <p className="text-sm text-gray-500 text-center py-6 shrink-0">No repositories found.</p>
                             )}
                         </div>
                     </div>
