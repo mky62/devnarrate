@@ -53,6 +53,7 @@ export default function ProfileSection({ user, initialGitStats }: ProfileSection
   }
 
   const displayName = resolvedUser.stageName || resolvedUser.name;
+  const bannerUrl = `https://picsum.photos/seed/${encodeURIComponent(resolvedUser.id)}/800/240`;
   const socialLinks = resolvedUser.socialLinks || {};
   const joinedDate = resolvedUser.createdAt
     ? new Date(resolvedUser.createdAt).toLocaleDateString("en-US", { month: "short", year: "numeric" })
@@ -60,7 +61,7 @@ export default function ProfileSection({ user, initialGitStats }: ProfileSection
 
   return (
     <div className="h-full rounded-2xl flex flex-col overflow-hidden border-white/10 border-2 min-w-0">
-      <ProfileBanner userId={resolvedUser.id} onEdit={() => setIsEditing(true)} />
+      <ProfileBanner onEdit={() => setIsEditing(true)} image={bannerUrl} />
       <ProfileAvatar image={resolvedUser.image} displayName={displayName} />
 
       <div className="flex-1 p-4 pt-3 space-y-3  min-h-0 overflow-y-auto">

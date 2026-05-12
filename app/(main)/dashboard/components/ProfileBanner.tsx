@@ -4,12 +4,11 @@ import Image from "next/image";
 import { Pencil } from "lucide-react";
 
 interface ProfileBannerProps {
-  userId: string;
   onEdit: () => void;
   image?: string;
 }
 
-export default function ProfileBanner({ userId, onEdit, image }: ProfileBannerProps) {
+export default function ProfileBanner({ onEdit, image }: ProfileBannerProps) {
   return (
     <div className="relative w-full h-24">
       {image ? (
@@ -18,6 +17,7 @@ export default function ProfileBanner({ userId, onEdit, image }: ProfileBannerPr
           alt="Profile banner"
           fill
           className="object-cover"
+          unoptimized
         />
       ) : (
         <div className="w-full h-full bg-gradient-to-br from-white/10 to-white/5" />

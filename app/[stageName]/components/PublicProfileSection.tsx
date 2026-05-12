@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Calendar, Coffee, Globe } from "lucide-react";
+import { Calendar, Coffee } from "lucide-react";
 import Link from "next/link";
 import { FaGithub, FaLinkedin, FaTwitter } from "react-icons/fa6";
 import PublicGitStats from "./PublicGitStats";
@@ -57,13 +57,14 @@ export default function PublicProfileSection({ stageName, user }: PublicProfileS
       {/* Banner */}
       <div className="relative w-full h-28 shrink-0">
         <Image
-          src={`https://picsum.photos/400/120?t=${user.id}`}
+          src={`https://picsum.photos/seed/${encodeURIComponent(user.id)}/800/240`}
           alt="profile banner"
           fill
           className="object-cover opacity-80"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           loading="eager"
           priority
+          unoptimized
         />
       </div>
 

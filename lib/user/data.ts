@@ -82,7 +82,7 @@ export async function deletePost(id: string): Promise<void> {
 
 // Repo API
 export interface Repo {
-  githubRepoId: number;
+  githubRepoId: string | number;
   name: string | null;
   accountId?: string;
   language: string | null;
@@ -123,7 +123,7 @@ export async function addRepo(payload: AddRepoPayload): Promise<{ repo: Repo }> 
   return data;
 }
 
-export async function deleteRepo(githubRepoId: number): Promise<void> {
+export async function deleteRepo(githubRepoId: string | number): Promise<void> {
   const res = await fetch("/api/repos/delete", {
     method: "DELETE",
     headers: { "Content-Type": "application/json" },

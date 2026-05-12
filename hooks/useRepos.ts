@@ -37,13 +37,13 @@ export function useDeleteRepo() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (githubRepoId: number) => deleteRepo(githubRepoId),
+    mutationFn: (githubRepoId: string | number) => deleteRepo(githubRepoId),
     onMutate: async (githubRepoId) => {
       await queryClient.cancelQueries({ queryKey: ["repos"] });
       const previousRepos = queryClient.getQueryData<Repo[]>(["repos"]);
       queryClient.setQueryData<Repo[]>(
         ["repos"],
-        (old) => old?.filter((repo) => repo.githubRepoId !== githubRepoId) ?? []
+        (old) => old?.filter((repo) => String(repo.githubRepoId) !== String(githubRepoId)) ?? []
       );
       return { previousRepos };
     },

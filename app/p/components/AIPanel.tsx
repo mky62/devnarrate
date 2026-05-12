@@ -388,7 +388,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-import { useCachedRepos } from "@/hooks/useRepos";
+import { useRepos } from "@/hooks/useRepos";
 import type { Repo } from "@/lib/userdata";
 
 const CONTENT_TYPES = [
@@ -437,7 +437,7 @@ export default function AIPanel({
   onClose,
   isDarkMode = false,
 }: AIPanelProps) {
-  const { data: repos = [] } = useCachedRepos();
+  const { data: repos = [] } = useRepos();
 
   const [selectedRepo, setSelectedRepo] = useState("");
   const [prompt, setPrompt] = useState("");
@@ -483,9 +483,7 @@ export default function AIPanel({
   const hasEmptyState = indexedRepos.length === 0;
 
   async function handleGenerate() {
-    console.log("handleGenerate called", { selectedRepo, prompt: prompt.trim() });
     if (!selectedRepo || !prompt.trim()) {
-      console.log("Early return - missing repo or prompt");
       return;
     }
 
@@ -499,7 +497,6 @@ export default function AIPanel({
     }, GENERATE_TIMEOUT_MS);
 
     try {
-      console.log("Sending fetch request...");
       const res = await fetch("/api/ai/generate", {
         method: "POST",
         signal: controller.signal,
