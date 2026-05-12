@@ -1,8 +1,42 @@
-import pLimit from 'p-limit';
-
 export interface RepoFile {
   path: string;
   content: string;
+}
+
+// Simple concurrency limiter to avoid external dependency issues
+class ConcurrencyLimiter {
+  private concurrency: number;
+  private running: number = 0;
+  private queue: Array<() => Promise<any>> = [];
+
+  constructor(concurrency: number) {
+    this.concurrency = concurrency;
+  }
+
+  async run<T>(fn: () => Promise<T>): Promise<T> {
+    if (this.running >= this.concurrency) {
+      return new Promise((resolve, reject) => {
+        this.queue.push(async () => {
+          try {
+            resolve(await fn());
+          } catch (error) {
+            reject(error);
+          }
+        });
+      });
+    }
+
+    this.running++;
+    try {
+      return await fn();
+    } finally {
+      this.running--;
+      if (this.queue.length > 0) {
+        const next = this.queue.shift();
+        if (next) next();
+      }
+    }
+  }
 }
 
 export interface RepoDetails {
@@ -120,11 +154,11 @@ export async function getRepoFilesFromGithub({
   const limitedFiles = files.slice(0, maxFiles);
 
   // Fetch content for each file in parallel with concurrency limit
-  const limit = pLimit(10); // 10 concurrent requests
+  const limiter = new ConcurrencyLimiter(10); // 10 concurrent requests
   const filesWithContent: RepoFile[] = [];
 
   const fetchPromises = limitedFiles.map(async (file) => {
-    return limit(async () => {
+    return limiter.run(async () => {
       try {
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), 10000);
