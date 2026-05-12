@@ -1,5 +1,4 @@
-import Image from "next/image";
-import DashBg from "@/public/dashbg.jpg";
+import { Particles } from "@/components/ui/particles";
 import PublicProfileSection from "./components/PublicProfileSection";
 import PublicPostSection from "./components/PublicPostSection";
 import PublicRepoList from "./components/PublicRepoList";
@@ -90,31 +89,28 @@ export default async function PublicDashboardPage({
   }));
 
   return (
-    <div className="h-full w-full flex">
-      <Image
-        src={DashBg}
-        alt="dashboard-bg"
-        className="absolute inset-0 z-[-1] w-full h-full object-cover"
-      />
+    <div className="h-full w-full flex min-h-screen bg-gradient-to-br from-[#1946BD] via-[#2B5AC0] to-[#D5824A] relative overflow-hidden">
+      <div className="absolute inset-0 bg-black/30 -z-20" />
+      <Particles className="absolute inset-0 -z-10" />
 
-      <div className="relative flex gap-2 h-screen w-full p-4">
+      <div className="relative flex gap-3 min-h-screen w-full p-2 z-10">
         {/* Profile */}
-        <div className="w-1/4 h-full flex flex-col">
-          <div className="flex-1 bg-white/80 backdrop-blur-sm border border-blue-500 rounded-2xl p-2 shadow-sm flex flex-col gap-3 overflow-hidden">
+        <div className="w-1/4 h-full flex flex-col overflow-hidden">
+          <div className="flex-1 bg-white/10 backdrop-blur-xl border border-white/10 rounded-3xl p-2 shadow-lg flex flex-col gap-2 overflow-hidden min-h-0">
             <PublicProfileSection stageName={stageName} user={initialUser} />
           </div>
         </div>
 
         {/* Posts */}
-        <div className="w-2/4 h-full flex flex-col">
-          <div className="flex-1 bg-white/80 backdrop-blur-sm border border-blue-500 rounded-2xl p-2 shadow-sm flex flex-col gap-3 overflow-hidden">
+        <div className="w-2/4 h-full flex flex-col overflow-hidden">
+          <div className="flex-1 bg-white/10 backdrop-blur-xl border border-white/10 rounded-3xl p-2 shadow-lg flex flex-col gap-2 overflow-hidden min-h-0">
             <PublicPostSection posts={initialPosts} />
           </div>
         </div>
 
         {/* Repositories */}
-        <div className="w-1/4 h-full flex flex-col">
-          <div className="flex-1 bg-white/80 backdrop-blur-sm border border-blue-500 rounded-2xl p-2 shadow-sm flex flex-col gap-3 overflow-hidden">
+        <div className="w-1/4 h-full flex flex-col overflow-hidden">
+          <div className="flex-1 bg-white/10 backdrop-blur-xl border border-white/10 rounded-3xl p-2 shadow-lg flex flex-col gap-2 overflow-hidden min-h-0">
             <PublicRepoList repos={initialRepos} />
           </div>
         </div>
