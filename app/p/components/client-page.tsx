@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/packages/tiptap/components/ui/button"
 import { AnimatePresence } from "framer-motion"
 import Link from "next/link";
@@ -64,6 +65,7 @@ const getEditorThemePreference = () => {
 
 export default function ClientPage() {
     const router = useRouter();
+    const queryClient = useQueryClient();
     const [loading, setLoading] = useState(false)
     const [showAIPanel, setShowAIPanel] = useState(false)
     const [isEditorDarkMode, setIsEditorDarkMode] = useState(getEditorThemePreference)
@@ -147,7 +149,8 @@ export default function ClientPage() {
             const data = await res.json()
             if (data.success) {
                 clearEditorDraft()
-                router.push("/dashboard")
+                queryClient.invalidateQueries({ queryKey: ["posts"] })
+                router.back()
                 router.refresh()
             }
         } catch (err) {
