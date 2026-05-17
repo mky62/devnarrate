@@ -1,7 +1,8 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react";
-import { Search, X, Loader2, Trash2 } from "lucide-react";
+import { useEffect, useMemo, useState, useRef } from "react";
+import { Search, X, Loader2, Trash2, CircleHelp } from "lucide-react";
+import { Button } from "@/packages/tiptap/components/ui/button";
 import { FaCodeFork } from "react-icons/fa6";
 import { useAddRepo, useDeleteRepo, useRepos } from "@/hooks/useRepos";
 import { useRepoIndexingPolling } from "@/hooks/use-repo-indexing-polling";
@@ -32,11 +33,24 @@ export default function RepoList({ initialSavedRepos = [] }: RepoListProps) {
     const [addingRepoId, setAddingRepoId] = useState<number | null>(null);
     const [deletingRepoId, setDeletingRepoId] = useState<RepoId | null>(null);
     const [indexingRepoId, setIndexingRepoId] = useState<RepoId | null>(null);
+    const [showInfo, setShowInfo] = useState(false);
+    const infoRef = useRef<HTMLDivElement>(null);
     const { data: savedRepos = initialSavedRepos, refetch: refetchRepos } = useRepos(initialSavedRepos);
     const addRepoMutation = useAddRepo();
     const deleteRepoMutation = useDeleteRepo();
 
     useRepoIndexingPolling(savedRepos, refetchRepos);
+
+    useEffect(() => {
+        if (!showInfo) return;
+        const handleClickOutside = (e: MouseEvent) => {
+            if (infoRef.current && !infoRef.current.contains(e.target as Node)) {
+                setShowInfo(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, [showInfo]);
 
     useEffect(() => {
         if (!showSearchModal || githubRepos !== null) return;
@@ -228,13 +242,55 @@ export default function RepoList({ initialSavedRepos = [] }: RepoListProps) {
                     <span className="text-xs bg-white/10 text-white/70 font-medium px-2 py-0.5 rounded-full">
                         {savedRepos.length}
                     </span>
-                    <button
+                    <div className="relative" ref={infoRef}>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setShowInfo(!showInfo)}
+                            title="Status info"
+                        >
+                            <CircleHelp size={14} className="text-white/70" />
+                        </Button>
+                        {showInfo && (
+                            <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 p-3 z-20">
+                                <p className="text-xs font-semibold text-gray-800 mb-2">Status Colors</p>
+                                <div className="space-y-1.5">
+                                    <div className="flex items-center gap-2">
+                                        <span className="w-2 h-2 rounded-full bg-[#0556f7]" />
+                                        <span className="text-xs text-gray-600">Indexed</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <span className="w-2 h-2 rounded-full bg-[#12df03] animate-pulse" />
+                                        <span className="text-xs text-gray-600">Indexing</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <span className="w-2 h-2 rounded-full bg-[#f7ef05] animate-pulse" />
+                                        <span className="text-xs text-gray-600">Pending</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <span className="w-2 h-2 rounded-full bg-[#dd0404]" />
+                                        <span className="text-xs text-gray-600">Failed</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <span className="w-2 h-2 rounded-full bg-[#e85704]" />
+                                        <span className="text-xs text-gray-600">Stale</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <span className="w-2 h-2 rounded-full bg-[#010107] animate-pulse" />
+                                        <span className="text-xs text-gray-600">Not indexed</span>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                    <Button
+                        variant="ghost"
+                        size="icon"
                         onClick={openSearchModal}
-                        className="p-1 hover:bg-white/10 rounded-md transition-colors"
                         title="Search GitHub repos"
                     >
                         <Search size={14} className="text-white/70" />
-                    </button>
+                    </Button>
                 </div>
             </div>
 
